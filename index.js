@@ -1,13 +1,68 @@
 "use strict";
 
-const WIDTH = window.innerWidth; //700;
-const HEIGHT = window.innerHeight; //300;
+// TODO: window resize
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
 const TILE_HEIGHT = 20;
 const TILE_WIDTH = 20;
 
+let offset_x = 0;
+let offset_y = 0;
+
+let mouseDown = false;
+let mouse_isox = 0;
+let mouse_isoy = 0;
+
+window.addEventListener(
+  "keydown",
+  event => {
+    switch (event.keyCode) {
+      case 37:
+        offset_x += 20;
+        break;
+      case 38:
+        offset_y += 20;
+        break;
+      case 39:
+        offset_x -= 20;
+        break;
+      case 40:
+        offset_y -= 20;
+        break;
+    }
+  },
+  false
+);
+
+document.addEventListener(
+  "mousemove",
+  event => {
+    mouse_isox = event.pageX;
+    mouse_isoy = event.pageY;
+    if (mouseDown) updateMap();
+  },
+  false
+);
+
+document.addEventListener("mousedown", event => {
+  mouseDown = true;
+});
+
+document.addEventListener("mouseup", event => {
+  mouseDown = false;
+});
+
+function updateMap() {
+  const [i, j] = getActiveTile();
+  if (i >= 0 && i < 100 && j >= 0 && j < 100) {
+    map[i][j] = TILE_WATER;
+  }
+}
+
 const app = new PIXI.Application({
   width: WIDTH,
-  height: HEIGHT
+  height: HEIGHT,
+  clearBeforeRender: true
 });
 document.body.appendChild(app.view);
 
@@ -18,6 +73,7 @@ const TILE_GRASS = "TILE_GRASS";
 const TILE_DIRT = "TILE_DIRT";
 const TILE_WATER = "TILE_WATER";
 const TILE_EMPTY = "TILE_EMPTY";
+const TILE_ACTIVE = "TILE_ACTIVE";
 
 const TILE_STATS = {
   TILE_GRASS: {
@@ -31,6 +87,10 @@ const TILE_STATS = {
   TILE_WATER: {
     backgroundColor: 0x85b9bb,
     borderColor: 0x476263
+  },
+  TILE_ACTIVE: {
+    backgroundColor: 0xff0000,
+    borderColor: 0xff0000
   }
 };
 
@@ -55,7 +115,23 @@ for (let i = 0; i < 100; i++) {
   map.push(line);
 }
 
+function getActiveTile() {
+  const mouse_real_isox = mouse_isox - offset_x;
+  const mouse_real_isoy = mouse_isoy - offset_y;
+  const mousex = (2 * mouse_real_isoy + mouse_real_isox) / 2;
+  const mousey = (2 * mouse_real_isoy - mouse_real_isox) / 2;
+
+  const mxi = Math.floor(mousex / TILE_WIDTH);
+  const myi = Math.floor(mousey / TILE_HEIGHT);
+
+  return [myi, mxi];
+}
+
 function renderMap(map) {
+  graphics.clear();
+
+  const [mouse_i, mouse_j] = getActiveTile();
+
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
       // cartesian 2D coordinate
@@ -66,9 +142,8 @@ function renderMap(map) {
       const isoX = x - y;
       const isoY = (x + y) / 2;
 
-      const tileType = map[i][j];
-      const offset = WIDTH / 2;
-      renderTile(tileType, offset + isoX, isoY);
+      const tileType = i == mouse_i && j == mouse_j ? TILE_ACTIVE : map[i][j];
+      renderTile(tileType, offset_x + isoX, offset_y + isoY);
     }
   }
 }
@@ -82,6 +157,10 @@ function renderTile(type, x, y) {
   const w = TILE_WIDTH;
   const h_2 = h / 2;
 
+  if (x > WIDTH || x + 2 * w < 0 || y - h_2 > HEIGHT || y + h_2 < 0) {
+    return;
+  }
+
   graphics.beginFill(backgroundColor);
   graphics.lineStyle(1, borderColor, 1);
   graphics.moveTo(x, y);
@@ -92,4 +171,4 @@ function renderTile(type, x, y) {
   graphics.endFill();
 }
 
-renderMap(map);
+app.ticker.add(() => renderMap(map));
