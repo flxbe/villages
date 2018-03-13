@@ -38,6 +38,24 @@ document.addEventListener(
   false
 );
 
-document.addEventListener("mousedown", event => {
-  const mouseTile = getActiveTile();
+document.addEventListener("mousedown", start => {
+  let startX = start.clientX;
+  let startY = start.clientY;
+
+  function moveOffset(mmevent) {
+    const moveX = mmevent.clientX;
+    const moveY = mmevent.clientY;
+
+    offsetX += (moveX - startX) * 0.75;
+    offsetY += (moveY - startY) * 0.75;
+
+    startX = moveX;
+    startY = moveY;
+  }
+
+  document.addEventListener("mousemove", moveOffset);
+
+  document.addEventListener("mouseup", end => {
+    document.removeEventListener("mousemove", moveOffset);
+  });
 });
