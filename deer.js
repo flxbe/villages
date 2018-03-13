@@ -36,8 +36,8 @@ const deerAssets = [
 ];
 
 const deer = {
-  x: 100,
-  y: 200,
+  x: 0,
+  y: 0,
 
   direction: [0, 0],
   currentTarget: [0, 0],

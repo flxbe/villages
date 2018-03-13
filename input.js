@@ -40,9 +40,4 @@ document.addEventListener(
 
 document.addEventListener("mousedown", event => {
   const mouseTile = getActiveTile();
-  if (isTileOnMap(mouseTile[0], mouseTile[1])) {
-    const deerTile = cart2tile(deer.x, deer.y);
-
-    setPath(deer, astar(deerTile, mouseTile));
-  }
 });

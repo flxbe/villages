@@ -1,11 +1,32 @@
+"use strict";
+
+// TODO: add global state object
+// TODO: add server actions to update state
+let inventory = 0;
+let storage = 0;
+
+// TODO: create UI
+let style = new PIXI.TextStyle({
+  fontFamily: "Arial",
+  fontSize: 20,
+  fill: "white",
+  strokeThickness: 4
+});
+
+const storageText = new PIXI.Text("", style);
+const inventoryText = new PIXI.Text("", style);
+
 PIXI.loader.add(deerAssets).load(setup);
 
 function setup() {
   deer.sprite = new PIXI.Sprite();
-
   setAnimation("STAND");
-
   app.stage.addChild(deer.sprite);
+
+  app.stage.addChild(storageText);
+  app.stage.addChild(inventoryText);
+  inventoryText.position.set(10, 40);
+  storageText.position.set(10, 10);
 }
 
 const app = new PIXI.Application({
@@ -57,8 +78,7 @@ function renderTile(type, x, y) {
 
 app.ticker.add(delta => {
   renderMap(map);
-
-  move(deer, delta);
+  move(deer, delta * 5);
 
   if (deer.sprite) {
     const frame = getAnimationFrame(deer);
@@ -68,4 +88,7 @@ app.ticker.add(delta => {
     deer.sprite.x = relX + DEER_OFFSET_X;
     deer.sprite.y = relY + DEER_OFFSET_Y;
   }
+
+  storageText.text = `Storage: ${storage}`;
+  inventoryText.text = `Inventory: ${Math.floor(inventory)}`;
 });

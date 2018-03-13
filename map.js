@@ -15,6 +15,8 @@ const TILE_WIDTH = 20;
 const TILE_GRASS = "TILE_GRASS";
 const TILE_DIRT = "TILE_DIRT";
 const TILE_WATER = "TILE_WATER";
+const TILE_STORAGE = "TILE_STORAGE";
+const TILE_TREE = "TILE_TREE";
 const TILE_EMPTY = "TILE_EMPTY";
 const TILE_ACTIVE = "TILE_ACTIVE";
 
@@ -30,6 +32,14 @@ const TILE_STATS = {
   TILE_WATER: {
     backgroundColor: 0x85b9bb,
     borderColor: 0x476263
+  },
+  TILE_STORAGE: {
+    backgroundColor: 0x6f42c2,
+    borderColor: 0x6f42c2
+  },
+  TILE_TREE: {
+    backgroundColor: 0x000000,
+    borderColor: 0x000000
   },
   TILE_ACTIVE: {
     backgroundColor: 0xff0000,
@@ -92,3 +102,6 @@ for (let i = 0; i < MAP_HEIGHT; i++) {
   }
   map.push(line);
 }
+
+map[3][3] = TILE_STORAGE;
+map[7][10] = TILE_TREE;

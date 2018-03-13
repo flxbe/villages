@@ -1,5 +1,6 @@
 "use strict";
 
+// TODO: save starttime of the new path
 function setPath(object, path) {
   object.path = path;
   updatePath(object);
@@ -21,6 +22,7 @@ function updatePath(object) {
       object.currentTarget[1]
     );
   } else {
+    delete object.path;
     object.targetDistance = 1;
     object.direction = [0, 0];
   }
