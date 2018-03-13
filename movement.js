@@ -1,11 +1,5 @@
 "use strict";
 
-// TODO: save starttime of the new path
-function setPath(object, path) {
-  object.path = path;
-  updatePath(object);
-}
-
 function updatePath(object) {
   if (object.targetDistance > 0) return;
 
