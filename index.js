@@ -1,62 +1,22 @@
 "use strict";
 
-// TODO: window resize
-const WIDTH = window.innerWidth;
-const HEIGHT = window.innerHeight;
-const TILE_HEIGHT = 20;
-const TILE_WIDTH = 20;
-
-let offset_x = 0;
-let offset_y = 0;
-
-let mouseDown = false;
-let mouse_isox = 0;
-let mouse_isoy = 0;
-
-window.addEventListener(
-  "keydown",
-  event => {
-    switch (event.keyCode) {
-      case 37:
-        offset_x += 20;
-        break;
-      case 38:
-        offset_y += 20;
-        break;
-      case 39:
-        offset_x -= 20;
-        break;
-      case 40:
-        offset_y -= 20;
-        break;
-    }
-  },
-  false
-);
-
-document.addEventListener(
-  "mousemove",
-  event => {
-    mouse_isox = event.pageX;
-    mouse_isoy = event.pageY;
-    if (mouseDown) updateMap();
-  },
-  false
-);
-
-document.addEventListener("mousedown", event => {
-  mouseDown = true;
-});
-
-document.addEventListener("mouseup", event => {
-  mouseDown = false;
-});
+let dir = [0, 0];
 
 function updateMap() {
   const [i, j] = getActiveTile();
   if (i >= 0 && i < 100 && j >= 0 && j < 100) {
     map[i][j] = TILE_WATER;
   }
+}
+
+PIXI.loader.add(deerAssets).load(setup);
+
+function setup() {
+  deer.sprite = new PIXI.Sprite();
+
+  setAnimation("GO_W");
+
+  app.stage.addChild(deer.sprite);
 }
 
 const app = new PIXI.Application({
@@ -116,15 +76,8 @@ for (let i = 0; i < 100; i++) {
 }
 
 function getActiveTile() {
-  const mouse_real_isox = mouse_isox - offset_x;
-  const mouse_real_isoy = mouse_isoy - offset_y;
-  const mousex = (2 * mouse_real_isoy + mouse_real_isox) / 2;
-  const mousey = (2 * mouse_real_isoy - mouse_real_isox) / 2;
-
-  const mxi = Math.floor(mousex / TILE_WIDTH);
-  const myi = Math.floor(mousey / TILE_HEIGHT);
-
-  return [myi, mxi];
+  const [absX, absY] = rel2abs(mouse_isox, mouse_isoy);
+  return rel2tile(absX, absY);
 }
 
 function renderMap(map) {
@@ -139,11 +92,11 @@ function renderMap(map) {
       const y = i * TILE_HEIGHT;
 
       // iso coordinate
-      const isoX = x - y;
-      const isoY = (x + y) / 2;
+      const [isoX, isoY] = cart2iso(x, y);
+      const [relX, relY] = abs2rel(isoX, isoY);
 
       const tileType = i == mouse_i && j == mouse_j ? TILE_ACTIVE : map[i][j];
-      renderTile(tileType, offset_x + isoX, offset_y + isoY);
+      renderTile(tileType, relX, relY);
     }
   }
 }
@@ -171,4 +124,20 @@ function renderTile(type, x, y) {
   graphics.endFill();
 }
 
-app.ticker.add(() => renderMap(map));
+app.ticker.add(delta => {
+  if (mouseDown) updateMap();
+  renderMap(map);
+
+  deer.animationTime += delta;
+  deer.y += dir[1] * delta / 2.0;
+  deer.x += dir[0] * delta / 2.0;
+
+  if (deer.sprite) {
+    const frame = getAnimationFrame();
+    deer.sprite.texture = PIXI.loader.resources[frame].texture;
+    const [isoX, isoY] = cart2iso(deer.x, deer.y);
+    const [relX, relY] = abs2rel(isoX, isoY);
+    deer.sprite.x = relX;
+    deer.sprite.y = relY;
+  }
+});
