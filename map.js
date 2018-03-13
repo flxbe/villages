@@ -81,27 +81,3 @@ function isTileOnMap(i, j) {
 function getTileCenter(i, j) {
   return [(j + 0.5) * TILE_WIDTH, (i + 0.5) * TILE_HEIGHT];
 }
-
-const map = [];
-for (let i = 0; i < MAP_HEIGHT; i++) {
-  const line = [];
-  for (let j = 0; j < MAP_WIDTH; j++) {
-    let type;
-    switch (Math.floor(Math.random() * 3 + 1)) {
-      case 1:
-        type = TILE_DIRT;
-        break;
-      case 2:
-        type = TILE_WATER;
-        break;
-      case 3:
-        type = TILE_GRASS;
-        break;
-    }
-    line.push(type);
-  }
-  map.push(line);
-}
-
-map[3][3] = TILE_STORAGE;
-map[7][10] = TILE_TREE;

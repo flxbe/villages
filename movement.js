@@ -7,6 +7,8 @@ function setPath(object, path) {
 }
 
 function updatePath(object) {
+  if (object.targetDistance > 0) return;
+
   if (object.path && object.path.length > 0) {
     object.currentTarget = object.path.pop();
     object.targetDistance = distance(
@@ -30,9 +32,11 @@ function updatePath(object) {
 
 function move(object, delta) {
   object.animationTime += delta;
+
   const direction = object.direction;
   let animation;
-  if (isNorth(direction)) animation = "GO_N";
+  if (!direction) animation = "STAND";
+  else if (isNorth(direction)) animation = "GO_N";
   else if (isNorthEast(direction)) animation = "GO_NE";
   else if (isEast(direction)) animation = "GO_E";
   else if (isSouthEast(direction)) animation = "GO_SE";
@@ -41,7 +45,12 @@ function move(object, delta) {
   else if (isWest(direction)) animation = "GO_W";
   else if (isNorthWest(direction)) animation = "GO_NW";
   else animation = "STAND";
+
   setAnimation(object, animation);
+
+  if (!object.path) return;
+
+  updatePath(object);
 
   object.targetDistance -= delta / 2.0;
   if (object.targetDistance > 0) {
@@ -50,27 +59,5 @@ function move(object, delta) {
   } else {
     object.x = object.currentTarget[0];
     object.y = object.currentTarget[1];
-
-    updatePath(object);
   }
-}
-
-function addAnimation(object, name, frames) {
-  object.animations[name] = frames;
-}
-
-function setAnimation(object, name) {
-  if (object.currentAnimation !== name) {
-    object.currentAnimation = name;
-    object.animationTime = 0;
-  }
-}
-
-function getAnimationFrame(object) {
-  const animation = object.animations[object.currentAnimation];
-
-  const frames = animation.length;
-  const timePerFrame = 7.5;
-  const index = Math.floor((object.animationTime / timePerFrame) % frames);
-  return animation[index];
 }

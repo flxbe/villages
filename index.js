@@ -1,32 +1,30 @@
 "use strict";
 
-// TODO: add global state object
-// TODO: add server actions to update state
-let inventory = 0;
-let storage = 0;
-
 // TODO: create UI
 let style = new PIXI.TextStyle({
   fontFamily: "Arial",
-  fontSize: 20,
-  fill: "white",
-  strokeThickness: 4
+  fontSize: 16,
+  fill: "white"
 });
 
-const storageText = new PIXI.Text("", style);
-const inventoryText = new PIXI.Text("", style);
-
-PIXI.loader.add(deerAssets).load(setup);
+const storageFoodText = new PIXI.Text("Storage (Food)", style);
+const storageWoodText = new PIXI.Text("Storage (Wood)", style);
+const inventoryDeer1Text = new PIXI.Text("", style);
+const inventoryDeer2Text = new PIXI.Text("", style);
+PIXI.loader.add(Array.from(assets)).load(setup);
 
 function setup() {
-  deer.sprite = new PIXI.Sprite();
-  setAnimation("STAND");
-  app.stage.addChild(deer.sprite);
+  app.stage.addChild(storageFoodText);
+  storageFoodText.position.set(10, 10);
+  app.stage.addChild(storageWoodText);
+  storageWoodText.position.set(10, 30);
 
-  app.stage.addChild(storageText);
-  app.stage.addChild(inventoryText);
-  inventoryText.position.set(10, 40);
-  storageText.position.set(10, 10);
+  app.stage.addChild(inventoryDeer1Text);
+  inventoryDeer1Text.position.set(300, 10);
+  app.stage.addChild(inventoryDeer2Text);
+  inventoryDeer2Text.position.set(300, 30);
+
+  app.ticker.add(gameloop);
 }
 
 const app = new PIXI.Application({
@@ -76,12 +74,12 @@ function renderTile(type, x, y) {
   graphics.endFill();
 }
 
-app.ticker.add(delta => {
-  renderMap(map);
-  move(deer, delta * 5);
+function gameloop(delta) {
+  renderMap(state.map);
 
-  if (deer.sprite) {
-    const frame = getAnimationFrame(deer);
+  for (let deer of Object.values(state.deers)) {
+    move(deer, delta * 5);
+    const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
 
     const [relX, relY] = cart2rel(deer.x, deer.y);
@@ -89,6 +87,12 @@ app.ticker.add(delta => {
     deer.sprite.y = relY + DEER_OFFSET_Y;
   }
 
-  storageText.text = `Storage: ${storage}`;
-  inventoryText.text = `Inventory: ${Math.floor(inventory)}`;
-});
+  storageFoodText.text = `Storage (Food): ${state.storage.food}`;
+  storageWoodText.text = `Storage (Wood): ${state.storage.wood}`;
+  inventoryDeer1Text.text = `Inventory (Deer1): ${Math.floor(
+    state.deers["deer1"].inventory
+  )}`;
+  inventoryDeer2Text.text = `Inventory (Deer2): ${Math.floor(
+    state.deers["deer2"].inventory
+  )}`;
+}
