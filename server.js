@@ -123,7 +123,7 @@ function generateRandomMap() {
   for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({ shade: shade2hexColor(maps[0][i][j]), passable: true, buildable: true });
+      line.push({ type: "TILE_NORMAL", shade: shade2hexColor(maps[0][i][j]), passable: true, buildable: true });
     }
     map.push(line);
   }

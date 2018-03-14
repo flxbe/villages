@@ -25,6 +25,17 @@ window.addEventListener(
         offsetY -= 20;
         break;
     }
+
+    switch (event.key) {
+      case "b": {
+        state.mode = "build";
+        break;
+      }
+      case "n": {
+        state.mode = "normal";
+        break;
+      }
+    }
   },
   false
 );
