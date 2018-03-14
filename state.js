@@ -10,7 +10,9 @@ const state = {
     food: 0,
     wood: 0
   },
-  deers: {}
+  deers: {},
+
+  mode: "normal"
 };
 
 /**

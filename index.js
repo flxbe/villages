@@ -36,6 +36,12 @@ document.body.appendChild(app.view);
 const graphics = new PIXI.Graphics();
 app.stage.addChild(graphics);
 
+function isInBlueprint(i, j) {
+  const [iMouse, jMouse] = getActiveTile();
+
+  return i <= iMouse && i >= iMouse - 3 && j <= jMouse && j >= jMouse - 3;
+}
+
 function renderMap(map) {
   graphics.clear();
 
@@ -45,7 +51,27 @@ function renderMap(map) {
     for (let j = 0; j < map[i].length; j++) {
       const [relX, relY] = tile2rel(i, j);
 
-      const tileType = i == mouse_i && j == mouse_j ? TILE_ACTIVE : map[i][j];
+      let tileType;
+      switch (state.mode) {
+        case "normal": {
+          tileType = map[i][j];
+          break;
+        }
+        case "build": {
+          if (isInBlueprint(i, j)) {
+            tileType = TILE_ACTIVE;
+          } else {
+            tileType = map[i][j];
+          }
+          break;
+        }
+        default: {
+          throw Error(`unknown mode: ${state.mode}`);
+        }
+      }
+
+      if (i == mouse_i && j == mouse_j) tileType = TILE_ACTIVE;
+
       renderTile(tileType, relX, relY);
     }
   }

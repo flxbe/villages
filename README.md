@@ -11,3 +11,8 @@
 * `deer.js`: Holds deer-specific variables.
 * `index.js`: Entry-points. Here, everything is loaded and rendered in the gameloop.
 * `server.js`: Emulates the server, pushes events to the state update function.
+
+## Controls
+
+* `b`: Activate building mode.
+* `n`: Activate normal mode.
