@@ -45,27 +45,23 @@ function renderMap(map) {
     for (let j = 0; j < map[i].length; j++) {
       const [relX, relY] = tile2rel(i, j);
 
-      const tileType = i == mouse_i && j == mouse_j ? TILE_ACTIVE : map[i][j];
-      renderTile(tileType, relX, relY);
+      const color = i == mouse_i && j == mouse_j ? 0xff0000 : map[i][j].shade;
+      renderTile(color, relX, relY);
     }
   }
 }
 
-function renderTile(type, x, y) {
-  if (type == TILE_EMPTY) {
-    return;
-  }
-  const { backgroundColor, borderColor } = TILE_STATS[type];
+function renderTile(color, x, y) {
   const h = TILE_HEIGHT;
   const w = TILE_WIDTH;
   const h_2 = h / 2;
 
-  if (x > WIDTH || x + 2 * w < 0 || y - h_2 > HEIGHT || y + h_2 < 0) {
+  if (x - 2 * w > WIDTH || x + 2 * w < 0 || y > HEIGHT || y + h < 0) {
     return;
   }
 
-  graphics.beginFill(backgroundColor);
-  graphics.lineStyle(1, borderColor, 1);
+  graphics.beginFill(color);
+  graphics.lineStyle(1, color, 1);
   graphics.moveTo(x, y);
   graphics.lineTo(x + w, y + h_2);
   graphics.lineTo(x, y + h);

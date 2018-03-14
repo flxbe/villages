@@ -83,3 +83,58 @@ function isWest([dx, dy]) {
 function isNorthWest([dx, dy]) {
   return dx < 0 && dy < 0;
 }
+
+function dec2hex(n) {
+  let hex = n.toString(16);
+  while (hex.length < 2) { hex = "0" + hex; }
+  return hex;
+}
+
+function rgb2hexColor(r, g, b) {
+  return "0x" + dec2hex(r) + dec2hex(g) + dec2hex(b);
+}
+
+function shade2hexColor(n) {
+  return rgb2hexColor(n, n, n);
+}
+
+function generateNoiseMaps(number, width, height, minVal, maxVal, blurRadius, blurFactor, blurGradient) {
+  const maps = [];
+
+  for (let n = 0; n < number; n++) {
+    const map = [];
+
+    for (let i = 0; i < width; i++) {
+      const line = [];
+      for (let j = 0; j < height; j++) {
+        line.push(Math.floor(Math.random() * (maxVal - minVal) + minVal));
+      }
+      map.push(line);
+    }
+
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        let val = blurFactor * map[i][j];
+        let valc = blurFactor;
+        for (let distX = 1; distX < blurRadius; distX++) {
+          for (let distY = 1; distX + distY <= blurRadius; distY++) {
+            const factor = blurFactor / ((distX + distY) * blurGradient);
+            if (i - distX >= 0 && j - distY >= 0) {
+              val += factor * map[i - distX][j - distY];
+              valc += factor;
+            }
+            if (i + distX < width && j + distY < height) {
+              val += factor * map[i + distX][j + distY];
+              valc += factor;
+            }
+          }
+        }
+        map[i][j] = Math.floor(val / valc);
+      }
+    }
+
+    maps.push(map);
+  }
+
+  return maps;
+}

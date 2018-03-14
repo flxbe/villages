@@ -5,30 +5,7 @@ function startServer() {
   const foodTile = [9, 13];
   const storageTile = [3, 3];
 
-  const map = [];
-  for (let i = 0; i < MAP_HEIGHT; i++) {
-    const line = [];
-    for (let j = 0; j < MAP_WIDTH; j++) {
-      let type;
-      switch (Math.floor(Math.random() * 3 + 1)) {
-        case 1:
-          type = TILE_DIRT;
-          break;
-        case 2:
-          type = TILE_GRASS; // TILE_WATER;
-          break;
-        case 3:
-          type = TILE_GRASS;
-          break;
-      }
-      line.push(type);
-    }
-    map.push(line);
-  }
-
-  map[3][3] = TILE_STORAGE;
-  map[7][10] = TILE_TREE;
-  map[9][13] = TILE_TREE;
+  const map = generateRandomMap();
 
   updateState({ type: "SET_MAP", map });
   updateState({
@@ -138,3 +115,18 @@ function startServer() {
 }
 
 startServer();
+
+function generateRandomMap() {
+  const map = [];
+  const maps = generateNoiseMaps(1, MAP_WIDTH, MAP_HEIGHT, 0, 255, 8, 16, 2);
+
+  for (let i = 0; i < MAP_WIDTH; i++) {
+    const line = [];
+    for (let j = 0; j < MAP_HEIGHT; j++) {
+      line.push({ shade: shade2hexColor(maps[0][i][j]), passable: true, buildable: true });
+    }
+    map.push(line);
+  }
+
+  return map;
+}

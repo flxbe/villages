@@ -29,12 +29,10 @@ window.addEventListener(
   false
 );
 
-document.addEventListener(
-  "mousemove",
-  event => {
-    mouse_isox = event.pageX;
-    mouse_isoy = event.pageY;
-  },
+document.addEventListener("mousemove", event => {
+  mouse_isox = event.pageX;
+  mouse_isoy = event.pageY;
+},
   false
 );
 
