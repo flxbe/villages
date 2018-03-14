@@ -72,12 +72,15 @@ function renderMap(map) {
 
       if (i == mouse_i && j == mouse_j) tileType = TILE_ACTIVE;
 
-      renderTile(tileType, map[i][j].color, relX, relY);
+      renderTile(tileType, map[i][j].shade, relX, relY);
     }
   }
 }
 
 function renderTile(type, color, x, y) {
+  if(type == TILE_EMPTY) {
+    return;
+  }
   if (type == TILE_ACTIVE) {
     color = 0xff0000;
   }

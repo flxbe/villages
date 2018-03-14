@@ -12,6 +12,10 @@ const MAP_WIDTH = 100;
 const TILE_HEIGHT = 20;
 const TILE_WIDTH = 20;
 
+const TILE_NORMAL = "TILE_NORMAL";
+const TILE_EMPTY = "TILE_EMPTY";
+const TILE_ACTIVE = "TILE_ACTIVE";
+
 function cart2tile(cartX, cartY) {
   const j = Math.floor(cartX / TILE_WIDTH);
   const i = Math.floor(cartY / TILE_HEIGHT);
