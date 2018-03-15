@@ -5,17 +5,7 @@ function startServer() {
   const foodTile = [9, 13];
   const storageTile = [3, 3];
 
-  const map = generateRandomMap();
-
-  updateState({ type: "SET_MAP", map });
-  updateState({
-    type: "ADD_DEER",
-    deer: { id: "deer1", x: 0, y: 0, inventory: 0, profession: "wood" }
-  });
-  updateState({
-    type: "ADD_DEER",
-    deer: { id: "deer2", x: 0, y: 50, inventory: 0, profession: "food" }
-  });
+  generateRandomMap();
 
   app.ticker.add(server);
 
@@ -116,67 +106,77 @@ function startServer() {
 
 startServer();
 
-function generateNoiseMaps(number, width, height, minVal, maxVal, blurRadius, blurCenterWeight, blurWeightGradient) {
-  const maps = [];
-
-  for(let n = 0; n < number; n++) {
-    const map = [];
-
-    for(let i = 0; i < width; i++) {
-      const line = [];
-      for (let j = 0; j < height; j++) {
-        line.push(Math.floor(Math.random() * (maxVal - minVal) + minVal));
-      }
-      map.push(line);
-    }
-
-    for(let i = 0; i < width; i++) {
-      for (let j = 0; j < height; j++) {
-        let val = map[i][j] * blurCenterWeight;
-        let valc = blurCenterWeight;
-        for(let distX = 1; distX < blurRadius; distX++) {
-          for(let distY = 1; distX + distY <= blurRadius; distY++) {
-            const factor = blurCenterWeight / ((distX + distY) * blurWeightGradient);
-            if(i - distX >= 0) {
-              if(j - distY >= 0) {
-                val += map[i - distX][j - distY] * factor;
-                valc += factor;
-              }
-              if(j + distY < height) {
-                val += map[i - distX][j + distY] * factor;
-                valc += factor;
-              }
-            }
-            if(i + distX < width) {
-              if(j - distY >= 0) {
-                val += map[i + distX][j - distY] * factor;
-                valc += factor;
-              }
-              if(j + distY < height) {
-                val += map[i + distX][j + distY] * factor;
-                valc += factor;
-              }
-            }
-            map[i][j] = Math.floor(val / valc);
-          }
-        }
-      }
-    }
-
-    maps.push(map);
-  }
-
-  return maps;
-}
-
 function generateRandomMap() {
-  const map = [];
-  const maps = generateNoiseMaps(1, MAP_WIDTH, MAP_HEIGHT, 0, 255, 4, 16, 2);
+  const rNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
+  //const gNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
+  const bNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
+  //const noiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
 
   for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({ type: TILE_NORMAL, shade: shade2hexColor(maps[0][i][j]), passable: true, buildable: true });
+      const rval = rNoiseMap[i][j];
+      //const gval = gNoiseMap[i][j];
+      const bval = bNoiseMap[i][j];
+      if (rval < 112) {
+        rNoiseMap[i][j] = 63;
+      }
+      else if (rval < 128) {
+        rNoiseMap[i][j] = 127;
+      }
+      else if (rval < 144) {
+        rNoiseMap[i][j] = 191;
+      }
+      else {
+        rNoiseMap[i][j] = 255;
+      }
+      /*if (gval < 112) {
+        gNoiseMap[i][j] = 63;
+      }
+      else if (gval < 128) {
+        gNoiseMap[i][j] = 127;
+      }
+      else if (gval < 144) {
+        gNoiseMap[i][j] = 191;
+      }
+      else {
+        gNoiseMap[i][j] = 255;
+      }*/
+      if (bval < 112) {
+        bNoiseMap[i][j] = 63;
+      }
+      else if (bval < 128) {
+        bNoiseMap[i][j] = 127;
+      }
+      else if (bval < 144) {
+        bNoiseMap[i][j] = 191;
+      }
+      else {
+        bNoiseMap[i][j] = 255;
+      }
+      /*const val = noiseMap[i][j];
+      if (val < 112) {
+        noiseMap[i][j] = 63;
+      }
+      else if (val < 128) {
+        noiseMap[i][j] = 127;
+      }
+      else if (val < 144) {
+        noiseMap[i][j] = 191;
+      }
+      else {
+        noiseMap[i][j] = 255;
+      }*/
+    }
+  }
+  
+  const map = [];
+  for(let i = 0; i < MAP_WIDTH; i++) {
+    const line = [];
+    for(let j = 0; j < MAP_HEIGHT; j++) {
+      line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], 255, bNoiseMap[i][j]), passable: true, buildable: true });
+      //line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], gNoiseMap[i][j], bNoiseMap[i][j]), passable: true, buildable: true });
+      //line.push({ type: TILE_GRASS, shade: shade2hexColor(noiseMap[i][j]), passable: true, buildable: true });
     }
     map.push(line);
   }
@@ -185,5 +185,13 @@ function generateRandomMap() {
   map[9][13].shade = "0x000000";
   map[3][3].shade = "0x551A8B";
 
-  return map;
+  updateState({ type: "SET_MAP", map });
+  updateState({
+    type: "ADD_DEER",
+    deer: { id: "deer1", x: 0, y: 0, inventory: 0, profession: "wood" }
+  });
+  updateState({
+    type: "ADD_DEER",
+    deer: { id: "deer2", x: 0, y: 50, inventory: 0, profession: "food" }
+  });
 }
