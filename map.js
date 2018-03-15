@@ -82,7 +82,7 @@ function tile2rel(i, j) {
 }
 
 /**
- * Convert relative coordinates to tile indices.
+ * Convert absolute coordinates to tile indices.
  * @param {number} absX
  * @param {number} absY
  */
@@ -91,19 +91,39 @@ function abs2tile(absX, absY) {
   return cart2tile(cartX, cartY);
 }
 
+/**
+ * Convert relative coordinates to tile indices.
+ * @param {number} relX
+ * @param {number} relY
+ */
 function rel2tile(relX, relY) {
   const [absX, absY] = rel2abs(relX, relY);
   return abs2tile(absX, absY);
 }
 
+/**
+ * Check if tile indices give a tile on the map.
+ * @param {number} i
+ * @param {number} j
+ */
 function isTileOnMap(i, j) {
   return j >= 0 && j < MAP_WIDTH && i >= 0 && i < MAP_HEIGHT;
 }
 
+/**
+ * Return cartesian coordinates of the center of the tile with given indices.
+ * @param {number} i
+ * @param {number} j
+ */
 function getTileCenter(i, j) {
   return [(j + 0.5) * TILE_WIDTH, (i + 0.5) * TILE_HEIGHT];
 }
 
+/**
+ * Check if tile indices give a tile covered by the blueprint.
+ * @param {number} i
+ * @param {number} j
+ */
 function isInBlueprint(i, j) {
   const [iMouse, jMouse] = getActiveTile();
 
@@ -152,7 +172,8 @@ function renderMap(map) {
 /**
  * Render a tile of type `type` at the specified relative coordinates.
  * The coordinates describe the upper corner of the isometric tile.
- * @param {TILE_TZPE} type
+ * @param {TILE_TYPE} type
+ * @param {string} color - hexadecimal color, e.g. "0xff0000"
  * @param {number} relX
  * @param {number} relY
  */
