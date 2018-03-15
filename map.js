@@ -169,10 +169,10 @@ function renderTile(type, color, relX, relY) {
   const h_2 = h / 2;
 
   if (
-    relX > WIDTH ||
-    relX + 2 * w < 0 ||
-    relY - h_2 > HEIGHT ||
-    relY + h_2 < 0
+    relX - w > WIDTH ||
+    relX + w < 0 ||
+    relY > HEIGHT ||
+    relY + h < 0
   ) {
     return;
   }
