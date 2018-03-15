@@ -16,3 +16,24 @@
 
 * `b`: Activate building mode.
 * `n`: Activate normal mode.
+
+## Assets
+
+Before the game starts, all assets are loaded in `index.js`. Only after all assets are loaded the game will start. The list of all required assets is the set defined in `assets.js`.
+
+To add an assets, that should be available in the game, one must add it to the `assets` set:
+
+```js
+// register textures
+assets.add("images/house/house1.png");
+assets.addArray(["images/house/house1.png", "images/house/house2.png"]);
+
+// create the sprite
+const sprite = new PIXI.Sprite();
+app.state.addChild(sprite);
+
+// render the texture
+function renderBuilding() {
+  sprite.texture = PIXI.utils.TextureCache["/images/house/house1.png"];
+}
+```

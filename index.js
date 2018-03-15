@@ -1,18 +1,32 @@
 "use strict";
 
+/**
+ * Initialize global variables that are used throughout the app.
+ *
+ * This should be better managed. Right now, the map graphics layer is created
+ * and added in the file `map.js`.
+ */
 // TODO: create UI
 let style = new PIXI.TextStyle({
   fontFamily: "Arial",
   fontSize: 16,
   fill: "white"
 });
-
 const storageFoodText = new PIXI.Text("Storage (Food)", style);
 const storageWoodText = new PIXI.Text("Storage (Wood)", style);
 const inventoryDeer1Text = new PIXI.Text("", style);
 const inventoryDeer2Text = new PIXI.Text("", style);
+
+document.body.appendChild(app.view);
+
+/**
+ * Start loading necessary assets
+ */
 PIXI.loader.add(Array.from(assets)).load(setup);
 
+/**
+ * At this point, all assets are loaded. Add stuff to the app.
+ */
 function setup() {
   app.stage.addChild(storageFoodText);
   storageFoodText.position.set(10, 10);
@@ -27,81 +41,10 @@ function setup() {
   app.ticker.add(gameloop);
 }
 
-const app = new PIXI.Application({
-  width: WIDTH,
-  height: HEIGHT
-});
-document.body.appendChild(app.view);
-
-const graphics = new PIXI.Graphics();
-app.stage.addChild(graphics);
-
-function isInBlueprint(i, j) {
-  const [iMouse, jMouse] = getActiveTile();
-
-  return i <= iMouse && i >= iMouse - 3 && j <= jMouse && j >= jMouse - 3;
-}
-
-function renderMap(map) {
-  graphics.clear();
-
-  const [mouse_i, mouse_j] = getActiveTile();
-
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      const [relX, relY] = tile2rel(i, j);
-
-      let tileType;
-      switch (state.mode) {
-        case "normal": {
-          tileType = map[i][j].type;
-          break;
-        }
-        case "build": {
-          if (isInBlueprint(i, j)) {
-            tileType = TILE_ACTIVE;
-          } else {
-            tileType = map[i][j].type;
-          }
-          break;
-        }
-        default: {
-          throw Error(`unknown mode: ${state.mode}`);
-        }
-      }
-
-      if (i == mouse_i && j == mouse_j) tileType = TILE_ACTIVE;
-
-      renderTile(tileType, map[i][j].shade, relX, relY);
-    }
-  }
-}
-
-function renderTile(type, color, x, y) {
-  if(type == TILE_EMPTY) {
-    return;
-  }
-  if (type == TILE_ACTIVE) {
-    color = 0xff0000;
-  }
-  const h = TILE_HEIGHT;
-  const w = TILE_WIDTH;
-  const h_2 = h / 2;
-
-  if (x - 2 * w > WIDTH || x + 2 * w < 0 || y > HEIGHT || y + h < 0) {
-    return;
-  }
-
-  graphics.beginFill(color);
-  graphics.lineStyle(1, color, 1);
-  graphics.moveTo(x, y);
-  graphics.lineTo(x + w, y + h_2);
-  graphics.lineTo(x, y + h);
-  graphics.lineTo(x - w, y + h_2);
-  graphics.lineTo(x, y);
-  graphics.endFill();
-}
-
+/**
+ * Proceed the game logic and render the current state.
+ * @param {number} delta The weight of the latest frame.
+ */
 function gameloop(delta) {
   renderMap(state.map);
 
