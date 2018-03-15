@@ -15,11 +15,7 @@ const MAP_WIDTH = 100;
 const TILE_HEIGHT = 20;
 const TILE_WIDTH = 20;
 
-const TILE_GRASS = "TILE_GRASS";
-const TILE_DIRT = "TILE_DIRT";
-const TILE_WATER = "TILE_WATER";
-const TILE_STORAGE = "TILE_STORAGE";
-const TILE_TREE = "TILE_TREE";
+const TILE_NORMAL = "TILE_NORMAL";
 const TILE_EMPTY = "TILE_EMPTY";
 const TILE_ACTIVE = "TILE_ACTIVE";
 
@@ -145,7 +141,7 @@ function renderMap(map) {
 
       if (i == mouse_i && j == mouse_j) tileType = TILE_ACTIVE;
 
-      renderTile(tileType, relX, relY);
+      renderTile(tileType, map[i][j].shade, relX, relY);
     }
   }
 }
@@ -157,11 +153,14 @@ function renderMap(map) {
  * @param {number} relX
  * @param {number} relY
  */
-function renderTile(type, relX, relY) {
-  if (type == TILE_EMPTY) {
+function renderTile(type, color, relX, relY) {
+  if (type === TILE_EMPTY) {
     return;
   }
-  const { backgroundColor, borderColor } = TILE_STATS[type];
+  if (type === TILE_ACTIVE) {
+    color = 0xff0000;
+  }
+
   const h = TILE_HEIGHT;
   const w = TILE_WIDTH;
   const h_2 = h / 2;
@@ -175,8 +174,8 @@ function renderTile(type, relX, relY) {
     return;
   }
 
-  graphics.beginFill(backgroundColor);
-  graphics.lineStyle(1, borderColor, 1);
+  graphics.beginFill(color);
+  graphics.lineStyle(1, color, 1);
   graphics.moveTo(relX, relY);
   graphics.lineTo(relX + w, relY + h_2);
   graphics.lineTo(relX, relY + h);

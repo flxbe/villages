@@ -83,3 +83,15 @@ function isWest([dx, dy]) {
 function isNorthWest([dx, dy]) {
   return dx < 0 && dy < 0;
 }
+
+function dec2hexStr(n) {
+  return n.toString(16);
+}
+
+function rgb2hexColor(r, g, b) {
+  return "0x" + dec2hexStr(r) + dec2hexStr(g) + dec2hexStr(b);
+}
+
+function shade2hexColor(n) {
+  return rgb2hexColor(n, n, n);
+}
