@@ -113,7 +113,11 @@ function noise(width, height, frequency) {
   for (let i = 0; i < width; i++) {
     const line = [];
     for (let j = 0; j < height; j++) {
-      line.push(Math.sin(2 * Math.PI * frequency[0] * i / width + sinPhase) * Math.cos(2 * Math.PI * frequency[1] * j / height + cosPhase) + 1);
+      line.push(
+        Math.sin(2 * Math.PI * frequency[0] * i / width + sinPhase) *
+          Math.cos(2 * Math.PI * frequency[1] * j / height + cosPhase) +
+          1
+      );
     }
     map.push(line);
   }
@@ -162,7 +166,15 @@ function generateRandomNoiseMap(width, height) {
   for (let f = 1; f <= 32; f *= 2) {
     frequencies.push([f, f]);
   }
-  return generateNoiseMap(width, height, frequencies, function ([f, g]) { return (1 / f + 1 / g) / 2 }, seed);
+  return generateNoiseMap(
+    width,
+    height,
+    frequencies,
+    function([f, g]) {
+      return (1 / f + 1 / g) / 2;
+    },
+    seed
+  );
 }
 
 function generateRandomMap() {
@@ -179,14 +191,11 @@ function generateRandomMap() {
       const bval = bNoiseMap[i][j];
       if (rval < 112) {
         rNoiseMap[i][j] = 63;
-      }
-      else if (rval < 128) {
+      } else if (rval < 128) {
         rNoiseMap[i][j] = 127;
-      }
-      else if (rval < 144) {
+      } else if (rval < 144) {
         rNoiseMap[i][j] = 191;
-      }
-      else {
+      } else {
         rNoiseMap[i][j] = 255;
       }
       /*if (gval < 112) {
@@ -203,14 +212,11 @@ function generateRandomMap() {
       }*/
       if (bval < 112) {
         bNoiseMap[i][j] = 63;
-      }
-      else if (bval < 128) {
+      } else if (bval < 128) {
         bNoiseMap[i][j] = 127;
-      }
-      else if (bval < 144) {
+      } else if (bval < 144) {
         bNoiseMap[i][j] = 191;
-      }
-      else {
+      } else {
         bNoiseMap[i][j] = 255;
       }
       /*const val = noiseMap[i][j];
@@ -228,12 +234,17 @@ function generateRandomMap() {
       }*/
     }
   }
-  
+
   const map = [];
-  for(let i = 0; i < MAP_WIDTH; i++) {
+  for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
-    for(let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], 255, bNoiseMap[i][j]), passable: true, buildable: true });
+    for (let j = 0; j < MAP_HEIGHT; j++) {
+      line.push({
+        type: TILE_GRASS,
+        shade: rgb2hexColor(rNoiseMap[i][j], 255, bNoiseMap[i][j]),
+        passable: true,
+        buildable: true
+      });
       //line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], gNoiseMap[i][j], bNoiseMap[i][j]), passable: true, buildable: true });
       //line.push({ type: TILE_GRASS, shade: shade2hexColor(noiseMap[i][j]), passable: true, buildable: true });
     }
@@ -252,5 +263,21 @@ function generateRandomMap() {
   updateState({
     type: "ADD_DEER",
     deer: { id: "deer2", x: 0, y: 50, inventory: 0, profession: "food" }
+  });
+  updateState({
+    type: "ADD_TREE",
+    tree: { id: "tree1", i: 2, j: 10 }
+  });
+  updateState({
+    type: "ADD_TREE",
+    tree: { id: "tree2", i: 4, j: 9 }
+  });
+  updateState({
+    type: "ADD_TREE",
+    tree: { id: "tree3", i: 2, j: 12 }
+  });
+  updateState({
+    type: "ADD_TREE",
+    tree: { id: "tree4", i: 5, j: 11 }
   });
 }

@@ -49,13 +49,24 @@ function gameloop(delta) {
   renderMap(state.map);
 
   for (let deer of Object.values(state.deers)) {
-    move(deer, delta * 5);
+    move(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
 
     const [relX, relY] = cart2rel(deer.x, deer.y);
     deer.sprite.x = relX + DEER_OFFSET_X;
     deer.sprite.y = relY + DEER_OFFSET_Y;
+  }
+
+  for (let tree of Object.values(state.trees)) {
+    tree.animationTime += delta * 0.66;
+    const frame = getAnimationFrame(tree.currentAnimation, tree.animationTime);
+    console.log(frame);
+    tree.sprite.texture = PIXI.loader.resources[frame].texture;
+
+    const [relX, relY] = tile2rel(tree.i, tree.j);
+    tree.sprite.x = relX - 60;
+    tree.sprite.y = relY - 175;
   }
 
   storageFoodText.text = `Storage (Food): ${state.storage.food}`;

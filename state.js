@@ -11,6 +11,7 @@ const state = {
     wood: 0
   },
   deers: {},
+  trees: {},
 
   mode: "normal"
 };
@@ -48,6 +49,14 @@ function updateState(action) {
       const deer = state.deers[action.id];
       app.stage.removeChild(deer.sprite);
       delete state.deers[action.id];
+      return;
+    }
+    case "ADD_TREE": {
+      const tree = action.tree;
+      tree.sprite = new PIXI.Sprite();
+      setAnimation(tree, "PINE_TREE");
+      app.stage.addChild(tree.sprite);
+      state.trees[tree.id] = tree;
       return;
     }
   }

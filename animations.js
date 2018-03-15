@@ -52,3 +52,14 @@ addAnimation("GO_SW", swAnimation);
 addAnimation("GO_W", wAnimation);
 addAnimation("GO_NW", nwAnimation);
 addAnimation("GO_N", nAnimation);
+
+const pineTree = [];
+
+for (let i = 0; i <= 12; i++) {
+  pineTree.push(`assets/tree_pine/0_0img${i * 2}.png`);
+}
+for (let i = 11; i >= 0; i--) {
+  pineTree.push(`assets/tree_pine/0_0img${i * 2}.png`);
+}
+
+addAnimation("PINE_TREE", pineTree);
