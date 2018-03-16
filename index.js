@@ -49,7 +49,7 @@ function gameloop(delta) {
   renderMap(state.map);
 
   for (let deer of Object.values(state.deers)) {
-    move(deer, delta);
+    move_deer(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
 
@@ -61,7 +61,6 @@ function gameloop(delta) {
   for (let tree of Object.values(state.trees)) {
     tree.animationTime += delta * 0.66;
     const frame = getAnimationFrame(tree.currentAnimation, tree.animationTime);
-    console.log(frame);
     tree.sprite.texture = PIXI.loader.resources[frame].texture;
 
     const [relX, relY] = tile2rel(tree.i, tree.j);

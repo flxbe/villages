@@ -11,10 +11,10 @@ const state = {
     wood: 0
   },
   deers: {},
-  trees: {},
-
-  mode: "normal"
+  trees: {}
 };
+
+const uiState = { mode: "normal" };
 
 /**
  * Update the current state by applying an update from the server.

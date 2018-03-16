@@ -24,7 +24,7 @@ function updatePath(object) {
   }
 }
 
-function move(object, delta) {
+function move_deer(object, delta) {
   object.animationTime += delta;
 
   const direction = object.direction;

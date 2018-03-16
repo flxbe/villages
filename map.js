@@ -144,7 +144,7 @@ function renderMap(map) {
       const [relX, relY] = tile2rel(i, j);
 
       let tileType;
-      switch (state.mode) {
+      switch (uiState.mode) {
         case "normal": {
           tileType = map[i][j];
           break;
@@ -189,12 +189,7 @@ function renderTile(type, color, relX, relY) {
   const w = TILE_WIDTH;
   const h_2 = h / 2;
 
-  if (
-    relX - w > WIDTH ||
-    relX + w < 0 ||
-    relY > HEIGHT ||
-    relY + h < 0
-  ) {
+  if (relX - w > WIDTH || relX + w < 0 || relY > HEIGHT || relY + h < 0) {
     return;
   }
 

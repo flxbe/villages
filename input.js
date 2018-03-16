@@ -28,11 +28,11 @@ window.addEventListener(
 
     switch (event.key) {
       case "b": {
-        state.mode = "build";
+        uiState.mode = "build";
         break;
       }
       case "n": {
-        state.mode = "normal";
+        uiState.mode = "normal";
         break;
       }
     }
@@ -40,10 +40,12 @@ window.addEventListener(
   false
 );
 
-document.addEventListener("mousemove", event => {
-  mouse_isox = event.pageX;
-  mouse_isoy = event.pageY;
-},
+document.addEventListener(
+  "mousemove",
+  event => {
+    mouse_isox = event.pageX;
+    mouse_isoy = event.pageY;
+  },
   false
 );
 

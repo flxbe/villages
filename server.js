@@ -24,81 +24,56 @@ function startServer() {
         if (deer.inventory < 20) {
           if (deerTile[0] === treeTile[0] && deerTile[1] === treeTile[1]) {
             const inventory = Math.min(deer.inventory + 1, 20);
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, inventory, item: "wood" }
-            });
+            updateState(
+              Actions.updateDeer({ id: deer.id, inventory, item: "wood" })
+            );
           } else if (!deer.path) {
             const path = astar(deerTile, treeTile);
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, path }
-            });
+            updateState(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState({
-            type: "UPDATE_DEER",
-            deer: { id: deer.id, job: "storage" }
-          });
+          updateState(Actions.updateDeer({ id: deer.id, job: "storage" }));
         }
       } else if (deer.job === "food") {
         // job: food
         if (deer.inventory < 20) {
           if (deerTile[0] === foodTile[0] && deerTile[1] === foodTile[1]) {
             const inventory = Math.min(deer.inventory + 1, 20);
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, inventory, item: "food" }
-            });
+            updateState(
+              Actions.updateDeer({ id: deer.id, inventory, item: "food" })
+            );
           } else if (!deer.path) {
             const path = astar(deerTile, foodTile);
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, path }
-            });
+            updateState(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState({
-            type: "UPDATE_DEER",
-            deer: { id: deer.id, job: "storage" }
-          });
+          updateState(Actions.updateDeer({ id: deer.id, job: "storage" }));
         }
       } else if (deer.job === "storage") {
-        // job: storate
+        // job: storage
         if (deer.inventory > 0) {
           if (
             deerTile[0] === storageTile[0] &&
             deerTile[1] === storageTile[1]
           ) {
-            updateState({
-              type: "UPDATE_STORAGE",
-              storage: {
+            updateState(
+              Actions.updateStorage({
                 [deer.item]: state.storage[deer.item] + deer.inventory
-              }
-            });
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, inventory: 0 }
-            });
+              })
+            );
+            updateState(Actions.updateDeer({ id: deer.id, inventory: 0 }));
           } else if (!deer.path) {
             const path = astar(deerTile, storageTile);
-            updateState({
-              type: "UPDATE_DEER",
-              deer: { id: deer.id, path }
-            });
+            updateState(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState({
-            type: "UPDATE_DEER",
-            deer: { id: deer.id, job: deer.profession }
-          });
+          updateState(
+            Actions.updateDeer({ id: deer.id, job: deer.profession })
+          );
         }
       } else {
         // no job
-        updateState({
-          type: "UPDATE_DEER",
-          deer: { id: deer.id, job: deer.profession }
-        });
+        updateState(Actions.updateDeer({ id: deer.id, job: deer.profession }));
       }
     }
   }
@@ -255,29 +230,29 @@ function generateRandomMap() {
   map[9][13].shade = "0x000000";
   map[3][3].shade = "0x551A8B";
 
-  updateState({ type: "SET_MAP", map });
-  updateState({
-    type: "ADD_DEER",
-    deer: { id: "deer1", x: 0, y: 0, inventory: 0, profession: "wood" }
-  });
-  updateState({
-    type: "ADD_DEER",
-    deer: { id: "deer2", x: 0, y: 50, inventory: 0, profession: "food" }
-  });
-  updateState({
-    type: "ADD_TREE",
-    tree: { id: "tree1", i: 2, j: 10 }
-  });
-  updateState({
-    type: "ADD_TREE",
-    tree: { id: "tree2", i: 4, j: 9 }
-  });
-  updateState({
-    type: "ADD_TREE",
-    tree: { id: "tree3", i: 2, j: 12 }
-  });
-  updateState({
-    type: "ADD_TREE",
-    tree: { id: "tree4", i: 5, j: 11 }
-  });
+  updateState(Actions.setMap(map));
+
+  updateState(
+    Actions.addDeer({
+      id: "deer1",
+      x: 0,
+      y: 0,
+      inventory: 0,
+      profession: "wood"
+    })
+  );
+  updateState(
+    Actions.addDeer({
+      id: "deer2",
+      x: 0,
+      y: 50,
+      inventory: 0,
+      profession: "food"
+    })
+  );
+
+  updateState(Actions.addTree({ id: "tree1", i: 2, j: 10 }));
+  updateState(Actions.addTree({ id: "tree2", i: 4, j: 9 }));
+  updateState(Actions.addTree({ id: "tree3", i: 2, j: 12 }));
+  updateState(Actions.addTree({ id: "tree4", i: 5, j: 11 }));
 }
