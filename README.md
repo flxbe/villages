@@ -22,7 +22,7 @@
 
 Before the game starts, all assets are loaded in `index.js`. Only after all assets are loaded the game will start. The list of all required assets is the set defined in `assets.js`.
 
-To add an assets, that should be available in the game, one must add it to the `assets` set:
+To add an asset, that should be available in the game, one must add it to the `assets` set:
 
 ```js
 // register textures

@@ -46,11 +46,13 @@ function move_deer(object, delta) {
 
   updatePath(object);
 
+  // TODO: incorporate start time for synchronised movement.
   object.targetDistance -= delta / 2.0;
   if (object.targetDistance > 0) {
     object.x += object.direction[0] * delta / 2.0;
     object.y += object.direction[1] * delta / 2.0;
   } else {
+    // TODO: use remaining delta
     object.x = object.currentTarget[0];
     object.y = object.currentTarget[1];
   }

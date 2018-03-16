@@ -1,10 +1,11 @@
 "use strict";
 
-let mouse_isox = 0;
-let mouse_isoy = 0;
+let mouseIsoX = 0;
+let mouseIsoY = 0;
+let mouseDown = false;
 
 function getActiveTile() {
-  const [absX, absY] = rel2abs(mouse_isox, mouse_isoy);
+  const [absX, absY] = rel2abs(mouseIsoX, mouseIsoY);
   return abs2tile(absX, absY);
 }
 
@@ -44,14 +45,20 @@ window.addEventListener(
   false
 );
 
-document.addEventListener(
-  "mousemove",
-  event => {
-    mouse_isox = event.pageX;
-    mouse_isoy = event.pageY;
-  },
-  false
-);
+document.addEventListener("mousemove", event => {
+  // TODO: difference clientX vs pageX
+  const moveX = event.clientX;
+  const moveY = event.clientY;
+
+  // move map
+  if (mouseDown) {
+    offsetX += (moveX - mouseIsoX) * 0.75;
+    offsetY += (moveY - mouseIsoY) * 0.75;
+  }
+
+  mouseIsoX = event.pageX;
+  mouseIsoY = event.pageY;
+});
 
 document.addEventListener("mousedown", start => {
   // TODO: add support to check, whether the building can be placed
@@ -60,23 +67,9 @@ document.addEventListener("mousedown", start => {
     serverRequest({ i, j, type: "PLACE_BUILDING" });
   }
 
-  let startX = start.clientX;
-  let startY = start.clientY;
+  mouseDown = true;
+});
 
-  function moveOffset(mmevent) {
-    const moveX = mmevent.clientX;
-    const moveY = mmevent.clientY;
-
-    offsetX += (moveX - startX) * 0.75;
-    offsetY += (moveY - startY) * 0.75;
-
-    startX = moveX;
-    startY = moveY;
-  }
-
-  document.addEventListener("mousemove", moveOffset);
-
-  document.addEventListener("mouseup", end => {
-    document.removeEventListener("mousemove", moveOffset);
-  });
+document.addEventListener("mouseup", () => {
+  mouseDown = false;
 });
