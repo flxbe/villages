@@ -22,33 +22,6 @@ const TILE_DEEPWATER = "TILE_DEEPWATER";
 const TILE_EMPTY = "TILE_EMPTY";
 const TILE_ACTIVE = "TILE_ACTIVE";
 
-const TILE_STATS = {
-  TILE_GRASS: {
-    backgroundColor: 0x80cf5a,
-    borderColor: 0x339900
-  },
-  TILE_DIRT: {
-    backgroundColor: 0x96712f,
-    borderColor: 0x403014
-  },
-  TILE_WATER: {
-    backgroundColor: 0x85b9bb,
-    borderColor: 0x476263
-  },
-  TILE_STORAGE: {
-    backgroundColor: 0x6f42c2,
-    borderColor: 0x6f42c2
-  },
-  TILE_TREE: {
-    backgroundColor: 0x000000,
-    borderColor: 0x000000
-  },
-  TILE_ACTIVE: {
-    backgroundColor: 0xff0000,
-    borderColor: 0xff0000
-  }
-};
-
 /**
  * Convert cartesian coordinates to tile indices.
  * @param {number} cartX
@@ -128,6 +101,23 @@ function isInBlueprint(i, j) {
   const [iMouse, jMouse] = getActiveTile();
 
   return i <= iMouse && i >= iMouse - 3 && j <= jMouse && j >= jMouse - 3;
+}
+
+/**
+ * Check, whether a building with the specified width and height can
+ * be placed at position i, j.
+ * @param {number} i
+ * @param {number} j
+ * @param {number} height
+ * @param {number} width
+ */
+function isAreaFreeForBuilding(i, j, height, width) {
+  for (let k = i; k > i - height; k--) {
+    for (let l = j; l > j - width; l--) {
+      if (!state.map[k][l].buildable) return false;
+    }
+  }
+  return true;
 }
 
 /**

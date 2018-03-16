@@ -64,7 +64,11 @@ document.addEventListener("mousedown", start => {
   // TODO: add support to check, whether the building can be placed
   if (uiState.mode === "build") {
     const [i, j] = getActiveTile();
-    serverRequest({ i, j, type: "PLACE_BUILDING" });
+    if (isAreaFreeForBuilding(i, j, 4, 4)) {
+      serverRequest({ i, j, type: "PLACE_BUILDING" });
+    } else {
+      console.log("cannot build");
+    }
   }
 
   mouseDown = true;
