@@ -16,6 +16,7 @@
 
 * `b`: Activate building mode.
 * `n`: Activate normal mode.
+* `g`: Toggle map grid.
 
 ## Assets
 

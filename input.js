@@ -35,6 +35,10 @@ window.addEventListener(
         uiState.mode = "normal";
         break;
       }
+      case "g": {
+        uiState.grid = !uiState.grid;
+        break;
+      }
     }
   },
   false

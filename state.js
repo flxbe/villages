@@ -14,7 +14,10 @@ const state = {
   trees: {}
 };
 
-const uiState = { mode: "normal" };
+const uiState = {
+  mode: "normal",
+  grid: false
+};
 
 /**
  * Update the current state by applying an update from the server.

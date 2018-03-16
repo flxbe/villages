@@ -176,8 +176,10 @@ function renderTile(color, relX, relY) {
     return;
   }
 
+  const lineColor = uiState.grid ? "0x444" : color;
+
   graphics.beginFill(color);
-  graphics.lineStyle(1, color, 1);
+  graphics.lineStyle(1, lineColor, 1);
   graphics.moveTo(relX, relY);
   graphics.lineTo(relX + w, relY + h_2);
   graphics.lineTo(relX, relY + h);
