@@ -1,6 +1,7 @@
 /**
  * Predefine all possible actions.
  */
+"use strict";
 
 const Actions = {};
 
@@ -12,6 +13,21 @@ Actions.setMap = function(map) {
   return {
     type: "SET_MAP",
     map
+  };
+};
+
+/**
+ * Update map tiles.
+ *
+ * Each MapUpdate has the form:
+ * { i: number, j: number, tile: Tile }
+ *
+ * @param {MapUpdate[]} mapUpdates
+ */
+Actions.updateMap = function(mapUpdates) {
+  return {
+    type: "UPDATE_MAP",
+    mapUpdates
   };
 };
 

@@ -141,30 +141,21 @@ function renderMap(map) {
 
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
-      const [relX, relY] = tile2rel(i, j);
+      const tile = map[i][j];
 
-      let tileType;
-      switch (uiState.mode) {
-        case "normal": {
-          tileType = map[i][j];
-          break;
-        }
-        case "build": {
-          if (isInBlueprint(i, j)) {
-            tileType = TILE_ACTIVE;
-          } else {
-            tileType = map[i][j];
-          }
-          break;
-        }
-        default: {
-          throw Error(`unknown mode: ${state.mode}`);
-        }
+      if (tile.type === TILE_EMPTY) {
+        continue;
       }
 
-      if (i == mouse_i && j == mouse_j) tileType = TILE_ACTIVE;
+      let color = tile.shade;
+      if (uiState.mode === "build" && isInBlueprint(i, j)) {
+        color = tile.buildable ? "0xff0000" : "0x990000";
+      } else if (i === mouse_i && j === mouse_j) {
+        color = "0xff0000";
+      }
 
-      renderTile(tileType, map[i][j].shade, relX, relY);
+      const [relX, relY] = tile2rel(i, j);
+      renderTile(color, relX, relY);
     }
   }
 }
@@ -172,19 +163,11 @@ function renderMap(map) {
 /**
  * Render a tile of type `type` at the specified relative coordinates.
  * The coordinates describe the upper corner of the isometric tile.
- * @param {TILE_TYPE} type
  * @param {string} color - hexadecimal color, e.g. "0xff0000"
  * @param {number} relX
  * @param {number} relY
  */
-function renderTile(type, color, relX, relY) {
-  if (type === TILE_EMPTY) {
-    return;
-  }
-  if (type === TILE_ACTIVE) {
-    color = 0xff0000;
-  }
-
+function renderTile(color, relX, relY) {
   const h = TILE_HEIGHT;
   const w = TILE_WIDTH;
   const h_2 = h / 2;

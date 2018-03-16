@@ -50,6 +50,12 @@ document.addEventListener(
 );
 
 document.addEventListener("mousedown", start => {
+  // TODO: add support to check, whether the building can be placed
+  if (uiState.mode === "build") {
+    const [i, j] = getActiveTile();
+    serverRequest({ i, j, type: "PLACE_BUILDING" });
+  }
+
   let startX = start.clientX;
   let startY = start.clientY;
 

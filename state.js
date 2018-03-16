@@ -29,6 +29,11 @@ function updateState(action) {
       state.map = action.map;
       return;
     }
+    case "UPDATE_MAP": {
+      for (let update of action.mapUpdates) {
+        state.map[update.i][update.j] = update.tile;
+      }
+    }
     case "UPDATE_STORAGE": {
       Object.assign(state.storage, action.storage);
       return;

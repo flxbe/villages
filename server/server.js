@@ -1,5 +1,48 @@
 "use strict";
 
+/**
+ * Send a request to the server.
+ *
+ * Apply an user action to the server. This will possably trigger a state
+ * change by the server. This will be replaced by a real server.
+ * @param {objext} request
+ */
+function serverRequest(request) {
+  switch (request.type) {
+    case "PLACE_BUILDING": {
+      const { i, j, buildingType } = request;
+      const width = 4;
+      const height = 4;
+
+      // construct map updates
+      const mapUpdates = [];
+      for (let k = i - height + 1; k <= i; k++) {
+        for (let l = j - width + 1; l <= j; l++) {
+          mapUpdates.push({
+            i: k,
+            j: l,
+            tile: {
+              type: TILE_GRASS,
+              shade: rgb2hexColor(0, 0, 0),
+              passable: false,
+              buildable: false
+            }
+          });
+        }
+      }
+
+      // dispatch map updates
+      updateState(Actions.updateMap(mapUpdates));
+    }
+  }
+}
+
+/**
+ * Start the server emulation.
+ *
+ * This registers a task, that is executed periodically and issues state
+ * updates. This will eventually be replaced by a real server implementation.
+ */
 function startServer() {
   const treeTile = [7, 10];
   const foodTile = [9, 13];

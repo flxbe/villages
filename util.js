@@ -139,7 +139,7 @@ function isNorthWest([dx, dy]) {
  */
 function dec2hexStr(n) {
   let hex = n.toString(16);
-  while(hex.length < 2) {
+  while (hex.length < 2) {
     hex = "0" + hex;
   }
   return hex;
