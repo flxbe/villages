@@ -40,6 +40,18 @@ window.addEventListener(
         uiState.grid = !uiState.grid;
         break;
       }
+      case "1": {
+        if (uiState.mode === "build") {
+          uiState.blueprint = "house";
+        }
+        break;
+      }
+      case "2": {
+        if (uiState.mode === "build") {
+          uiState.blueprint = "barn";
+        }
+        break;
+      }
     }
   },
   false
@@ -64,8 +76,16 @@ document.addEventListener("mousedown", start => {
   // TODO: add support to check, whether the building can be placed
   if (uiState.mode === "build") {
     const [i, j] = getActiveTile();
-    if (isAreaFreeForBuilding(i, j, 4, 4)) {
-      serverRequest({ i, j, type: "PLACE_BUILDING" });
+    const blueprintName = uiState.blueprint;
+    const blueprint = blueprints[uiState.blueprint];
+
+    if (!blueprint) {
+      console.log("select a blueprint");
+      return;
+    }
+
+    if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
+      serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
     } else {
       console.log("cannot build");
     }

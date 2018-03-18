@@ -10,31 +10,54 @@
 function serverRequest(request) {
   switch (request.type) {
     case "PLACE_BUILDING": {
-      const { i, j, buildingType } = request;
-      const width = 4;
-      const height = 4;
-
-      // construct map updates
-      const mapUpdates = [];
-      for (let k = i - height + 1; k <= i; k++) {
-        for (let l = j - width + 1; l <= j; l++) {
-          mapUpdates.push({
-            i: k,
-            j: l,
-            tile: {
-              type: TILE_GRASS,
-              shade: rgb2hexColor(0, 0, 0),
-              passable: false,
-              buildable: false
-            }
-          });
-        }
-      }
-
-      // dispatch map updates
-      updateState(Actions.updateMap(mapUpdates));
+      const { i, j, blueprintName } = request;
+      placeBuilding(i, j, blueprintName);
     }
   }
+}
+
+/**
+ * Create a new building.
+ *
+ * TODO: verify, that the building can be placed.
+ * @param {number} i
+ * @param {number} j
+ * @param {string} blueprintName
+ */
+function placeBuilding(i, j, blueprintName) {
+  const blueprint = blueprints[blueprintName];
+  if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
+
+  if (state.storage.wood < blueprint.wood) {
+    throw Error("not enough wood");
+  }
+
+  // reduce resources
+  updateState(
+    Actions.updateStorage({
+      wood: state.storage.wood - blueprint.wood
+    })
+  );
+
+  // update map
+  const mapUpdates = [];
+  for (let k = i - blueprint.height + 1; k <= i; k++) {
+    for (let l = j - blueprint.width + 1; l <= j; l++) {
+      mapUpdates.push({
+        i: k,
+        j: l,
+        tile: {
+          type: TILE_GRASS,
+          shade: rgb2hexColor(0, 0, 0),
+          passable: false,
+          buildable: false
+        }
+      });
+    }
+  }
+
+  // dispatch map updates
+  updateState(Actions.updateMap(mapUpdates));
 }
 
 /**
@@ -306,7 +329,7 @@ function generateRandomMap() {
 function setTree(id, i, j) {
   const tile = {
     type: TILE_GRASS,
-    shade: rgb2hexColor(0, 0, 0),
+    shade: "0x269a41",
     passable: false,
     buildable: false
   };

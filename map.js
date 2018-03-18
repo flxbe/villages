@@ -94,13 +94,24 @@ function getTileCenter(i, j) {
 
 /**
  * Check if tile indices give a tile covered by the blueprint.
+ *
+ * TODO: check for blueprint and extract blueprint before.
+ *
  * @param {number} i
  * @param {number} j
  */
 function isInBlueprint(i, j) {
+  if (!uiState.blueprint) return false;
+
+  const blueprint = blueprints[uiState.blueprint];
   const [iMouse, jMouse] = getActiveTile();
 
-  return i <= iMouse && i >= iMouse - 3 && j <= jMouse && j >= jMouse - 3;
+  return (
+    i <= iMouse &&
+    i >= iMouse - blueprint.height + 1 &&
+    j <= jMouse &&
+    j >= jMouse - blueprint.width + 1
+  );
 }
 
 /**
@@ -114,7 +125,7 @@ function isInBlueprint(i, j) {
 function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!state.map[k][l].buildable) return false;
+      if (!isTileOnMap(k, l) || !state.map[k][l].buildable) return false;
     }
   }
   return true;
@@ -122,6 +133,9 @@ function isAreaFreeForBuilding(i, j, height, width) {
 
 /**
  * Render the complete map by iterating over the two dimensional tile array.
+ *
+ * TODO: Specialized render functions for normal and build mode. This should
+ * avoid the string comparison for every tile.
  * @param {tile[][]} map
  */
 function renderMap(map) {

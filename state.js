@@ -7,14 +7,15 @@
 const state = {
   map: undefined,
   storage: {
-    food: 0,
-    wood: 0
+    food: 500,
+    wood: 500
   },
   deers: {},
   trees: {}
 };
 
 const uiState = {
+  blueprint: "house",
   mode: "normal",
   grid: false
 };
