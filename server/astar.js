@@ -58,6 +58,9 @@ function astar([fX, fY], [tX, tY]) {
 
       if (!isTileOnMap(nX, nY)) continue;
       if (closedSet.includes(neighborId)) continue;
+      // TODO: use better reference to the map. This currently uses the client
+      // map, but the algorithm will be executed on the server.
+      if (!state.map[nX][nY].passable) continue;
 
       if (!openSetIndex.includes(neighborId)) {
         openSetIndex.push(neighborId);

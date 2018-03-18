@@ -270,8 +270,11 @@ function generateRandomMap() {
   }
 
   map[7][10].shade = "0x000000";
+  map[7][10].buildable = false;
   map[9][13].shade = "0x000000";
+  map[9][13].buildable = false;
   map[3][3].shade = "0x551A8B";
+  map[3][3].buildable = false;
 
   updateState(Actions.setMap(map));
 
@@ -294,8 +297,19 @@ function generateRandomMap() {
     })
   );
 
-  updateState(Actions.addTree({ id: "tree1", i: 2, j: 10 }));
-  updateState(Actions.addTree({ id: "tree2", i: 4, j: 9 }));
-  updateState(Actions.addTree({ id: "tree3", i: 2, j: 12 }));
-  updateState(Actions.addTree({ id: "tree4", i: 5, j: 11 }));
+  setTree("tree1", 2, 10);
+  setTree("tree2", 4, 9);
+  setTree("tree3", 2, 12);
+  setTree("tree4", 5, 11);
+}
+
+function setTree(id, i, j) {
+  const tile = {
+    type: TILE_GRASS,
+    shade: rgb2hexColor(0, 0, 0),
+    passable: false,
+    buildable: false
+  };
+  updateState(Actions.updateMap([{ i, j, tile }]));
+  updateState(Actions.addTree({ id, i, j }));
 }
