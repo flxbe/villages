@@ -45,8 +45,8 @@ function gameloop(delta) {
     tree.sprite.texture = PIXI.loader.resources[frame].texture;
 
     const [relX, relY] = tile2rel(tree.i, tree.j);
-    tree.sprite.x = relX - 60;
-    tree.sprite.y = relY - 175;
+    tree.sprite.x = relX + PALM_OFFSET_X;
+    tree.sprite.y = relY + PALM_OFFSET_Y;
   }
 
   renderUI();

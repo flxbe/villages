@@ -14,6 +14,20 @@ const HEIGHT = window.innerHeight;
 // sprite specific render offsets
 const DEER_OFFSET_X = -50;
 const DEER_OFFSET_Y = -70;
+const PALM_OFFSET_X = -60;
+const PALM_OFFSET_Y = -175;
+
+const MAP_HEIGHT = 100;
+const MAP_WIDTH = 100;
+const TILE_HEIGHT = 20;
+const TILE_WIDTH = 20;
+
+const TILE_GRASS = "TILE_GRASS";
+const TILE_DIRT = "TILE_DIRT";
+const TILE_WATER = "TILE_WATER";
+const TILE_DEEPWATER = "TILE_DEEPWATER";
+const TILE_EMPTY = "TILE_EMPTY";
+const TILE_ACTIVE = "TILE_ACTIVE";
 
 const APPLICATION = new PIXI.Application({
   width: WIDTH,
