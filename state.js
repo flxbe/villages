@@ -26,12 +26,14 @@ const uiState = {
  * @param {object} action
  */
 function updateState(action) {
-  console.log(`UPDATE STATE: ${action.type}`);
+  console.groupCollapsed(`state: ${action.type}`);
+  console.log("prev state", state);
+  console.log("action", action);
 
   switch (action.type) {
     case "SET_MAP": {
       state.map = action.map;
-      return;
+      break;
     }
     case "UPDATE_MAP": {
       for (let update of action.mapUpdates) {
@@ -40,7 +42,7 @@ function updateState(action) {
     }
     case "UPDATE_STORAGE": {
       Object.assign(state.storage, action.storage);
-      return;
+      break;
     }
     case "ADD_DEER": {
       const deer = action.deer;
@@ -48,17 +50,17 @@ function updateState(action) {
       setAnimation(deer, "STAND");
       app.stage.addChild(deer.sprite);
       state.deers[deer.id] = deer;
-      return;
+      break;
     }
     case "UPDATE_DEER": {
       Object.assign(state.deers[action.deer.id], action.deer);
-      return;
+      break;
     }
     case "REMOVE_DEER": {
       const deer = state.deers[action.id];
       app.stage.removeChild(deer.sprite);
       delete state.deers[action.id];
-      return;
+      break;
     }
     case "ADD_TREE": {
       const tree = action.tree;
@@ -66,7 +68,10 @@ function updateState(action) {
       setAnimation(tree, "PINE_TREE");
       app.stage.addChild(tree.sprite);
       state.trees[tree.id] = tree;
-      return;
+      break;
     }
   }
+
+  console.log("next state", state);
+  console.groupEnd();
 }
