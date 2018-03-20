@@ -1,11 +1,17 @@
 "use strict";
 
-let mouseIsoX = 0;
-let mouseIsoY = 0;
-let mouseDown = false;
+function addOffsetX(delta) {
+  UI_STATE.offsetX += delta;
+  UI_STATE.updateMap = true;
+}
+
+function addOffsetY(delta) {
+  UI_STATE.offsetY += delta;
+  UI_STATE.updateMap = true;
+}
 
 function getActiveTile() {
-  const [absX, absY] = rel2abs(mouseIsoX, mouseIsoY);
+  const [absX, absY] = rel2abs(UI_STATE.mouseIsoX, UI_STATE.mouseIsoY);
   return abs2tile(absX, absY);
 }
 
@@ -14,41 +20,41 @@ window.addEventListener(
   event => {
     switch (event.keyCode) {
       case 37:
-        offsetX += 20;
+        addOffsetX(20);
         break;
       case 38:
-        offsetY += 20;
+        addOffsetY(20);
         break;
       case 39:
-        offsetX -= 20;
+        addOffsetX(-20);
         break;
       case 40:
-        offsetY -= 20;
+        addOffsetY(-20);
         break;
     }
 
     switch (event.key) {
       case "b": {
-        uiState.mode = "build";
+        UI_STATE.mode = "build";
         break;
       }
       case "n": {
-        uiState.mode = "normal";
+        UI_STATE.mode = "normal";
         break;
       }
       case "g": {
-        uiState.grid = !uiState.grid;
+        UI_STATE.grid = !UI_STATE.grid;
         break;
       }
       case "1": {
-        if (uiState.mode === "build") {
-          uiState.blueprint = "house";
+        if (UI_STATE.mode === "build") {
+          UI_STATE.blueprint = "house";
         }
         break;
       }
       case "2": {
-        if (uiState.mode === "build") {
-          uiState.blueprint = "barn";
+        if (UI_STATE.mode === "build") {
+          UI_STATE.blueprint = "barn";
         }
         break;
       }
@@ -63,21 +69,21 @@ document.addEventListener("mousemove", event => {
   const moveY = event.clientY;
 
   // move map
-  if (mouseDown) {
-    offsetX += (moveX - mouseIsoX) * 0.75;
-    offsetY += (moveY - mouseIsoY) * 0.75;
+  if (UI_STATE.mouseDown) {
+    UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
+    UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
   }
 
-  mouseIsoX = event.pageX;
-  mouseIsoY = event.pageY;
+  UI_STATE.mouseIsoX = event.pageX;
+  UI_STATE.mouseIsoY = event.pageY;
 });
 
 document.addEventListener("mousedown", start => {
   // TODO: add support to check, whether the building can be placed
-  if (uiState.mode === "build") {
+  if (UI_STATE.mode === "build") {
     const [i, j] = getActiveTile();
-    const blueprintName = uiState.blueprint;
-    const blueprint = blueprints[uiState.blueprint];
+    const blueprintName = UI_STATE.blueprint;
+    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
 
     if (!blueprint) {
       console.log("select a blueprint");
@@ -91,9 +97,9 @@ document.addEventListener("mousedown", start => {
     }
   }
 
-  mouseDown = true;
+  UI_STATE.mouseDown = true;
 });
 
 document.addEventListener("mouseup", () => {
-  mouseDown = false;
+  UI_STATE.mouseDown = false;
 });

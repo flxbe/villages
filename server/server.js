@@ -3,7 +3,7 @@
 /**
  * Send a request to the server.
  *
- * Apply an user action to the server. This will possably trigger a state
+ * Apply an user action to the server. This will possably trigger a STATE
  * change by the server. This will be replaced by a real server.
  * @param {objext} request
  */
@@ -25,17 +25,17 @@ function serverRequest(request) {
  * @param {string} blueprintName
  */
 function placeBuilding(i, j, blueprintName) {
-  const blueprint = blueprints[blueprintName];
+  const blueprint = BLUEPRINTS[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
 
-  if (state.storage.wood < blueprint.wood) {
+  if (STATE.storage.wood < blueprint.wood) {
     throw Error("not enough wood");
   }
 
   // reduce resources
   updateState(
     Actions.updateStorage({
-      wood: state.storage.wood - blueprint.wood
+      wood: STATE.storage.wood - blueprint.wood
     })
   );
 
@@ -63,7 +63,7 @@ function placeBuilding(i, j, blueprintName) {
 /**
  * Start the server emulation.
  *
- * This registers a task, that is executed periodically and issues state
+ * This registers a task, that is executed periodically and issues STATE
  * updates. This will eventually be replaced by a real server implementation.
  */
 function startServer() {
@@ -73,7 +73,7 @@ function startServer() {
 
   generateRandomMap();
 
-  app.ticker.add(server);
+  APPLICATION.ticker.add(server);
 
   let counter = 0;
   function server(delta) {
@@ -82,7 +82,7 @@ function startServer() {
 
     counter -= 20;
 
-    for (let deer of Object.values(state.deers)) {
+    for (let deer of Object.values(STATE.deers)) {
       const deerTile = cart2tile(deer.x, deer.y);
 
       if (deer.job === "wood") {
@@ -124,7 +124,7 @@ function startServer() {
           ) {
             updateState(
               Actions.updateStorage({
-                [deer.item]: state.storage[deer.item] + deer.inventory
+                [deer.item]: STATE.storage[deer.item] + deer.inventory
               })
             );
             updateState(Actions.updateDeer({ id: deer.id, inventory: 0 }));

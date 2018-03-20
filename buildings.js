@@ -1,4 +1,4 @@
-const blueprints = {
+BLUEPRINTS = {
   house: {
     height: 4,
     width: 4,

@@ -7,9 +7,6 @@
  *   - abs: canvas
  */
 
-const graphics = new PIXI.Graphics();
-app.stage.addChild(graphics);
-
 const MAP_HEIGHT = 100;
 const MAP_WIDTH = 100;
 const TILE_HEIGHT = 20;
@@ -101,9 +98,9 @@ function getTileCenter(i, j) {
  * @param {number} j
  */
 function isInBlueprint(i, j) {
-  if (!uiState.blueprint) return false;
+  if (!UI_STATE.blueprint) return false;
 
-  const blueprint = blueprints[uiState.blueprint];
+  const blueprint = BLUEPRINTS[UI_STATE.blueprint];
   const [iMouse, jMouse] = getActiveTile();
 
   return (
@@ -125,7 +122,7 @@ function isInBlueprint(i, j) {
 function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !state.map[k][l].buildable) return false;
+      if (!isTileOnMap(k, l) || !STATE.map[k][l].buildable) return false;
     }
   }
   return true;
@@ -139,7 +136,10 @@ function isAreaFreeForBuilding(i, j, height, width) {
  * @param {tile[][]} map
  */
 function renderMap(map) {
-  graphics.clear();
+  //if (!UI_STATE.updateMap) return;
+  //UI_STATE.updateMap = false;
+
+  MAP_GRAPHICS_LAYER.clear();
 
   const [mouse_i, mouse_j] = getActiveTile();
 
@@ -152,7 +152,7 @@ function renderMap(map) {
       }
 
       let color = tile.shade;
-      if (uiState.mode === "build" && isInBlueprint(i, j)) {
+      if (UI_STATE.mode === "build" && isInBlueprint(i, j)) {
         color = tile.buildable ? "0xff0000" : "0x990000";
       } else if (i === mouse_i && j === mouse_j) {
         color = "0xff0000";
@@ -180,14 +180,14 @@ function renderTile(color, relX, relY) {
     return;
   }
 
-  const lineColor = uiState.grid ? "0x444" : color;
+  const lineColor = UI_STATE.grid ? "0x444" : color;
 
-  graphics.beginFill(color);
-  graphics.lineStyle(1, lineColor, 1);
-  graphics.moveTo(relX, relY);
-  graphics.lineTo(relX + w, relY + h_2);
-  graphics.lineTo(relX, relY + h);
-  graphics.lineTo(relX - w, relY + h_2);
-  graphics.lineTo(relX, relY);
-  graphics.endFill();
+  MAP_GRAPHICS_LAYER.beginFill(color);
+  MAP_GRAPHICS_LAYER.lineStyle(1, lineColor, 1);
+  MAP_GRAPHICS_LAYER.moveTo(relX, relY);
+  MAP_GRAPHICS_LAYER.lineTo(relX + w, relY + h_2);
+  MAP_GRAPHICS_LAYER.lineTo(relX, relY + h);
+  MAP_GRAPHICS_LAYER.lineTo(relX - w, relY + h_2);
+  MAP_GRAPHICS_LAYER.lineTo(relX, relY);
+  MAP_GRAPHICS_LAYER.endFill();
 }

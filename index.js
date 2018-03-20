@@ -3,33 +3,33 @@
 /**
  * Initialize global variables that are used throughout the app.
  *
- * This should be better managed. Right now, the map graphics layer is created
+ * This should be better managed. Right now, the map MAP_GRAPHICS_LAYER layer is created
  * and added in the file `map.js`.
  */
-document.body.appendChild(app.view);
+document.body.appendChild(APPLICATION.view);
 
 /**
- * Start loading necessary assets
+ * Start loading necessary ASSETS
  */
-PIXI.loader.add(Array.from(assets)).load(setup);
+PIXI.loader.add(Array.from(ASSETS)).load(setup);
 
 /**
- * At this point, all assets are loaded. Add stuff to the app.
+ * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
   initUI();
 
-  app.ticker.add(gameloop);
+  APPLICATION.ticker.add(gameloop);
 }
 
 /**
- * Proceed the game logic and render the current state.
+ * Proceed the game logic and render the current STATE.
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  renderMap(state.map);
+  renderMap(STATE.map);
 
-  for (let deer of Object.values(state.deers)) {
+  for (let deer of Object.values(STATE.deers)) {
     move_deer(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
@@ -39,7 +39,7 @@ function gameloop(delta) {
     deer.sprite.y = relY + DEER_OFFSET_Y;
   }
 
-  for (let tree of Object.values(state.trees)) {
+  for (let tree of Object.values(STATE.trees)) {
     tree.animationTime += delta * 0.66;
     const frame = getAnimationFrame(tree.currentAnimation, tree.animationTime);
     tree.sprite.texture = PIXI.loader.resources[frame].texture;

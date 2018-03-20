@@ -1,13 +1,8 @@
 /**
- * Holds a simple set of all assets that should be loaded before starting the game.
+ * Holds a simple set of all ASSETS that should be loaded before starting the game.
  */
 
 "use strict";
-
-const app = new PIXI.Application({
-  width: WIDTH,
-  height: HEIGHT
-});
 
 Set.prototype.addArray = function(a) {
   for (let item of a) {
@@ -15,4 +10,4 @@ Set.prototype.addArray = function(a) {
   }
 };
 
-const assets = new Set();
+ASSETS = new Set();

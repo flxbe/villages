@@ -1,19 +1,12 @@
 "use strict";
 
-// TODO: window resize
-const WIDTH = window.innerWidth;
-const HEIGHT = window.innerHeight;
-
-let offsetX = 200;
-let offsetY = 200;
-
 /**
  * Convert absolute to relative coordinates.
  * @param {number} absX
  * @param {number} absY
  */
 function abs2rel(absX, absY) {
-  return [absX + offsetX, absY + offsetY];
+  return [absX + UI_STATE.offsetX, absY + UI_STATE.offsetY];
 }
 
 /**
@@ -22,7 +15,7 @@ function abs2rel(absX, absY) {
  * @param {number} relY
  */
 function rel2abs(relX, relY) {
-  return [relX - offsetX, relY - offsetY];
+  return [relX - UI_STATE.offsetX, relY - UI_STATE.offsetY];
 }
 
 /**

@@ -32,7 +32,7 @@ Actions.updateMap = function(mapUpdates) {
 };
 
 /**
- * Add a new deer to the server state.
+ * Add a new deer to the server STATE.
  * @param {Deer} deer
  */
 Actions.addDeer = function(deer) {
@@ -76,7 +76,7 @@ Actions.addTree = function(tree) {
 };
 
 /**
- * Update the storage state.
+ * Update the storage STATE.
  * @param {StorageUpdate} storage
  */
 Actions.updateStorage = function(storage) {

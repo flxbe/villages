@@ -12,7 +12,7 @@
  * Author: Mikola Lysenko
  *
  * Ported from Stanford bit twiddling hack library:
- *    http://graphics.stanford.edu/~seander/bithacks.html
+ *    http://MAP_GRAPHICS_LAYER.stanford.edu/~seander/bithacks.html
  */
 
 "use strict"; "use restrict";
@@ -2607,7 +2607,7 @@ module.exports = Texture;
 
 },{}],13:[function(require,module,exports){
 
-// state object//
+// STATE object//
 var setVertexAttribArrays = require( './setVertexAttribArrays' );
 
 /**
@@ -2618,7 +2618,7 @@ var setVertexAttribArrays = require( './setVertexAttribArrays' );
  * @memberof PIXI.glCore
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  */
-function VertexArrayObject(gl, state)
+function VertexArrayObject(gl, STATE)
 {
     this.nativeVaoExtension = null;
 
@@ -2629,7 +2629,7 @@ function VertexArrayObject(gl, state)
                                   gl.getExtension('WEBKIT_OES_vertex_array_object');
     }
 
-    this.nativeState = state;
+    this.nativeState = STATE;
 
     if(this.nativeVaoExtension)
     {
@@ -2637,7 +2637,7 @@ function VertexArrayObject(gl, state)
 
         var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
 
-        // VAO - overwrite the state..
+        // VAO - overwrite the STATE..
         this.nativeState = {
             tempAttribState: new Array(maxAttribs),
             attribState: new Array(maxAttribs)
@@ -2930,15 +2930,15 @@ if (typeof window !== 'undefined')
 /**
  * @param gl {WebGLRenderingContext} The current WebGL context
  * @param attribs {*}
- * @param state {*}
+ * @param STATE {*}
  */
-var setVertexAttribArrays = function (gl, attribs, state)
+var setVertexAttribArrays = function (gl, attribs, STATE)
 {
     var i;
-    if(state)
+    if(STATE)
     {
-        var tempAttribState = state.tempAttribState,
-            attribState = state.attribState;
+        var tempAttribState = STATE.tempAttribState,
+            attribState = STATE.attribState;
 
         for (i = 0; i < tempAttribState.length; i++)
         {
@@ -2957,7 +2957,7 @@ var setVertexAttribArrays = function (gl, attribs, state)
             {
                 attribState[i] = tempAttribState[i];
 
-                if (state.attribState[i])
+                if (STATE.attribState[i])
                 {
                     gl.enableVertexAttribArray(i);
                 }
@@ -4031,7 +4031,7 @@ process.umask = function() { return 0; };
 		// Cache the length
 		inputLength = input.length;
 
-		// Initialize the state
+		// Initialize the STATE
 		n = initialN;
 		delta = 0;
 		bias = initialBias;
@@ -4066,7 +4066,7 @@ process.umask = function() { return 0; };
 				}
 			}
 
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// Increase `delta` enough to advance the decoder's <n,i> STATE to <m,0>,
 			// but guard against overflow
 			handledCPCountPlusOne = handledCPCount + 1;
 			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
@@ -4450,7 +4450,7 @@ var MAX_PROGRESS = 100;
 var rgxExtractUrlHash = /(#[\w-]+)?$/;
 
 /**
- * Manages the state and loading of multiple resources to load.
+ * Manages the STATE and loading of multiple resources to load.
  *
  * @class
  */
@@ -4483,7 +4483,7 @@ var Loader = function () {
         this.progress = 0;
 
         /**
-         * Loading state of the loader, true if it is currently loading resources.
+         * Loading STATE of the loader, true if it is currently loading resources.
          *
          * @member {boolean}
          */
@@ -4889,7 +4889,7 @@ var Loader = function () {
             this._queue._tasks[i].data.progressChunk = chunk;
         }
 
-        // update loading state
+        // update loading STATE
         this.loading = true;
 
         // notify of start
@@ -5068,7 +5068,7 @@ var STATUS_TYPE_OK = 2;
 function _noop() {} /* empty */
 
 /**
- * Manages the state and loading of a resource and all child resources.
+ * Manages the STATE and loading of a resource and all child resources.
  *
  * @class
  */
@@ -5130,7 +5130,7 @@ var Resource = function () {
         options = options || {};
 
         /**
-         * The state flags of this resource.
+         * The STATE flags of this resource.
          *
          * @member {number}
          */
@@ -7459,7 +7459,7 @@ var AccessibilityManager = function () {
         this._onMouseMove = this._onMouseMove.bind(this);
 
         /**
-         * stores the state of the manager. If there are no accessible objects or the mouse is moving, this will be false.
+         * stores the STATE of the manager. If there are no accessible objects or the mouse is moving, this will be false.
          *
          * @member {Array<*>}
          * @private
@@ -7978,7 +7978,7 @@ var Application = function () {
      * @param {boolean} [options.legacy=false] - `true` to ensure compatibility with older / less advanced devices.
      *  If you experience unexplained flickering try setting this to true. **webgl only**
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card **webgl only**
+     *  for devices with dual MAP_GRAPHICS_LAYER card **webgl only**
      * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.ticker.shared, `false` to create new ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.loaders.shared, `false` to create new Loader.
      */
@@ -8246,7 +8246,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * @param {boolean} [options.legacy=false] - `true` to ensure compatibility with older / less advanced devices.
  *  If you experience unexplained flickering try setting this to true. **webgl only**
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
- *  for devices with dual graphics card **webgl only**
+ *  for devices with dual MAP_GRAPHICS_LAYER card **webgl only**
  * @return {PIXI.WebGLRenderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 function autoDetectRenderer(options, arg1, arg2, arg3) {
@@ -10926,7 +10926,7 @@ var Graphics = function (_Container) {
         _this._localBounds = new _Bounds2.default();
 
         /**
-         * Used to detect if the graphics object has changed. If this is set to true then the graphics
+         * Used to detect if the MAP_GRAPHICS_LAYER object has changed. If this is set to true then the MAP_GRAPHICS_LAYER
          * object will be recalculated.
          *
          * @member {boolean}
@@ -10941,7 +10941,7 @@ var Graphics = function (_Container) {
         _this.fastRectDirty = -1;
 
         /**
-         * Used to detect if we clear the graphics webGL data
+         * Used to detect if we clear the MAP_GRAPHICS_LAYER webGL data
          * @type {Number}
          */
         _this.clearDirty = 0;
@@ -10964,11 +10964,11 @@ var Graphics = function (_Container) {
         _this._fastRect = false;
 
         /**
-         * When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
-         * This is useful if your graphics element does not change often, as it will speed up the rendering
-         * of the object in exchange for taking up texture memory. It is also useful if you need the graphics
+         * When cacheAsBitmap is set to true the MAP_GRAPHICS_LAYER object will be rendered as if it was a sprite.
+         * This is useful if your MAP_GRAPHICS_LAYER element does not change often, as it will speed up the rendering
+         * of the object in exchange for taking up texture memory. It is also useful if you need the MAP_GRAPHICS_LAYER
          * object to be anti-aliased, because it will be rendered using canvas. This is not recommended if
-         * you are constantly redrawing the graphics element.
+         * you are constantly redrawing the MAP_GRAPHICS_LAYER element.
          *
          * @name cacheAsBitmap
          * @member {boolean}
@@ -10982,7 +10982,7 @@ var Graphics = function (_Container) {
      * Creates a new Graphics object with the same values as this one.
      * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
      *
-     * @return {PIXI.Graphics} A clone of the graphics object
+     * @return {PIXI.Graphics} A clone of the MAP_GRAPHICS_LAYER object
      */
 
 
@@ -11000,7 +11000,7 @@ var Graphics = function (_Container) {
         clone.dirty = 0;
         clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
-        // copy graphics data
+        // copy MAP_GRAPHICS_LAYER data
         for (var i = 0; i < this.graphicsData.length; ++i) {
             clone.graphicsData.push(this.graphicsData[i].clone());
         }
@@ -11457,7 +11457,7 @@ var Graphics = function (_Container) {
     };
 
     /**
-     * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
+     * Clears the MAP_GRAPHICS_LAYER that were drawn to this Graphics object, and resets fill and line style settings.
      *
      * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
@@ -11481,7 +11481,7 @@ var Graphics = function (_Container) {
     };
 
     /**
-     * True if graphics consists of one rectangle, and thus, can be drawn like a Sprite and
+     * True if MAP_GRAPHICS_LAYER consists of one rectangle, and thus, can be drawn like a Sprite and
      * masked with gl.scissor.
      *
      * @returns {boolean} True if only 1 rect.
@@ -11511,8 +11511,8 @@ var Graphics = function (_Container) {
         if (this._fastRect) {
             this._renderSpriteRect(renderer);
         } else {
-            renderer.setObjectRenderer(renderer.plugins.graphics);
-            renderer.plugins.graphics.render(this);
+            renderer.setObjectRenderer(renderer.plugins.MAP_GRAPHICS_LAYER);
+            renderer.plugins.MAP_GRAPHICS_LAYER.render(this);
         }
     };
 
@@ -11576,7 +11576,7 @@ var Graphics = function (_Container) {
             return;
         }
 
-        renderer.plugins.graphics.render(this);
+        renderer.plugins.MAP_GRAPHICS_LAYER.render(this);
     };
 
     /**
@@ -11600,7 +11600,7 @@ var Graphics = function (_Container) {
     };
 
     /**
-     * Tests if a point is inside this graphics object
+     * Tests if a point is inside this MAP_GRAPHICS_LAYER object
      *
      * @param {PIXI.Point} point - the point to test
      * @return {boolean} the result of the test
@@ -11817,7 +11817,7 @@ var Graphics = function (_Container) {
 
         canvasRenderer.render(this, canvasBuffer, true, tempMatrix);
 
-        var texture = _Texture2.default.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode, 'graphics');
+        var texture = _Texture2.default.fromCanvas(canvasBuffer.baseTexture._canvasRenderTarget.canvas, scaleMode, 'MAP_GRAPHICS_LAYER');
 
         texture.baseTexture.resolution = resolution;
         texture.baseTexture.update();
@@ -12056,11 +12056,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's CanvasGraphicsRenderer:
- * https://github.com/libgdx/libgdx/blob/1.0.0/gdx/src/com/badlogic/gdx/graphics/glutils/ShapeRenderer.java
+ * https://github.com/libgdx/libgdx/blob/1.0.0/gdx/src/com/badlogic/gdx/MAP_GRAPHICS_LAYER/glutils/ShapeRenderer.java
  */
 
 /**
- * Renderer dedicated to drawing and batching graphics objects.
+ * Renderer dedicated to drawing and batching MAP_GRAPHICS_LAYER objects.
  *
  * @class
  * @private
@@ -12079,33 +12079,33 @@ var CanvasGraphicsRenderer = function () {
     /**
      * Renders a Graphics object to a canvas.
      *
-     * @param {PIXI.Graphics} graphics - the actual graphics object to render
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - the actual MAP_GRAPHICS_LAYER object to render
      */
 
 
-    CanvasGraphicsRenderer.prototype.render = function render(graphics) {
+    CanvasGraphicsRenderer.prototype.render = function render(MAP_GRAPHICS_LAYER) {
         var renderer = this.renderer;
         var context = renderer.context;
-        var worldAlpha = graphics.worldAlpha;
-        var transform = graphics.transform.worldTransform;
+        var worldAlpha = MAP_GRAPHICS_LAYER.worldAlpha;
+        var transform = MAP_GRAPHICS_LAYER.transform.worldTransform;
         var resolution = renderer.resolution;
 
-        // if the tint has changed, set the graphics object to dirty.
+        // if the tint has changed, set the MAP_GRAPHICS_LAYER object to dirty.
         if (this._prevTint !== this.tint) {
             this.dirty = true;
         }
 
         context.setTransform(transform.a * resolution, transform.b * resolution, transform.c * resolution, transform.d * resolution, transform.tx * resolution, transform.ty * resolution);
 
-        if (graphics.dirty) {
-            this.updateGraphicsTint(graphics);
-            graphics.dirty = false;
+        if (MAP_GRAPHICS_LAYER.dirty) {
+            this.updateGraphicsTint(MAP_GRAPHICS_LAYER);
+            MAP_GRAPHICS_LAYER.dirty = false;
         }
 
-        renderer.setBlendMode(graphics.blendMode);
+        renderer.setBlendMode(MAP_GRAPHICS_LAYER.blendMode);
 
-        for (var i = 0; i < graphics.graphicsData.length; i++) {
-            var data = graphics.graphicsData[i];
+        for (var i = 0; i < MAP_GRAPHICS_LAYER.graphicsData.length; i++) {
+            var data = MAP_GRAPHICS_LAYER.graphicsData[i];
             var shape = data.shape;
 
             var fillColor = data._fillTint;
@@ -12235,22 +12235,22 @@ var CanvasGraphicsRenderer = function () {
     };
 
     /**
-     * Updates the tint of a graphics object
+     * Updates the tint of a MAP_GRAPHICS_LAYER object
      *
      * @private
-     * @param {PIXI.Graphics} graphics - the graphics that will have its tint updated
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - the MAP_GRAPHICS_LAYER that will have its tint updated
      */
 
 
-    CanvasGraphicsRenderer.prototype.updateGraphicsTint = function updateGraphicsTint(graphics) {
-        graphics._prevTint = graphics.tint;
+    CanvasGraphicsRenderer.prototype.updateGraphicsTint = function updateGraphicsTint(MAP_GRAPHICS_LAYER) {
+        MAP_GRAPHICS_LAYER._prevTint = MAP_GRAPHICS_LAYER.tint;
 
-        var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-        var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-        var tintB = (graphics.tint & 0xFF) / 255;
+        var tintR = (MAP_GRAPHICS_LAYER.tint >> 16 & 0xFF) / 255;
+        var tintG = (MAP_GRAPHICS_LAYER.tint >> 8 & 0xFF) / 255;
+        var tintB = (MAP_GRAPHICS_LAYER.tint & 0xFF) / 255;
 
-        for (var i = 0; i < graphics.graphicsData.length; ++i) {
-            var data = graphics.graphicsData[i];
+        for (var i = 0; i < MAP_GRAPHICS_LAYER.graphicsData.length; ++i) {
+            var data = MAP_GRAPHICS_LAYER.graphicsData[i];
 
             var fillColor = data.fillColor | 0;
             var lineColor = data.lineColor | 0;
@@ -12284,7 +12284,7 @@ var CanvasGraphicsRenderer = function () {
     };
 
     /**
-     * destroy graphics object
+     * destroy MAP_GRAPHICS_LAYER object
      *
      */
 
@@ -12299,7 +12299,7 @@ var CanvasGraphicsRenderer = function () {
 exports.default = CanvasGraphicsRenderer;
 
 
-_CanvasRenderer2.default.registerPlugin('graphics', CanvasGraphicsRenderer);
+_CanvasRenderer2.default.registerPlugin('MAP_GRAPHICS_LAYER', CanvasGraphicsRenderer);
 
 },{"../../const":46,"../../renderers/canvas/CanvasRenderer":77}],56:[function(require,module,exports){
 "use strict";
@@ -12401,7 +12401,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Renders the graphics object.
+ * Renders the MAP_GRAPHICS_LAYER object.
  *
  * @class
  * @memberof PIXI
@@ -12460,39 +12460,39 @@ var GraphicsRenderer = function (_ObjectRenderer) {
     };
 
     /**
-     * Renders a graphics object.
+     * Renders a MAP_GRAPHICS_LAYER object.
      *
-     * @param {PIXI.Graphics} graphics - The graphics object to render.
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - The MAP_GRAPHICS_LAYER object to render.
      */
 
 
-    GraphicsRenderer.prototype.render = function render(graphics) {
+    GraphicsRenderer.prototype.render = function render(MAP_GRAPHICS_LAYER) {
         var renderer = this.renderer;
         var gl = renderer.gl;
 
         var webGLData = void 0;
-        var webGL = graphics._webGL[this.CONTEXT_UID];
+        var webGL = MAP_GRAPHICS_LAYER._webGL[this.CONTEXT_UID];
 
-        if (!webGL || graphics.dirty !== webGL.dirty) {
-            this.updateGraphics(graphics);
+        if (!webGL || MAP_GRAPHICS_LAYER.dirty !== webGL.dirty) {
+            this.updateGraphics(MAP_GRAPHICS_LAYER);
 
-            webGL = graphics._webGL[this.CONTEXT_UID];
+            webGL = MAP_GRAPHICS_LAYER._webGL[this.CONTEXT_UID];
         }
 
         // This  could be speeded up for sure!
         var shader = this.primitiveShader;
 
         renderer.bindShader(shader);
-        renderer.state.setBlendMode(graphics.blendMode);
+        renderer.STATE.setBlendMode(MAP_GRAPHICS_LAYER.blendMode);
 
         for (var i = 0, n = webGL.data.length; i < n; i++) {
             webGLData = webGL.data[i];
             var shaderTemp = webGLData.shader;
 
             renderer.bindShader(shaderTemp);
-            shaderTemp.uniforms.translationMatrix = graphics.transform.worldTransform.toArray(true);
-            shaderTemp.uniforms.tint = (0, _utils.hex2rgb)(graphics.tint);
-            shaderTemp.uniforms.alpha = graphics.worldAlpha;
+            shaderTemp.uniforms.translationMatrix = MAP_GRAPHICS_LAYER.transform.worldTransform.toArray(true);
+            shaderTemp.uniforms.tint = (0, _utils.hex2rgb)(MAP_GRAPHICS_LAYER.tint);
+            shaderTemp.uniforms.alpha = MAP_GRAPHICS_LAYER.worldAlpha;
 
             renderer.bindVao(webGLData.vao);
 
@@ -12505,30 +12505,30 @@ var GraphicsRenderer = function (_ObjectRenderer) {
     };
 
     /**
-     * Updates the graphics object
+     * Updates the MAP_GRAPHICS_LAYER object
      *
      * @private
-     * @param {PIXI.Graphics} graphics - The graphics object to update
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - The MAP_GRAPHICS_LAYER object to update
      */
 
 
-    GraphicsRenderer.prototype.updateGraphics = function updateGraphics(graphics) {
+    GraphicsRenderer.prototype.updateGraphics = function updateGraphics(MAP_GRAPHICS_LAYER) {
         var gl = this.renderer.gl;
 
-        // get the contexts graphics object
-        var webGL = graphics._webGL[this.CONTEXT_UID];
+        // get the contexts MAP_GRAPHICS_LAYER object
+        var webGL = MAP_GRAPHICS_LAYER._webGL[this.CONTEXT_UID];
 
-        // if the graphics object does not exist in the webGL context time to create it!
+        // if the MAP_GRAPHICS_LAYER object does not exist in the webGL context time to create it!
         if (!webGL) {
-            webGL = graphics._webGL[this.CONTEXT_UID] = { lastIndex: 0, data: [], gl: gl, clearDirty: -1, dirty: -1 };
+            webGL = MAP_GRAPHICS_LAYER._webGL[this.CONTEXT_UID] = { lastIndex: 0, data: [], gl: gl, clearDirty: -1, dirty: -1 };
         }
 
-        // flag the graphics as not dirty as we are about to update it...
-        webGL.dirty = graphics.dirty;
+        // flag the MAP_GRAPHICS_LAYER as not dirty as we are about to update it...
+        webGL.dirty = MAP_GRAPHICS_LAYER.dirty;
 
-        // if the user cleared the graphics object we will need to clear every object
-        if (graphics.clearDirty !== webGL.clearDirty) {
-            webGL.clearDirty = graphics.clearDirty;
+        // if the user cleared the MAP_GRAPHICS_LAYER object we will need to clear every object
+        if (MAP_GRAPHICS_LAYER.clearDirty !== webGL.clearDirty) {
+            webGL.clearDirty = MAP_GRAPHICS_LAYER.clearDirty;
 
             // loop through and return all the webGLDatas to the object pool so than can be reused later on
             for (var i = 0; i < webGL.data.length; i++) {
@@ -12543,11 +12543,11 @@ var GraphicsRenderer = function (_ObjectRenderer) {
         var webGLData = void 0;
         var webGLDataNativeLines = void 0;
 
-        // loop through the graphics datas and construct each one..
+        // loop through the MAP_GRAPHICS_LAYER datas and construct each one..
         // if the object is a complex fill then the new stencil buffer technique will be used
-        // other wise graphics objects will be pushed into a batch..
-        for (var _i = webGL.lastIndex; _i < graphics.graphicsData.length; _i++) {
-            var data = graphics.graphicsData[_i];
+        // other wise MAP_GRAPHICS_LAYER objects will be pushed into a batch..
+        for (var _i = webGL.lastIndex; _i < MAP_GRAPHICS_LAYER.graphicsData.length; _i++) {
+            var data = MAP_GRAPHICS_LAYER.graphicsData[_i];
 
             // TODO - this can be simplified
             webGLData = this.getWebGLData(webGL, 0);
@@ -12597,7 +12597,7 @@ var GraphicsRenderer = function (_ObjectRenderer) {
         var webGLData = gl.data[gl.data.length - 1];
 
         if (!webGLData || webGLData.nativeLines !== nativeLines || webGLData.points.length > 320000) {
-            webGLData = this.graphicsDataPool.pop() || new _WebGLGraphicsData2.default(this.renderer.gl, this.primitiveShader, this.renderer.state.attribsState);
+            webGLData = this.graphicsDataPool.pop() || new _WebGLGraphicsData2.default(this.renderer.gl, this.primitiveShader, this.renderer.STATE.attribsState);
             webGLData.nativeLines = nativeLines;
             webGLData.reset(type);
             gl.data.push(webGLData);
@@ -12614,7 +12614,7 @@ var GraphicsRenderer = function (_ObjectRenderer) {
 exports.default = GraphicsRenderer;
 
 
-_WebGLRenderer2.default.registerPlugin('graphics', GraphicsRenderer);
+_WebGLRenderer2.default.registerPlugin('MAP_GRAPHICS_LAYER', GraphicsRenderer);
 
 },{"../../const":46,"../../renderers/webgl/WebGLRenderer":84,"../../renderers/webgl/utils/ObjectRenderer":94,"../../utils":124,"./WebGLGraphicsData":58,"./shaders/PrimitiveShader":59,"./utils/buildCircle":60,"./utils/buildPoly":62,"./utils/buildRectangle":63,"./utils/buildRoundedRectangle":64}],58:[function(require,module,exports){
 'use strict';
@@ -12640,7 +12640,7 @@ var WebGLGraphicsData = function () {
   /**
    * @param {WebGLRenderingContext} gl - The current WebGL drawing context
    * @param {PIXI.Shader} shader - The shader
-   * @param {object} attribsState - The state for the VAO
+   * @param {object} attribsState - The STATE for the VAO
    */
   function WebGLGraphicsData(gl, shader, attribsState) {
     _classCallCheck(this, WebGLGraphicsData);
@@ -12683,13 +12683,13 @@ var WebGLGraphicsData = function () {
     this.indexBuffer = _pixiGlCore2.default.GLBuffer.createIndexBuffer(gl);
 
     /**
-     * Whether this graphics is dirty or not
+     * Whether this MAP_GRAPHICS_LAYER is dirty or not
      * @member {boolean}
      */
     this.dirty = true;
 
     /**
-     * Whether this graphics is nativeLines or not
+     * Whether this MAP_GRAPHICS_LAYER is nativeLines or not
      * @member {boolean}
      */
     this.nativeLines = false;
@@ -12827,7 +12827,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object to draw
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object to draw
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
@@ -12921,7 +12921,7 @@ var _utils = require('../../../utils');
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
 function buildLine(graphicsData, webGLData) {
@@ -13120,7 +13120,7 @@ function buildLine(graphicsData, webGLData) {
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  */
 
@@ -13132,7 +13132,7 @@ function buildLine(graphicsData, webGLData) {
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
@@ -13192,7 +13192,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
@@ -13274,7 +13274,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
@@ -13354,7 +13354,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * @ignore
  * @private
- * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
+ * @param {PIXI.WebGLGraphicsData} graphicsData - The MAP_GRAPHICS_LAYER object containing all the necessary properties
  * @param {object} webGLData - an object containing all the webGL-specific information to create this shape
  * @param {object} webGLDataNativeLines - an object containing all the webGL-specific information to create nativeLines
  */
@@ -13641,7 +13641,7 @@ Object.defineProperty(exports, 'TextMetrics', {
   }
 });
 
-var _Graphics = require('./graphics/Graphics');
+var _Graphics = require('./MAP_GRAPHICS_LAYER/Graphics');
 
 Object.defineProperty(exports, 'Graphics', {
   enumerable: true,
@@ -13650,7 +13650,7 @@ Object.defineProperty(exports, 'Graphics', {
   }
 });
 
-var _GraphicsData = require('./graphics/GraphicsData');
+var _GraphicsData = require('./MAP_GRAPHICS_LAYER/GraphicsData');
 
 Object.defineProperty(exports, 'GraphicsData', {
   enumerable: true,
@@ -13659,7 +13659,7 @@ Object.defineProperty(exports, 'GraphicsData', {
   }
 });
 
-var _GraphicsRenderer = require('./graphics/webgl/GraphicsRenderer');
+var _GraphicsRenderer = require('./MAP_GRAPHICS_LAYER/webgl/GraphicsRenderer');
 
 Object.defineProperty(exports, 'GraphicsRenderer', {
   enumerable: true,
@@ -13668,7 +13668,7 @@ Object.defineProperty(exports, 'GraphicsRenderer', {
   }
 });
 
-var _CanvasGraphicsRenderer = require('./graphics/canvas/CanvasGraphicsRenderer');
+var _CanvasGraphicsRenderer = require('./MAP_GRAPHICS_LAYER/canvas/CanvasGraphicsRenderer');
 
 Object.defineProperty(exports, 'CanvasGraphicsRenderer', {
   enumerable: true,
@@ -13862,7 +13862,7 @@ exports.WebGLRenderer = _WebGLRenderer2.default; /**
                                                   * @namespace PIXI
                                                   */
 
-},{"./Application":43,"./Shader":44,"./autoDetectRenderer":45,"./const":46,"./display/Bounds":47,"./display/Container":48,"./display/DisplayObject":49,"./display/Transform":50,"./display/TransformBase":51,"./display/TransformStatic":52,"./graphics/Graphics":53,"./graphics/GraphicsData":54,"./graphics/canvas/CanvasGraphicsRenderer":55,"./graphics/webgl/GraphicsRenderer":57,"./math":70,"./renderers/canvas/CanvasRenderer":77,"./renderers/canvas/utils/CanvasRenderTarget":79,"./renderers/webgl/WebGLRenderer":84,"./renderers/webgl/filters/Filter":86,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":89,"./renderers/webgl/managers/WebGLManager":93,"./renderers/webgl/utils/ObjectRenderer":94,"./renderers/webgl/utils/Quad":95,"./renderers/webgl/utils/RenderTarget":96,"./settings":101,"./sprites/Sprite":102,"./sprites/canvas/CanvasSpriteRenderer":103,"./sprites/canvas/CanvasTinter":104,"./sprites/webgl/SpriteRenderer":106,"./text/Text":108,"./text/TextMetrics":109,"./text/TextStyle":110,"./textures/BaseRenderTexture":111,"./textures/BaseTexture":112,"./textures/RenderTexture":113,"./textures/Spritesheet":114,"./textures/Texture":115,"./textures/TextureUvs":116,"./textures/VideoBaseTexture":117,"./ticker":120,"./utils":124,"pixi-gl-core":15}],66:[function(require,module,exports){
+},{"./Application":43,"./Shader":44,"./autoDetectRenderer":45,"./const":46,"./display/Bounds":47,"./display/Container":48,"./display/DisplayObject":49,"./display/Transform":50,"./display/TransformBase":51,"./display/TransformStatic":52,"./MAP_GRAPHICS_LAYER/Graphics":53,"./MAP_GRAPHICS_LAYER/GraphicsData":54,"./MAP_GRAPHICS_LAYER/canvas/CanvasGraphicsRenderer":55,"./MAP_GRAPHICS_LAYER/webgl/GraphicsRenderer":57,"./math":70,"./renderers/canvas/CanvasRenderer":77,"./renderers/canvas/utils/CanvasRenderTarget":79,"./renderers/webgl/WebGLRenderer":84,"./renderers/webgl/filters/Filter":86,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":89,"./renderers/webgl/managers/WebGLManager":93,"./renderers/webgl/utils/ObjectRenderer":94,"./renderers/webgl/utils/Quad":95,"./renderers/webgl/utils/RenderTarget":96,"./settings":101,"./sprites/Sprite":102,"./sprites/canvas/CanvasSpriteRenderer":103,"./sprites/canvas/CanvasTinter":104,"./sprites/webgl/SpriteRenderer":106,"./text/Text":108,"./text/TextMetrics":109,"./text/TextStyle":110,"./textures/BaseRenderTexture":111,"./textures/BaseTexture":112,"./textures/RenderTexture":113,"./textures/Spritesheet":114,"./textures/Texture":115,"./textures/TextureUvs":116,"./textures/VideoBaseTexture":117,"./ticker":120,"./utils":124,"pixi-gl-core":15}],66:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -15905,7 +15905,7 @@ var SystemRenderer = function (_EventEmitter) {
    * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
    * @param {number} scaleMode - Should be one of the scaleMode consts
    * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
-   * @return {PIXI.Texture} a texture of the graphics object
+   * @return {PIXI.Texture} a texture of the MAP_GRAPHICS_LAYER object
    */
 
 
@@ -16425,13 +16425,13 @@ var CanvasMaskManager = function () {
     /**
      * Renders a PIXI.Graphics shape.
      *
-     * @param {PIXI.Graphics} graphics - The object to render.
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - The object to render.
      */
 
 
-    CanvasMaskManager.prototype.renderGraphicsShape = function renderGraphicsShape(graphics) {
+    CanvasMaskManager.prototype.renderGraphicsShape = function renderGraphicsShape(MAP_GRAPHICS_LAYER) {
         var context = this.renderer.context;
-        var len = graphics.graphicsData.length;
+        var len = MAP_GRAPHICS_LAYER.graphicsData.length;
 
         if (len === 0) {
             return;
@@ -16440,7 +16440,7 @@ var CanvasMaskManager = function () {
         context.beginPath();
 
         for (var i = 0; i < len; i++) {
-            var data = graphics.graphicsData[i];
+            var data = MAP_GRAPHICS_LAYER.graphicsData[i];
             var shape = data.shape;
 
             if (data.type === _const.SHAPES.POLY) {
@@ -16512,7 +16512,7 @@ var CanvasMaskManager = function () {
     };
 
     /**
-     * Restores the current drawing context to the state it was before the mask was applied.
+     * Restores the current drawing context to the STATE it was before the mask was applied.
      *
      * @param {PIXI.CanvasRenderer} renderer - The renderer context to use.
      */
@@ -17283,7 +17283,7 @@ var WebGLRenderer = function (_SystemRenderer) {
      * @param {boolean} [options.legacy=false] - If true PixiJS will aim to ensure compatibility
      *  with older / less advanced devices. If you experiance unexplained flickering try setting this to true.
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card
+     *  for devices with dual MAP_GRAPHICS_LAYER card
      */
     function WebGLRenderer(options, arg2, arg3) {
         _classCallCheck(this, WebGLRenderer);
@@ -17377,12 +17377,12 @@ var WebGLRenderer = function (_SystemRenderer) {
          *
          * @member {PIXI.WebGLState}
          */
-        _this.state = new _WebGLState2.default(_this.gl);
+        _this.STATE = new _WebGLState2.default(_this.gl);
 
         _this.renderingToScreen = true;
 
         /**
-         * Holds the current state of textures bound to the GPU.
+         * Holds the current STATE of textures bound to the GPU.
          * @type {Array}
          */
         _this.boundTextures = null;
@@ -17466,7 +17466,7 @@ var WebGLRenderer = function (_SystemRenderer) {
         this.textureManager = new _TextureManager2.default(this);
         this.textureGC = new _TextureGarbageCollector2.default(this);
 
-        this.state.resetToDefault();
+        this.STATE.resetToDefault();
 
         this.rootRenderTarget = new _RenderTarget2.default(gl, this.width, this.height, null, this.resolution, true);
         this.rootRenderTarget.clearColor = this._backgroundColorRgba;
@@ -17614,7 +17614,7 @@ var WebGLRenderer = function (_SystemRenderer) {
 
 
     WebGLRenderer.prototype.setBlendMode = function setBlendMode(blendMode) {
-        this.state.setBlendMode(blendMode);
+        this.STATE.setBlendMode(blendMode);
     };
 
     /**
@@ -17820,14 +17820,14 @@ var WebGLRenderer = function (_SystemRenderer) {
     };
 
     /**
-     * Creates a new VAO from this renderer's context and state.
+     * Creates a new VAO from this renderer's context and STATE.
      *
      * @return {VertexArrayObject} The new VAO.
      */
 
 
     WebGLRenderer.prototype.createVao = function createVao() {
-        return new _pixiGlCore2.default.VertexArrayObject(this.gl, this.state.attribState);
+        return new _pixiGlCore2.default.VertexArrayObject(this.gl, this.STATE.attribState);
     };
 
     /**
@@ -17856,7 +17856,7 @@ var WebGLRenderer = function (_SystemRenderer) {
     };
 
     /**
-     * Resets the WebGL state so you can render things however you fancy!
+     * Resets the WebGL STATE so you can render things however you fancy!
      *
      * @return {PIXI.WebGLRenderer} Returns itself.
      */
@@ -17871,7 +17871,7 @@ var WebGLRenderer = function (_SystemRenderer) {
         // bind the main frame buffer (the screen);
         this.rootRenderTarget.activate();
 
-        this.state.resetToDefault();
+        this.STATE.resetToDefault();
 
         return this;
     };
@@ -17994,7 +17994,7 @@ var CULL_FACE = 3;
 var BLEND_FUNC = 4;
 
 /**
- * A WebGL state machines
+ * A WebGL STATE machines
  *
  * @memberof PIXI
  * @class
@@ -18008,14 +18008,14 @@ var WebGLState = function () {
         _classCallCheck(this, WebGLState);
 
         /**
-         * The current active state
+         * The current active STATE
          *
          * @member {Uint8Array}
          */
         this.activeState = new Uint8Array(16);
 
         /**
-         * The default state
+         * The default STATE
          *
          * @member {Uint8Array}
          */
@@ -18025,7 +18025,7 @@ var WebGLState = function () {
         this.defaultState[0] = 1;
 
         /**
-         * The current state index in the stack
+         * The current STATE index in the stack
          *
          * @member {number}
          * @private
@@ -18061,51 +18061,51 @@ var WebGLState = function () {
     }
 
     /**
-     * Pushes a new active state
+     * Pushes a new active STATE
      */
 
 
     WebGLState.prototype.push = function push() {
-        // next state..
-        var state = this.stack[this.stackIndex];
+        // next STATE..
+        var STATE = this.stack[this.stackIndex];
 
-        if (!state) {
-            state = this.stack[this.stackIndex] = new Uint8Array(16);
+        if (!STATE) {
+            STATE = this.stack[this.stackIndex] = new Uint8Array(16);
         }
 
         ++this.stackIndex;
 
-        // copy state..
-        // set active state so we can force overrides of gl state
+        // copy STATE..
+        // set active STATE so we can force overrides of gl STATE
         for (var i = 0; i < this.activeState.length; i++) {
-            state[i] = this.activeState[i];
+            STATE[i] = this.activeState[i];
         }
     };
 
     /**
-     * Pops a state out
+     * Pops a STATE out
      */
 
 
     WebGLState.prototype.pop = function pop() {
-        var state = this.stack[--this.stackIndex];
+        var STATE = this.stack[--this.stackIndex];
 
-        this.setState(state);
+        this.setState(STATE);
     };
 
     /**
-     * Sets the current state
+     * Sets the current STATE
      *
-     * @param {*} state - The state to set.
+     * @param {*} STATE - The STATE to set.
      */
 
 
-    WebGLState.prototype.setState = function setState(state) {
-        this.setBlend(state[BLEND]);
-        this.setDepthTest(state[DEPTH_TEST]);
-        this.setFrontFace(state[FRONT_FACE]);
-        this.setCullFace(state[CULL_FACE]);
-        this.setBlendMode(state[BLEND_FUNC]);
+    WebGLState.prototype.setState = function setState(STATE) {
+        this.setBlend(STATE[BLEND]);
+        this.setDepthTest(STATE[DEPTH_TEST]);
+        this.setFrontFace(STATE[FRONT_FACE]);
+        this.setCullFace(STATE[CULL_FACE]);
+        this.setBlendMode(STATE[BLEND_FUNC]);
     };
 
     /**
@@ -18239,7 +18239,7 @@ var WebGLState = function () {
         // reset all attributes..
         this.resetAttributes();
 
-        // set active state so we can force overrides of gl state
+        // set active STATE so we can force overrides of gl STATE
         for (var i = 0; i < this.activeState.length; ++i) {
             this.activeState[i] = 32;
         }
@@ -18377,7 +18377,7 @@ var Filter = function () {
    * @param {PIXI.RenderTarget} input - The input render target.
    * @param {PIXI.RenderTarget} output - The target to output to.
    * @param {boolean} clear - Should the output be cleared before rendering to it
-   * @param {object} [currentState] - It's current state of filter.
+   * @param {object} [currentState] - It's current STATE of filter.
    *        There are some useful properties in the currentState :
    *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
    */
@@ -18743,7 +18743,7 @@ var FilterManager = function (_WebGLManager) {
 
         _this.gl = _this.renderer.gl;
         // know about sprites!
-        _this.quad = new _Quad2.default(_this.gl, renderer.state.attribState);
+        _this.quad = new _Quad2.default(_this.gl, renderer.STATE.attribState);
 
         _this.shaderCache = {};
         // todo add default!
@@ -18783,7 +18783,7 @@ var FilterManager = function (_WebGLManager) {
             this.filterData = filterData;
         }
 
-        // get the current filter state..
+        // get the current filter STATE..
         var currentState = filterData.stack[++filterData.index];
 
         if (!currentState) {
@@ -18949,7 +18949,7 @@ var FilterManager = function (_WebGLManager) {
         // this syncs the PixiJS filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
-        renderer.state.setBlendMode(filter.blendMode);
+        renderer.STATE.setBlendMode(filter.blendMode);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
@@ -19502,12 +19502,12 @@ var StencilManager = function (_WebGLManager) {
     /**
      * Applies the Mask and adds it to the current stencil stack. @alvin
      *
-     * @param {PIXI.Graphics} graphics - The mask
+     * @param {PIXI.Graphics} MAP_GRAPHICS_LAYER - The mask
      */
 
 
-    StencilManager.prototype.pushStencil = function pushStencil(graphics) {
-        this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
+    StencilManager.prototype.pushStencil = function pushStencil(MAP_GRAPHICS_LAYER) {
+        this.renderer.setObjectRenderer(this.renderer.plugins.MAP_GRAPHICS_LAYER);
 
         this.renderer._activeRenderTarget.attachStencilBuffer();
 
@@ -19518,13 +19518,13 @@ var StencilManager = function (_WebGLManager) {
             gl.enable(gl.STENCIL_TEST);
         }
 
-        this.stencilMaskStack.push(graphics);
+        this.stencilMaskStack.push(MAP_GRAPHICS_LAYER);
 
         // Increment the refference stencil value where the new mask overlaps with the old ones.
         gl.colorMask(false, false, false, false);
         gl.stencilFunc(gl.EQUAL, prevMaskCount, this._getBitwiseMask());
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-        this.renderer.plugins.graphics.render(graphics);
+        this.renderer.plugins.MAP_GRAPHICS_LAYER.render(MAP_GRAPHICS_LAYER);
 
         this._useCurrent();
     };
@@ -19535,10 +19535,10 @@ var StencilManager = function (_WebGLManager) {
 
 
     StencilManager.prototype.popStencil = function popStencil() {
-        this.renderer.setObjectRenderer(this.renderer.plugins.graphics);
+        this.renderer.setObjectRenderer(this.renderer.plugins.MAP_GRAPHICS_LAYER);
 
         var gl = this.renderer.gl;
-        var graphics = this.stencilMaskStack.pop();
+        var MAP_GRAPHICS_LAYER = this.stencilMaskStack.pop();
 
         if (this.stencilMaskStack.length === 0) {
             // the stack is empty!
@@ -19549,7 +19549,7 @@ var StencilManager = function (_WebGLManager) {
             // Decrement the refference stencil value where the popped mask overlaps with the other ones
             gl.colorMask(false, false, false, false);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
-            this.renderer.plugins.graphics.render(graphics);
+            this.renderer.plugins.MAP_GRAPHICS_LAYER.render(MAP_GRAPHICS_LAYER);
 
             this._useCurrent();
         }
@@ -19755,9 +19755,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Quad = function () {
   /**
    * @param {WebGLRenderingContext} gl - The gl context for this quad to use.
-   * @param {object} state - TODO: Description
+   * @param {object} STATE - TODO: Description
    */
-  function Quad(gl, state) {
+  function Quad(gl, STATE) {
     _classCallCheck(this, Quad);
 
     /**
@@ -19816,7 +19816,7 @@ var Quad = function () {
      *
      * @member {glCore.VertexArrayObject}
      */
-    this.vao = new _pixiGlCore2.default.VertexArrayObject(gl, state);
+    this.vao = new _pixiGlCore2.default.VertexArrayObject(gl, STATE);
   }
 
   /**
@@ -20679,7 +20679,7 @@ var tempPoint = new _math.Point();
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = new PIXI.Sprite.fromImage('assets/image.png');
+ * let sprite = new PIXI.Sprite.fromImage('ASSETS/image.png');
  * ```
  *
  * @class
@@ -21296,7 +21296,7 @@ var canvasRenderWorldTransform = new _math.Matrix();
  * share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's CanvasSpriteRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/CanvasSpriteRenderer.java
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/MAP_GRAPHICS_LAYER/g2d/CanvasSpriteRenderer.java
  */
 
 /**
@@ -22179,7 +22179,7 @@ var SpriteRenderer = function (_ObjectRenderer) {
             }
 
             // set the blend mode..
-            this.renderer.state.setBlendMode(group.blend);
+            this.renderer.STATE.setBlendMode(group.blend);
 
             gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * 2);
         }
@@ -23160,7 +23160,7 @@ var TextMetrics = function () {
 
 
     TextMetrics.measureFont = function measureFont(font) {
-        // as this method is used for preparing assets, don't recalculate things if we don't need to
+        // as this method is used for preparing ASSETS, don't recalculate things if we don't need to
         if (TextMetrics._fonts[font]) {
             return TextMetrics._fonts[font];
         }
@@ -24543,7 +24543,7 @@ var BaseTexture = function (_EventEmitter) {
      * downloaded, then the 'loaded' or 'error' event will be dispatched in the future
      * and `hasLoaded` will remain false after this call.
      *
-     * The logic state after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
+     * The logic STATE after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
      *
      *     if (texture.hasLoaded) {
      *        // texture ready for use
@@ -25527,7 +25527,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * let texture = PIXI.Texture.fromImage('assets/image.png');
+ * let texture = PIXI.Texture.fromImage('ASSETS/image.png');
  * let sprite1 = new PIXI.Sprite(texture);
  * let sprite2 = new PIXI.Sprite(texture);
  * ```
@@ -25535,7 +25535,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
  * ```js
- * var texture = PIXI.Texture.fromImage('assets/image.svg');
+ * var texture = PIXI.Texture.fromImage('ASSETS/image.svg');
  * var sprite1 = new PIXI.Sprite(texture);
  * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
@@ -26146,7 +26146,7 @@ removeAllHandlers(Texture.EMPTY);
 removeAllHandlers(Texture.EMPTY.baseTexture);
 
 /**
- * A white texture of 10x10 size, used for graphics and other things
+ * A white texture of 10x10 size, used for MAP_GRAPHICS_LAYER and other things
  * Can not be destroyed.
  *
  * @static
@@ -26343,7 +26343,7 @@ var VideoBaseTexture = function (_BaseTexture) {
 
         /**
          * When set to true will automatically play videos used by this texture once
-         * they are loaded. If false, it will not modify the playing state.
+         * they are loaded. If false, it will not modify the playing STATE.
          *
          * @member {boolean}
          * @default true
@@ -26734,7 +26734,7 @@ var Ticker = function () {
             if (_this.started) {
                 // Invoke listeners now
                 _this.update(time);
-                // Listener side effects may have modified ticker state.
+                // Listener side effects may have modified ticker STATE.
                 if (_this.started && _this._requestId === null && _this._head.next) {
                     _this._requestId = requestAnimationFrame(_this._tick);
                 }
@@ -28702,7 +28702,7 @@ function deprecation(core) {
     };
 
     core.Graphics.prototype.generateTexture = function generateTexture(scaleMode, resolution) {
-        warn('graphics generate texture has moved to the renderer. ' + 'Or to render a graphics to a texture using canvas please use generateCanvasTexture');
+        warn('MAP_GRAPHICS_LAYER generate texture has moved to the renderer. ' + 'Or to render a MAP_GRAPHICS_LAYER to a texture using canvas please use generateCanvasTexture');
 
         return this.generateCanvasTexture(scaleMode, resolution);
     };
@@ -29086,7 +29086,7 @@ function deprecation(core) {
 
     if (prepare.canvas) {
         /**
-         * The number of graphics or textures to upload to the GPU.
+         * The number of MAP_GRAPHICS_LAYER or textures to upload to the GPU.
          *
          * @name PIXI.prepare.canvas.UPLOADS_PER_FRAME
          * @static
@@ -29110,7 +29110,7 @@ function deprecation(core) {
 
     if (prepare.webgl) {
         /**
-         * The number of graphics or textures to upload to the GPU.
+         * The number of MAP_GRAPHICS_LAYER or textures to upload to the GPU.
          *
          * @name PIXI.prepare.webgl.UPLOADS_PER_FRAME
          * @static
@@ -30241,7 +30241,7 @@ var BitmapText = function (_core$Container) {
         }, _this, 0, 0);
 
         /**
-         * The dirty state of this object.
+         * The dirty STATE of this object.
          *
          * @member {boolean}
          */
@@ -31034,7 +31034,7 @@ var TilingSprite = function (_core$Sprite) {
             this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
         }
 
-        // set context state..
+        // set context STATE..
         context.globalAlpha = this.worldAlpha;
         context.setTransform(transform.a * resolution, transform.b * resolution, transform.c * resolution, transform.d * resolution, transform.tx * resolution, transform.ty * resolution);
 
@@ -31506,7 +31506,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     this.renderWebGL = this._cacheData.originalRenderWebGL;
 
     renderer.render(this, renderTexture, true, m, true);
-    // now restore the state be setting the new properties
+    // now restore the STATE be setting the new properties
 
     renderer.bindRenderTarget(cachedRenderTarget);
 
@@ -31613,7 +31613,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     // renderTexture.render(this, m, true);
     renderer.render(this, renderTexture, true, m, false);
 
-    // now restore the state be setting the new properties
+    // now restore the STATE be setting the new properties
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
@@ -31885,7 +31885,7 @@ var TilingSpriteRenderer = function (_core$ObjectRenderer) {
         this.simpleShader = new core.Shader(gl, 'attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\nuniform mat3 uTransform;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = (uTransform * vec3(aTextureCoord, 1.0)).xy;\n}\n', 'varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 uColor;\n\nvoid main(void)\n{\n    vec4 sample = texture2D(uSampler, vTextureCoord);\n    gl_FragColor = sample * uColor;\n}\n');
 
         this.renderer.bindVao(null);
-        this.quad = new core.Quad(gl, this.renderer.state.attribState);
+        this.quad = new core.Quad(gl, this.renderer.STATE.attribState);
         this.quad.initVao(this.shader);
     };
 
@@ -34682,7 +34682,7 @@ var InteractionManager = function (_EventEmitter) {
     };
 
     /**
-     * Updates the state of interactive objects.
+     * Updates the STATE of interactive objects.
      * Invoked by a throttled ticker update from {@link PIXI.ticker.shared}.
      *
      * @param {number} deltaTime - time delta since last tick
@@ -35173,7 +35173,7 @@ var InteractionManager = function (_EventEmitter) {
             } else if (isDown) {
                 this.dispatchEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', interactionEvent);
             }
-            // update the down state of the tracking data
+            // update the down STATE of the tracking data
             if (trackingData) {
                 if (isRightButton) {
                     trackingData.rightDown = false;
@@ -35201,7 +35201,7 @@ var InteractionManager = function (_EventEmitter) {
             this.dispatchEvent(displayObject, 'pointerupoutside', interactionEvent);
             if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
-        // Only remove the tracking data if there is no over/down state still associated with it
+        // Only remove the tracking data if there is no over/down STATE still associated with it
         if (trackingData && trackingData.none) {
             delete displayObject.trackedPointers[id];
         }
@@ -35340,7 +35340,7 @@ var InteractionManager = function (_EventEmitter) {
 
         var trackingData = displayObject.trackedPointers[id];
 
-        // if we just moused over the display object, then we need to track that state
+        // if we just moused over the display object, then we need to track that STATE
         if (hit && !trackingData) {
             trackingData = displayObject.trackedPointers[id] = new _InteractionTrackingData2.default(id);
         }
@@ -35522,10 +35522,10 @@ var InteractionManager = function (_EventEmitter) {
                 touch.tangentialPressure = 0;
                 // TODO: Remove these, as layerX/Y is not a standard, is deprecated, has uneven
                 // support, and the fill ins are not quite the same
-                // offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
+                // UI_STATE.offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
                 // left is not 0,0 on the page
-                if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
-                if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
+                if (typeof touch.layerX === 'undefined') touch.layerX = touch.UI_STATE.offsetX = touch.clientX;
+                if (typeof touch.layerY === 'undefined') touch.layerY = touch.UI_STATE.offsetY = touch.clientY;
 
                 // mark the touch as normalized, just so that we know we did it
                 touch.isNormalized = true;
@@ -36108,11 +36108,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * This namespace contains APIs which extends the {@link https://github.com/englercj/resource-loader resource-loader} module
- * for loading assets, data, and other resources dynamically.
+ * for loading ASSETS, data, and other resources dynamically.
  * @example
  * const loader = new PIXI.loaders.Loader();
  * loader.add('bunny', 'data/bunny.png')
- *       .add('spaceship', 'assets/spritesheet.json');
+ *       .add('spaceship', 'ASSETS/spritesheet.json');
  * loader.load((loader, resources) => {
  *    // resources.bunny
  *    // resources.spaceship
@@ -36218,8 +36218,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  *
  * // Chainable `add` to enqueue a resource
  * loader.add('bunny', 'data/bunny.png')
- *       .add('spaceship', 'assets/spritesheet.json');
- * loader.add('scoreFont', 'assets/score.fnt');
+ *       .add('spaceship', 'ASSETS/spritesheet.json');
+ * loader.add('scoreFont', 'ASSETS/score.fnt');
  *
  * // Chainable `pre` to add a middleware that runs for each resource, *before* loading that resource.
  * // This is useful to implement custom caching modules (using filesystem, indexeddb, memory, etc).
@@ -36678,7 +36678,7 @@ var Mesh = function (_core$Container) {
   ;
 
   Mesh.prototype._calculateBounds = function _calculateBounds() {
-    // TODO - we can cache local bounds and use them if they are dirty (like graphics)
+    // TODO - we can cache local bounds and use them if they are dirty (like MAP_GRAPHICS_LAYER)
     this._bounds.addVertices(this.transform, this.vertices, 0, this.vertices.length);
   };
 
@@ -38021,7 +38021,7 @@ var MeshRenderer = function (_core$ObjectRenderer) {
 
         glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
 
-        renderer.state.setBlendMode(core.utils.correctBlendMode(mesh.blendMode, texture.baseTexture.premultipliedAlpha));
+        renderer.STATE.setBlendMode(core.utils.correctBlendMode(mesh.blendMode, texture.baseTexture.premultipliedAlpha));
 
         if (glData.shader.uniforms.uTransform) {
             if (mesh.uploadUvTransform) {
@@ -38465,7 +38465,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * they now share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's ParticleBuffer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/ParticleBuffer.java
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/MAP_GRAPHICS_LAYER/g2d/ParticleBuffer.java
  */
 
 /**
@@ -38715,7 +38715,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * share 4 bytes on the vertex buffer
  *
  * Heavily inspired by LibGDX's ParticleRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/ParticleRenderer.java
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/MAP_GRAPHICS_LAYER/g2d/ParticleRenderer.java
  */
 
 /**
@@ -39395,14 +39395,14 @@ var BasePrepare = function () {
         this.queue = [];
 
         /**
-         * Collection of additional hooks for finding assets.
+         * Collection of additional hooks for finding ASSETS.
          * @type {Array<Function>}
          * @private
          */
         this.addHooks = [];
 
         /**
-         * Collection of additional hooks for processing assets.
+         * Collection of additional hooks for processing ASSETS.
          * @type {Array<Function>}
          * @private
          */
@@ -39448,7 +39448,7 @@ var BasePrepare = function () {
     }
 
     /**
-     * Upload all the textures and graphics to the GPU.
+     * Upload all the textures and MAP_GRAPHICS_LAYER to the GPU.
      *
      * @param {Function|PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
      *        Either the container or display object to search for items to upload, the items to upload themselves,
@@ -39505,7 +39505,7 @@ var BasePrepare = function () {
 
     BasePrepare.prototype.prepareItems = function prepareItems() {
         this.limiter.beginFrame();
-        // Upload the graphics
+        // Upload the MAP_GRAPHICS_LAYER
         while (this.queue.length && this.limiter.allowedToUpload()) {
             var item = this.queue[0];
             var uploaded = false;
@@ -40124,7 +40124,7 @@ var WebGLPrepare = function (_BasePrepare) {
 
         _this.uploadHookHelper = _this.renderer;
 
-        // Add textures and graphics to upload
+        // Add textures and MAP_GRAPHICS_LAYER to upload
         _this.registerFindHook(findGraphics);
         _this.registerUploadHook(uploadBaseTextures);
         _this.registerUploadHook(uploadGraphics);
@@ -40171,8 +40171,8 @@ function uploadGraphics(renderer, item) {
     if (item instanceof core.Graphics) {
         // if the item is not dirty and already has webgl data, then it got prepared or rendered
         // before now and we shouldn't waste time updating it again
-        if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.graphics.CONTEXT_UID]) {
-            renderer.plugins.graphics.updateGraphics(item);
+        if (item.dirty || item.clearDirty || !item._webGL[renderer.plugins.MAP_GRAPHICS_LAYER.CONTEXT_UID]) {
+            renderer.plugins.MAP_GRAPHICS_LAYER.updateGraphics(item);
         }
 
         return true;
@@ -40182,7 +40182,7 @@ function uploadGraphics(renderer, item) {
 }
 
 /**
- * Built-in hook to find graphics.
+ * Built-in hook to find MAP_GRAPHICS_LAYER.
  *
  * @private
  * @param {PIXI.DisplayObject} item - Display object to check

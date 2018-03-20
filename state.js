@@ -1,77 +1,61 @@
 /**
- * Defines the current state of the complete game.
+ * Defines the current STATE of the complete game.
  */
 
 "use strict";
 
-const state = {
-  map: undefined,
-  storage: {
-    food: 500,
-    wood: 500
-  },
-  deers: {},
-  trees: {}
-};
-
-const uiState = {
-  blueprint: "house",
-  mode: "normal",
-  grid: false
-};
-
 /**
- * Update the current state by applying an update from the server.
+ * Update the current STATE by applying an update from the server.
  *
  * @param {object} action
  */
 function updateState(action) {
-  console.groupCollapsed(`state: ${action.type}`);
-  console.log("prev state", state);
+  console.groupCollapsed(`STATE: ${action.type}`);
+  console.log("prev STATE", STATE);
   console.log("action", action);
 
   switch (action.type) {
     case "SET_MAP": {
-      state.map = action.map;
+      STATE.map = action.map;
       break;
     }
     case "UPDATE_MAP": {
       for (let update of action.mapUpdates) {
-        state.map[update.i][update.j] = update.tile;
+        STATE.map[update.i][update.j] = update.tile;
       }
     }
     case "UPDATE_STORAGE": {
-      Object.assign(state.storage, action.storage);
+      Object.assign(STATE.storage, action.storage);
       break;
     }
     case "ADD_DEER": {
       const deer = action.deer;
       deer.sprite = new PIXI.Sprite();
       setAnimation(deer, "STAND");
-      app.stage.addChild(deer.sprite);
-      state.deers[deer.id] = deer;
+      OBJECT_CONTAINER.addChild(deer.sprite);
+      STATE.deers[deer.id] = deer;
       break;
     }
     case "UPDATE_DEER": {
-      Object.assign(state.deers[action.deer.id], action.deer);
+      Object.assign(STATE.deers[action.deer.id], action.deer);
       break;
     }
     case "REMOVE_DEER": {
-      const deer = state.deers[action.id];
-      app.stage.removeChild(deer.sprite);
-      delete state.deers[action.id];
+      const deer = STATE.deers[action.id];
+      OBJECT_CONTAINER.removeChild(deer.sprite);
+      delete STATE.deers[action.id];
       break;
     }
     case "ADD_TREE": {
       const tree = action.tree;
       tree.sprite = new PIXI.Sprite();
       setAnimation(tree, "PINE_TREE");
-      app.stage.addChild(tree.sprite);
-      state.trees[tree.id] = tree;
+      OBJECT_CONTAINER.addChild(tree.sprite);
+      STATE.trees[tree.id] = tree;
       break;
     }
   }
 
-  console.log("next state", state);
+  console.log("next STATE", STATE);
   console.groupEnd();
 }
