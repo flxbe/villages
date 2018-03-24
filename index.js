@@ -27,7 +27,15 @@ function setup() {
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  renderMap(STATE.map);
+  // map
+  MAP_SPRITE.position.x = UI_STATE.offsetX - UI_STATE.mapOffsetX;
+  MAP_SPRITE.position.y = UI_STATE.offsetY;
+
+  // map grid
+  MAP_GRID_SPRITE.position.x = UI_STATE.offsetX - UI_STATE.mapOffsetX;
+  MAP_GRID_SPRITE.position.y = UI_STATE.offsetY;
+  MAP_GRID_SPRITE.visible = UI_STATE.grid;
+
   renderMapDecoration();
 
   for (let deer of Object.values(STATE.deers)) {

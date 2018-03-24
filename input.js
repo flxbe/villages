@@ -44,7 +44,6 @@ window.addEventListener(
       }
       case "g": {
         UI_STATE.grid = !UI_STATE.grid;
-        UI_STATE.updateMap = true;
         break;
       }
       case "1": {

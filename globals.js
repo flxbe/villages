@@ -34,10 +34,15 @@ const APPLICATION = new PIXI.Application({
   height: HEIGHT
 });
 
-// renders the actual map
-const MAP_GRAPHICS_LAYER = new PIXI.Graphics();
-//MAP_GRAPHICS_LAYER.cacheAsBitmap = true;
-APPLICATION.stage.addChild(MAP_GRAPHICS_LAYER);
+// map
+const MAP_TEXTURE = PIXI.RenderTexture.create();
+const MAP_SPRITE = new PIXI.Sprite(MAP_TEXTURE);
+APPLICATION.stage.addChild(MAP_SPRITE);
+
+// map grid
+const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
+const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
+APPLICATION.stage.addChild(MAP_GRID_SPRITE);
 
 // renders the mouse and blueprints on the map
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
@@ -72,7 +77,6 @@ const UI_STATE = {
   // camera
   offsetX: 200,
   offsetY: 200,
-  updateMap: true,
 
   // mouse state
   mouseIsoX: 0,
