@@ -10,19 +10,19 @@
  * @param {object} action
  */
 function updateState(action) {
-  console.groupCollapsed(`STATE: ${action.type}`);
-  console.log("prev STATE", STATE);
-  console.log("action", action);
+  console.log(`STATE: ${action.type}`);
 
   switch (action.type) {
     case "SET_MAP": {
       STATE.map = action.map;
+      renderMapTexture();
       break;
     }
     case "UPDATE_MAP": {
       for (let update of action.mapUpdates) {
         STATE.map[update.i][update.j] = update.tile;
       }
+      updateMapTexture(action.mapUpdates);
     }
     case "UPDATE_STORAGE": {
       Object.assign(STATE.storage, action.storage);
@@ -55,7 +55,4 @@ function updateState(action) {
       break;
     }
   }
-
-  console.log("next STATE", STATE);
-  console.groupEnd();
 }

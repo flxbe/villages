@@ -34,19 +34,8 @@ function tile2cart(i, j) {
  * @param {number} j
  */
 function tile2rel(i, j) {
-  const [cartX, cartY] = tile2cart(i, j);
-  const [absX, absY] = cart2abs(cartX, cartY);
+  const [absX, absY] = tile2abs(i, j);
   return abs2rel(absX, absY);
-}
-
-/**
- * Convert absolute coordinates to tile indices.
- * @param {number} absX
- * @param {number} absY
- */
-function abs2tile(absX, absY) {
-  const [cartX, cartY] = abs2cart(absX, absY);
-  return cart2tile(cartX, cartY);
 }
 
 /**
@@ -57,6 +46,26 @@ function abs2tile(absX, absY) {
 function rel2tile(relX, relY) {
   const [absX, absY] = rel2abs(relX, relY);
   return abs2tile(absX, absY);
+}
+
+/**
+ * Convert tile indices to relative coordinates.
+ * @param {number} i
+ * @param {number} j
+ */
+function tile2abs(i, j) {
+  const [cartX, cartY] = tile2cart(i, j);
+  return cart2abs(cartX, cartY);
+}
+
+/**
+ * Convert absolute coordinates to tile indices.
+ * @param {number} absX
+ * @param {number} absY
+ */
+function abs2tile(absX, absY) {
+  const [cartX, cartY] = abs2cart(absX, absY);
+  return cart2tile(cartX, cartY);
 }
 
 /**
@@ -75,28 +84,6 @@ function isTileOnMap(i, j) {
  */
 function getTileCenter(i, j) {
   return [(j + 0.5) * TILE_WIDTH, (i + 0.5) * TILE_HEIGHT];
-}
-
-/**
- * Check if tile indices give a tile covered by the blueprint.
- *
- * TODO: check for blueprint and extract blueprint before.
- *
- * @param {number} i
- * @param {number} j
- */
-function isInBlueprint(i, j) {
-  if (!UI_STATE.blueprint) return false;
-
-  const blueprint = BLUEPRINTS[UI_STATE.blueprint];
-  const [iMouse, jMouse] = getActiveTile();
-
-  return (
-    i <= iMouse &&
-    i >= iMouse - blueprint.height + 1 &&
-    j <= jMouse &&
-    j >= jMouse - blueprint.width + 1
-  );
 }
 
 /**
@@ -169,64 +156,134 @@ function isRoadableTile(type) {
 
 /**
  * Render the complete map by iterating over the two dimensional tile array.
+ * Render the map overlays like the mouse position or blueprints.
  *
- * TODO: Specialized render functions for normal and build mode. This should
- * avoid the string comparison for every tile.
- * @param {tile[][]} map
+ * TODO: only re-render, when something has changed.
  */
-function renderMap(map) {
-  //if (!UI_STATE.updateMap) return;
-  //UI_STATE.updateMap = false;
+function renderMapDecoration() {
+  MAP_DECORATION_LAYER.clear();
 
-  MAP_GRAPHICS_LAYER.clear();
+  const [mouseI, mouseJ] = getActiveTile();
 
-  const [mouse_i, mouse_j] = getActiveTile();
+  if (UI_STATE.mode === "build") {
+    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
+    for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
+      for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
+        if (!isTileOnMap(i, j)) continue;
+        const tile = STATE.map[i][j];
+        const color = tile.buildable ? "0xff0000" : "0x990000";
+        const [relX, relY] = tile2rel(i, j);
+        renderTile(MAP_DECORATION_LAYER, color, relX, relY);
+      }
+    }
+  } else {
+    const [relX, relY] = tile2rel(mouseI, mouseJ);
+    renderTile(MAP_DECORATION_LAYER, "0xff0000", relX, relY);
+  }
+}
 
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      const tile = map[i][j];
+/**
+ * Render the map and the map grid to a texture.
+ *
+ * This should only be executed, when a complete new map is loaded!
+ *
+ * The map's origin is in the top center of the texture. One must therefore
+ * add the half of the width as an offset. The same offset must be substracted
+ * when rendering the map.
+ */
+function renderMapTexture() {
+  // calculate texture size
+  const xDim = STATE.map.length;
+  const yDim = STATE.map[0].length;
+  const height = (xDim + yDim) * TILE_HEIGHT / 2.0;
+  const width = (xDim + yDim) * TILE_WIDTH;
+  const offsetX = width / 2.0;
+
+  // update state
+  UI_STATE.mapHeight = height;
+  UI_STATE.mapWidth = width;
+  UI_STATE.mapOffsetX = width / 2.0;
+  MAP_TEXTURE.resize(width, height);
+  MAP_GRID_TEXTURE.resize(width, height);
+
+  const map = new PIXI.Graphics();
+  const mapGrid = new PIXI.Graphics();
+
+  for (let i = 0; i < STATE.map.length; i++) {
+    for (let j = 0; j < STATE.map[i].length; j++) {
+      const tile = STATE.map[i][j];
 
       if (tile.type === TILE_EMPTY) {
         continue;
       }
 
-      let color = tile.shade;
-      if (UI_STATE.mode === "build" && isInBlueprint(i, j)) {
-        color = tile.buildable ? "0xff0000" : "0x990000";
-      } else if (i === mouse_i && j === mouse_j) {
-        color = "0xff0000";
-      }
-
-      const [relX, relY] = tile2rel(i, j);
-      renderTile(color, relX, relY);
+      const [absX, absY] = tile2abs(i, j);
+      renderTile(map, tile.shade, offsetX + absX, absY);
+      renderTileGrid(mapGrid, offsetX + absX, absY);
     }
   }
+
+  APPLICATION.renderer.render(map, MAP_TEXTURE);
+  APPLICATION.renderer.render(mapGrid, MAP_GRID_TEXTURE);
+}
+
+/**
+ * Update the map texture by re-drawing the changed tiles.
+ *
+ * @param {MapUpdate[]} updates - the updated tiles
+ */
+function updateMapTexture(updates) {
+  const map = new PIXI.Graphics();
+  map.fillAlpha = 0;
+  const offsetX = UI_STATE.mapOffsetX;
+
+  for (let update of updates) {
+    const { i, j, tile } = update;
+    const [absX, absY] = tile2abs(i, j);
+    renderTile(map, tile.shade, offsetX + absX, absY);
+  }
+
+  APPLICATION.renderer.clearBeforeRender = false;
+  APPLICATION.renderer.render(map, MAP_TEXTURE);
+  APPLICATION.renderer.clearBeforeRender = true;
 }
 
 /**
  * Render a tile of type `type` at the specified relative coordinates.
  * The coordinates describe the upper corner of the isometric tile.
+ * @param {PIXI.Graphics} target
  * @param {string} color - hexadecimal color, e.g. "0xff0000"
- * @param {number} relX
- * @param {number} relY
+ * @param {number} x
+ * @param {number} y
  */
-function renderTile(color, relX, relY) {
-  const h = TILE_HEIGHT;
-  const w = TILE_WIDTH;
-  const h_2 = h / 2;
-
-  if (relX - w > WIDTH || relX + w < 0 || relY > HEIGHT || relY + h < 0) {
-    return;
-  }
+function renderTile(target, color, x, y) {
+  const h_2 = TILE_HEIGHT / 2;
 
   const lineColor = UI_STATE.grid ? "0x444" : color;
 
-  MAP_GRAPHICS_LAYER.beginFill(color);
-  MAP_GRAPHICS_LAYER.lineStyle(1, lineColor, 1);
-  MAP_GRAPHICS_LAYER.moveTo(relX, relY);
-  MAP_GRAPHICS_LAYER.lineTo(relX + w, relY + h_2);
-  MAP_GRAPHICS_LAYER.lineTo(relX, relY + h);
-  MAP_GRAPHICS_LAYER.lineTo(relX - w, relY + h_2);
-  MAP_GRAPHICS_LAYER.lineTo(relX, relY);
-  MAP_GRAPHICS_LAYER.endFill();
+  target.beginFill(color);
+  target.lineStyle(1, lineColor, 1);
+  target.moveTo(x, y);
+  target.lineTo(x + TILE_WIDTH, y + h_2);
+  target.lineTo(x, y + TILE_HEIGHT);
+  target.lineTo(x - TILE_WIDTH, y + h_2);
+  target.lineTo(x, y);
+  target.endFill();
+}
+
+/**
+ * Render the gridlines of a tile.
+ * @param {PIXI.Graphics} target
+ * @param {number} x
+ * @param {number} y
+ */
+function renderTileGrid(target, x, y) {
+  const h_2 = TILE_HEIGHT / 2;
+
+  target.lineStyle(1, "0x444", 1);
+  target.moveTo(x, y);
+  target.lineTo(x + TILE_WIDTH, y + h_2);
+  target.lineTo(x, y + TILE_HEIGHT);
+  target.lineTo(x - TILE_WIDTH, y + h_2);
+  target.lineTo(x, y);
 }
