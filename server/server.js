@@ -1,5 +1,7 @@
 "use strict";
 
+let serverMap = [];
+
 /**
  * Send a request to the server.
  *
@@ -191,6 +193,7 @@ function weightedSum(width, height, amplitudes, noises) {
 }
 
 function generateNoiseMap(width, height, frequencies, amplitudeFunc, seed) {
+  // TODO: implement random function with settable seed
   //Math.random.seed(seed);
   const amplitudes = [];
   const noises = [];
@@ -279,6 +282,7 @@ function generateRandomMap() {
   const map = [];
   for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
+    const typeline = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
       line.push({
         type: TILE_GRASS,
@@ -286,10 +290,12 @@ function generateRandomMap() {
         passable: true,
         buildable: true
       });
+      typeline.push(TILE_GRASS);
       //line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], gNoiseMap[i][j], bNoiseMap[i][j]), passable: true, buildable: true });
       //line.push({ type: TILE_GRASS, shade: shade2hexColor(noiseMap[i][j]), passable: true, buildable: true });
     }
     map.push(line);
+    serverMap.push(typeline);
   }
 
   map[7][10].shade = "0x000000";

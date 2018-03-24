@@ -117,6 +117,57 @@ function isAreaFreeForBuilding(i, j, height, width) {
 }
 
 /**
+ * Determine if a tile is walkable by its type.
+ * @param {string} type
+ */
+function isWalkableTile(type) {
+  switch (type) {
+    case TILE_GRASS: return true;
+    case TILE_DIRT: return true;
+    case TILE_WATER: return false;
+    case TILE_DEEPWATER: return false;
+    case TILE_TREE: return false;
+    case TILE_BUILDING: return false;
+    case TILE_ROAD: return true;
+    default: throw Error(`unknown tile type: ${type}`);
+  }
+}
+
+/**
+ * Determine if a tile is buildable by its type.
+ * @param {string} type
+ */
+function isBuildableTile(type) {
+  switch (type) {
+    case TILE_GRASS: return true;
+    case TILE_DIRT: return true;
+    case TILE_WATER: return false;
+    case TILE_DEEPWATER: return false;
+    case TILE_TREE: return false;
+    case TILE_BUILDING: return false;
+    case TILE_ROAD: return false;
+    default: throw Error(`unknown tile type: ${type}`);
+  }
+}
+
+/**
+ * Determine if a tile is acceptable for street building by its type.
+ * @param {string} type
+ */
+function isRoadableTile(type) {
+  switch (type) {
+    case TILE_GRASS: return true;
+    case TILE_DIRT: return true;
+    case TILE_WATER: return true;
+    case TILE_DEEPWATER: return false;
+    case TILE_TREE: return false;
+    case TILE_BUILDING: return false;
+    case TILE_ROAD: return false;
+    default: throw Error(`unknown tile type: ${type}`);
+  }
+}
+
+/**
  * Render the complete map by iterating over the two dimensional tile array.
  *
  * TODO: Specialized render functions for normal and build mode. This should
