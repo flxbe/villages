@@ -34,19 +34,8 @@ function tile2cart(i, j) {
  * @param {number} j
  */
 function tile2rel(i, j) {
-  const [cartX, cartY] = tile2cart(i, j);
-  const [absX, absY] = cart2abs(cartX, cartY);
+  const [absX, absY] = tile2abs(i, j);
   return abs2rel(absX, absY);
-}
-
-/**
- * Convert absolute coordinates to tile indices.
- * @param {number} absX
- * @param {number} absY
- */
-function abs2tile(absX, absY) {
-  const [cartX, cartY] = abs2cart(absX, absY);
-  return cart2tile(cartX, cartY);
 }
 
 /**
@@ -57,6 +46,26 @@ function abs2tile(absX, absY) {
 function rel2tile(relX, relY) {
   const [absX, absY] = rel2abs(relX, relY);
   return abs2tile(absX, absY);
+}
+
+/**
+ * Convert tile indices to relative coordinates.
+ * @param {number} i
+ * @param {number} j
+ */
+function tile2abs(i, j) {
+  const [cartX, cartY] = tile2cart(i, j);
+  return cart2abs(cartX, cartY);
+}
+
+/**
+ * Convert absolute coordinates to tile indices.
+ * @param {number} absX
+ * @param {number} absY
+ */
+function abs2tile(absX, absY) {
+  const [cartX, cartY] = abs2cart(absX, absY);
+  return cart2tile(cartX, cartY);
 }
 
 /**
@@ -116,38 +125,52 @@ function isAreaFreeForBuilding(i, j, height, width) {
   return true;
 }
 
+function renderMapDecoration() {
+  MAP_DECORATION_LAYER.clear();
+
+  const [mouseI, mouseJ] = getActiveTile();
+
+  if (UI_STATE.mode === "build") {
+    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
+    for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
+      for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
+        if (!isTileOnMap(i, j)) continue;
+        const tile = STATE.map[i][j];
+        const color = tile.buildable ? "0xff0000" : "0x990000";
+        const [relX, relY] = tile2rel(i, j);
+        renderTile(MAP_DECORATION_LAYER, color, relX, relY);
+      }
+    }
+  } else {
+    const color = "0xff0000";
+    const [absX, absY] = tile2rel(mouseI, mouseJ);
+    renderTile(MAP_DECORATION_LAYER, color, absX, absY);
+  }
+}
+
 /**
  * Render the complete map by iterating over the two dimensional tile array.
  *
  * TODO: Specialized render functions for normal and build mode. This should
  * avoid the string comparison for every tile.
- * @param {tile[][]} map
  */
-function renderMap(map) {
-  //if (!UI_STATE.updateMap) return;
-  //UI_STATE.updateMap = false;
+function renderMap() {
+  MAP_GRAPHICS_LAYER.position.x = UI_STATE.offsetX;
+  MAP_GRAPHICS_LAYER.position.y = UI_STATE.offsetY;
 
-  MAP_GRAPHICS_LAYER.clear();
+  if (!UI_STATE.updateMap) return;
+  UI_STATE.updateMap = false;
 
-  const [mouse_i, mouse_j] = getActiveTile();
-
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      const tile = map[i][j];
+  for (let i = 0; i < STATE.map.length; i++) {
+    for (let j = 0; j < STATE.map[i].length; j++) {
+      const tile = STATE.map[i][j];
 
       if (tile.type === TILE_EMPTY) {
         continue;
       }
 
-      let color = tile.shade;
-      if (UI_STATE.mode === "build" && isInBlueprint(i, j)) {
-        color = tile.buildable ? "0xff0000" : "0x990000";
-      } else if (i === mouse_i && j === mouse_j) {
-        color = "0xff0000";
-      }
-
-      const [relX, relY] = tile2rel(i, j);
-      renderTile(color, relX, relY);
+      const [absX, absY] = tile2abs(i, j);
+      renderTile(MAP_GRAPHICS_LAYER, tile.shade, absX, absY);
     }
   }
 }
@@ -155,27 +178,26 @@ function renderMap(map) {
 /**
  * Render a tile of type `type` at the specified relative coordinates.
  * The coordinates describe the upper corner of the isometric tile.
+ * @param {PIXI.Graphics} target
  * @param {string} color - hexadecimal color, e.g. "0xff0000"
- * @param {number} relX
- * @param {number} relY
+ * @param {number} x
+ * @param {number} y
  */
-function renderTile(color, relX, relY) {
-  const h = TILE_HEIGHT;
-  const w = TILE_WIDTH;
-  const h_2 = h / 2;
+function renderTile(target, color, x, y) {
+  const h_2 = TILE_HEIGHT / 2;
 
-  if (relX - w > WIDTH || relX + w < 0 || relY > HEIGHT || relY + h < 0) {
-    return;
-  }
+  //if (relX - w > WIDTH || relX + w < 0 || relY > HEIGHT || relY + h < 0) {
+  //  return;
+  //}
 
   const lineColor = UI_STATE.grid ? "0x444" : color;
 
-  MAP_GRAPHICS_LAYER.beginFill(color);
-  MAP_GRAPHICS_LAYER.lineStyle(1, lineColor, 1);
-  MAP_GRAPHICS_LAYER.moveTo(relX, relY);
-  MAP_GRAPHICS_LAYER.lineTo(relX + w, relY + h_2);
-  MAP_GRAPHICS_LAYER.lineTo(relX, relY + h);
-  MAP_GRAPHICS_LAYER.lineTo(relX - w, relY + h_2);
-  MAP_GRAPHICS_LAYER.lineTo(relX, relY);
-  MAP_GRAPHICS_LAYER.endFill();
+  target.beginFill(color);
+  target.lineStyle(1, lineColor, 1);
+  target.moveTo(x, y);
+  target.lineTo(x + TILE_WIDTH, y + h_2);
+  target.lineTo(x, y + TILE_HEIGHT);
+  target.lineTo(x - TILE_WIDTH, y + h_2);
+  target.lineTo(x, y);
+  target.endFill();
 }

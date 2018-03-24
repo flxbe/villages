@@ -28,6 +28,7 @@ function setup() {
  */
 function gameloop(delta) {
   renderMap(STATE.map);
+  renderMapDecoration();
 
   for (let deer of Object.values(STATE.deers)) {
     move_deer(deer, delta);

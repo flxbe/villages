@@ -34,8 +34,14 @@ const APPLICATION = new PIXI.Application({
   height: HEIGHT
 });
 
+// renders the actual map
 const MAP_GRAPHICS_LAYER = new PIXI.Graphics();
+//MAP_GRAPHICS_LAYER.cacheAsBitmap = true;
 APPLICATION.stage.addChild(MAP_GRAPHICS_LAYER);
+
+// renders the mouse and blueprints on the map
+const MAP_DECORATION_LAYER = new PIXI.Graphics();
+APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
 
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);

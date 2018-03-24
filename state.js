@@ -23,6 +23,7 @@ function updateState(action) {
       for (let update of action.mapUpdates) {
         STATE.map[update.i][update.j] = update.tile;
       }
+      UI_STATE.updateMap = true;
     }
     case "UPDATE_STORAGE": {
       Object.assign(STATE.storage, action.storage);
