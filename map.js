@@ -97,7 +97,7 @@ function getTileCenter(i, j) {
 function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !STATE.map[k][l].buildable) return false;
+      if (!isTileOnMap(k, l) || !isBuildableTile(STATE.map[k][l].type)) return false;
     }
   }
   return true;
@@ -171,7 +171,7 @@ function renderMapDecoration() {
       for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
         if (!isTileOnMap(i, j)) continue;
         const tile = STATE.map[i][j];
-        const color = tile.buildable ? "0xff0000" : "0x990000";
+        const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
         const [relX, relY] = tile2rel(i, j);
         renderTile(MAP_DECORATION_LAYER, color, relX, relY);
       }

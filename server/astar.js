@@ -102,13 +102,13 @@ BinaryHeap.prototype = {
   }
 };
 
-function astar([si, sj], [ti, tj], weightFunction = function (i, j) { return 1; }) {
+function astar([si, sj], [ti, tj], weightFunction = function (i, j) { if (STATE.map[i][j].type == TILE_ROAD) return 1; return 2; }) {
   let map = [];
 
   for (let i = 0; i < MAP_WIDTH; i++) {
     let line = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({ i: i, j: j, walkable: isWalkableTile(serverMap[i][j]), visited: false, closed: false, pred: null, f: undefined, g: undefined, cost: weightFunction(i, j) });
+      line.push({ i: i, j: j, walkable: isWalkableTile(STATE.map[i][j].type), visited: false, closed: false, pred: null, f: undefined, g: undefined, cost: weightFunction(i, j) });
     }
     map.push(line);
   }

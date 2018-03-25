@@ -1,7 +1,5 @@
 "use strict";
 
-let serverMap = [];
-
 /**
  * Send a request to the server.
  *
@@ -49,10 +47,8 @@ function placeBuilding(i, j, blueprintName) {
         i: k,
         j: l,
         tile: {
-          type: TILE_GRASS,
-          shade: rgb2hexColor(0, 0, 0),
-          passable: false,
-          buildable: false
+          type: TILE_BUILDING,
+          shade: rgb2hexColor(0, 0, 0)
         }
       });
     }
@@ -223,87 +219,43 @@ function generateRandomNoiseMap(width, height) {
 
 function generateRandomMap() {
   const rNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
-  //const gNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
   const bNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
-  //const noiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
-
-  for (let i = 0; i < MAP_WIDTH; i++) {
-    const line = [];
-    for (let j = 0; j < MAP_HEIGHT; j++) {
-      const rval = rNoiseMap[i][j];
-      //const gval = gNoiseMap[i][j];
-      const bval = bNoiseMap[i][j];
-      if (rval < 112) {
-        rNoiseMap[i][j] = 63;
-      } else if (rval < 128) {
-        rNoiseMap[i][j] = 127;
-      } else if (rval < 144) {
-        rNoiseMap[i][j] = 191;
-      } else {
-        rNoiseMap[i][j] = 255;
-      }
-      /*if (gval < 112) {
-        gNoiseMap[i][j] = 63;
-      }
-      else if (gval < 128) {
-        gNoiseMap[i][j] = 127;
-      }
-      else if (gval < 144) {
-        gNoiseMap[i][j] = 191;
-      }
-      else {
-        gNoiseMap[i][j] = 255;
-      }*/
-      if (bval < 112) {
-        bNoiseMap[i][j] = 63;
-      } else if (bval < 128) {
-        bNoiseMap[i][j] = 127;
-      } else if (bval < 144) {
-        bNoiseMap[i][j] = 191;
-      } else {
-        bNoiseMap[i][j] = 255;
-      }
-      /*const val = noiseMap[i][j];
-      if (val < 112) {
-        noiseMap[i][j] = 63;
-      }
-      else if (val < 128) {
-        noiseMap[i][j] = 127;
-      }
-      else if (val < 144) {
-        noiseMap[i][j] = 191;
-      }
-      else {
-        noiseMap[i][j] = 255;
-      }*/
-    }
-  }
 
   const map = [];
   for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
-    const typeline = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({
-        type: TILE_GRASS,
-        shade: rgb2hexColor(rNoiseMap[i][j], 255, bNoiseMap[i][j]),
-        passable: true,
-        buildable: true
-      });
-      typeline.push(TILE_GRASS);
-      //line.push({ type: TILE_GRASS, shade: rgb2hexColor(rNoiseMap[i][j], gNoiseMap[i][j], bNoiseMap[i][j]), passable: true, buildable: true });
-      //line.push({ type: TILE_GRASS, shade: shade2hexColor(noiseMap[i][j]), passable: true, buildable: true });
+      if (i > 13 && j > 13 && rNoiseMap[i][j] + bNoiseMap[i][j] > 350) {
+        line.push({
+          type: TILE_WATER,
+          shade: "0x000550"
+        });
+      } else if (rNoiseMap[i][j] > 150) {
+        line.push({
+          type: TILE_DIRT,
+          shade: "0x561f00"
+        });
+      } else if (bNoiseMap[i][j] > 150) {
+        line.push({
+          type: TILE_ROAD,
+          shade: "0x999999"
+        });
+      } else {
+        line.push({
+          type: TILE_GRASS,
+          shade: "0x005111"
+        });
+      }
     }
     map.push(line);
-    serverMap.push(typeline);
   }
 
   map[7][10].shade = "0x000000";
-  map[7][10].buildable = false;
+  map[7][10].type = TILE_ROAD;
   map[9][13].shade = "0x000000";
-  map[9][13].buildable = false;
+  map[9][13].type = TILE_ROAD;
   map[3][3].shade = "0x551A8B";
-  map[3][3].buildable = false;
+  map[3][3].type = TILE_ROAD;
 
   updateState(Actions.setMap(map));
 
@@ -326,18 +278,16 @@ function generateRandomMap() {
     })
   );
 
-  setTree("tree1", 2, 10);
-  setTree("tree2", 4, 9);
-  setTree("tree3", 2, 12);
-  setTree("tree4", 5, 11);
+  setTree("tree1", 2, 5);
+  setTree("tree2", 3, 5);
+  setTree("tree3", 4, 5);
+  setTree("tree4", 5, 5);
 }
 
 function setTree(id, i, j) {
   const tile = {
-    type: TILE_GRASS,
-    shade: "0x269a41",
-    passable: false,
-    buildable: false
+    type: TILE_TREE,
+    shade: "0x269a41"
   };
   updateState(Actions.updateMap([{ i, j, tile }]));
   updateState(Actions.addTree({ id, i, j }));
