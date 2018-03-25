@@ -134,9 +134,13 @@ document.addEventListener("mouseup", event => {
   const container = getActiveContainer();
 
   if (container == "buildmenu") {
-    const [i, j] = getActiveGridTile();
-    UI_STATE.blueprint = BUILDMENU_GRID[i][j].blueprintName;
-    UI_STATE.mode = "build";
+    const [mouseI, mouseJ] = getActiveGridTile();
+    if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
+      UI_STATE.blueprint = BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
+      UI_STATE.mode = "build";
+    } else {
+      UI_STATE.mode = "normal";
+    }
   } else {
     mouseDiffX -= event.pageX;
     mouseDiffY -= event.pageY;
