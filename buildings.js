@@ -10,3 +10,7 @@ BLUEPRINTS = {
     wood: 100
   }
 };
+
+function sufficientResources(blueprint) {
+  return STATE.storage.wood >= blueprint.wood;
+}

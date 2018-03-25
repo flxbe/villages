@@ -1,5 +1,8 @@
 "use strict";
 
+let mouseDiffX = 0;
+let mouseDiffY = 0;
+
 function addOffsetX(delta) {
   UI_STATE.offsetX += delta;
   UI_STATE.updateMap = true;
@@ -87,9 +90,19 @@ document.addEventListener("mousemove", event => {
   UI_STATE.mouseIsoY = event.pageY;
 });
 
-document.addEventListener("mousedown", start => {
+document.addEventListener("mousedown", event => {
   // TODO: add support to check, whether the building can be placed
-  if (UI_STATE.mode === "build") {
+  mouseDiffX = event.pageX;
+  mouseDiffY = event.pageY;
+
+  UI_STATE.mouseDown = true;
+});
+
+document.addEventListener("mouseup", event => {
+  mouseDiffX -= event.pageX;
+  mouseDiffY -= event.pageY;
+
+  if (UI_STATE.mode === "build" && Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
     const [i, j] = getActiveTile();
     const blueprintName = UI_STATE.blueprint;
     const blueprint = BLUEPRINTS[UI_STATE.blueprint];
@@ -100,18 +113,19 @@ document.addEventListener("mousedown", start => {
     }
 
     if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-      serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+      if (sufficientResources(blueprint)) {
+        serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+
+        if (!UI_STATE.ctrlDown) {
+          UI_STATE.mode = "normal";
+        }
+      } else {
+        console.log("not enough resources");
+      }
     } else {
       console.log("cannot build");
     }
   }
 
-  UI_STATE.mouseDown = true;
-});
-
-document.addEventListener("mouseup", () => {
-  if (!UI_STATE.ctrlDown) {
-    UI_STATE.mode = "normal";
-  }
   UI_STATE.mouseDown = false;
 });
