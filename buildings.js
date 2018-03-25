@@ -8,6 +8,11 @@ BLUEPRINTS = {
     height: 6,
     width: 4,
     wood: 100
+  },
+  road: {
+    height: 1,
+    width: 1,
+    wood: 10
   }
 };
 

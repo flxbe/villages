@@ -41,7 +41,8 @@ function renderUI() {
       ? [
           `current building: ${UI_STATE.blueprint}`,
           `(1) house (40 wood)`,
-          `(2) barn (100 wood)`
+          `(2) barn (100 wood)`,
+          `(3) road (10 wood)`
         ].join("    ")
       : "";
 

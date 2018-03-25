@@ -47,8 +47,8 @@ function placeBuilding(i, j, blueprintName) {
         i: k,
         j: l,
         tile: {
-          type: TILE_BUILDING,
-          shade: rgb2hexColor(0, 0, 0)
+          type: blueprintName == "road" ? TILE_ROAD : TILE_BUILDING,
+          shade: blueprintName == "road" ? "0x999999" : "0x000000"
         }
       });
     }
@@ -218,27 +218,21 @@ function generateRandomNoiseMap(width, height) {
 }
 
 function generateRandomMap() {
-  const rNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
-  const bNoiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
+  const noiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
 
   const map = [];
   for (let i = 0; i < MAP_WIDTH; i++) {
     const line = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      if (i > 13 && j > 13 && rNoiseMap[i][j] + bNoiseMap[i][j] > 350) {
+      if (i > 13 && j > 13 && noiseMap[i][j] > 200) {
         line.push({
           type: TILE_WATER,
           shade: "0x000550"
         });
-      } else if (rNoiseMap[i][j] > 150) {
+      } else if (noiseMap[i][j] > 150) {
         line.push({
           type: TILE_DIRT,
           shade: "0x561f00"
-        });
-      } else if (bNoiseMap[i][j] > 150) {
-        line.push({
-          type: TILE_ROAD,
-          shade: "0x999999"
         });
       } else {
         line.push({

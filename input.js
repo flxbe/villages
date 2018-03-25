@@ -64,6 +64,12 @@ window.addEventListener(
         }
         break;
       }
+      case "3": {
+        if (UI_STATE.mode === "build") {
+          UI_STATE.blueprint = "road";
+        }
+        break;
+      }
     }
   },
   false

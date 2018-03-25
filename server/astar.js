@@ -143,7 +143,7 @@ function astar([si, sj], [ti, tj], weightFunction = function (i, j) { if (STATE.
       let neighbour = map[ni][nj];
 
       if (neighbour.closed || !neighbour.walkable) continue;
-      const g = current.g + neighbour.cost;
+      const g = ni != current.i && nj != current.j ? current.g + neighbour.cost * 1.5 : current.g + neighbour.cost;
 
       if (neighbour.visited && g >= neighbour.g) continue;
       neighbour.pred = current;
