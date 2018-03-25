@@ -19,6 +19,9 @@ window.addEventListener(
   "keydown",
   event => {
     switch (event.keyCode) {
+      case 17:
+        UI_STATE.ctrlDown = true;
+        break;
       case 37:
         addOffsetX(20);
         break;
@@ -63,6 +66,12 @@ window.addEventListener(
   false
 );
 
+document.addEventListener("keyup", event => {
+  if (event.keyCode == 17) {
+    UI_STATE.ctrlDown = false;
+  }
+});
+
 document.addEventListener("mousemove", event => {
   // TODO: difference clientX vs pageX
   const moveX = event.clientX;
@@ -101,5 +110,8 @@ document.addEventListener("mousedown", start => {
 });
 
 document.addEventListener("mouseup", () => {
+  if (!UI_STATE.ctrlDown) {
+    UI_STATE.mode = "normal";
+  }
   UI_STATE.mouseDown = false;
 });

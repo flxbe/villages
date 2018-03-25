@@ -84,7 +84,8 @@ const UI_STATE = {
   // mouse state
   mouseIsoX: 0,
   mouseIsoY: 0,
-  mouseDown: false
+  mouseDown: false,
+  ctrlDown: false
 };
 
 // Animation buffer
