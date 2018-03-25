@@ -17,6 +17,13 @@ const DEER_OFFSET_Y = -70;
 const PALM_OFFSET_X = -60;
 const PALM_OFFSET_Y = -175;
 
+// UI layer "buildmenu"
+const BUILDMENU_WIDTH = 50;
+const BUILDMENU_HEIGHT = 250;
+const BUILDMENU_TILESIZE = 50;
+const BUILDMENU_OFFSET_X = innerWidth - BUILDMENU_WIDTH - 5;
+const BUILDMENU_OFFSET_Y = 5;
+
 const MAP_HEIGHT = 100;
 const MAP_WIDTH = 100;
 const TILE_HEIGHT = 20;
@@ -47,9 +54,17 @@ const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
 const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
 APPLICATION.stage.addChild(MAP_GRID_SPRITE);
 
-// renders the mouse and blueprints on the map
+// renders decorations the map to highlight user selection
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
+
+// build menu grid
+const BUILD_MENU_LAYER = new PIXI.Graphics();
+APPLICATION.stage.addChild(BUILD_MENU_LAYER);
+
+// renders decorations the ui to highlight user selection
+const UI_DECORATION_LAYER = new PIXI.Graphics();
+APPLICATION.stage.addChild(UI_DECORATION_LAYER);
 
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);

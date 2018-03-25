@@ -161,8 +161,6 @@ function isRoadableTile(type) {
  * TODO: only re-render, when something has changed.
  */
 function renderMapDecoration() {
-  MAP_DECORATION_LAYER.clear();
-
   const [mouseI, mouseJ] = getActiveTile();
 
   if (UI_STATE.mode === "build") {

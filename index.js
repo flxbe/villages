@@ -36,7 +36,8 @@ function gameloop(delta) {
   MAP_GRID_SPRITE.position.y = UI_STATE.offsetY;
   MAP_GRID_SPRITE.visible = UI_STATE.grid;
 
-  renderMapDecoration();
+  renderUI();
+  renderDecoration();
 
   for (let deer of Object.values(STATE.deers)) {
     move_deer(deer, delta);
@@ -57,6 +58,4 @@ function gameloop(delta) {
     tree.sprite.x = relX + PALM_OFFSET_X;
     tree.sprite.y = relY + PALM_OFFSET_Y;
   }
-
-  renderUI();
 }

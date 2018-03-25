@@ -18,6 +18,13 @@ function getActiveTile() {
   return abs2tile(absX, absY);
 }
 
+function getActiveContainer() {
+  if (UI_STATE.mouseIsoX < BUILDMENU_OFFSET_X || UI_STATE.mouseIsoY < BUILDMENU_OFFSET_Y || UI_STATE.mouseIsoX > BUILDMENU_OFFSET_X + BUILDMENU_WIDTH || UI_STATE.mouseIsoY > BUILDMENU_OFFSET_Y + BUILDMENU_HEIGHT) {
+    return "map";
+  }
+  return "buildmenu";
+}
+
 window.addEventListener(
   "keydown",
   event => {
@@ -82,14 +89,30 @@ document.addEventListener("keyup", event => {
 });
 
 document.addEventListener("mousemove", event => {
-  // TODO: difference clientX vs pageX
-  const moveX = event.clientX;
-  const moveY = event.clientY;
+  const container = getActiveContainer();
 
-  // move map
-  if (UI_STATE.mouseDown) {
-    UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
-    UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
+  if (UI_ELEMENTS.tooltip) {
+    UI_ELEMENTS.tooltip.text = "";
+  }
+
+  if (container == "buildmenu") {
+    const [mouseI, mouseJ] = getActiveGridTile();
+    if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
+      if (UI_ELEMENTS.tooltip) {
+        UI_ELEMENTS.tooltip.text = BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
+        UI_ELEMENTS.tooltip.position.set(UI_STATE.mouseIsoX - 40, UI_STATE.mouseIsoY);
+      }
+    }
+  } else {
+    // TODO: difference clientX vs pageX
+    const moveX = event.clientX;
+    const moveY = event.clientY;
+
+    // move map
+    if (UI_STATE.mouseDown) {
+      UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
+      UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
+    }
   }
 
   UI_STATE.mouseIsoX = event.pageX;
@@ -97,39 +120,50 @@ document.addEventListener("mousemove", event => {
 });
 
 document.addEventListener("mousedown", event => {
-  // TODO: add support to check, whether the building can be placed
-  mouseDiffX = event.pageX;
-  mouseDiffY = event.pageY;
+  const container = getActiveContainer();
+
+  if (container == "map") {
+    mouseDiffX = event.pageX;
+    mouseDiffY = event.pageY;
+  }
 
   UI_STATE.mouseDown = true;
 });
 
 document.addEventListener("mouseup", event => {
-  mouseDiffX -= event.pageX;
-  mouseDiffY -= event.pageY;
+  const container = getActiveContainer();
 
-  if (UI_STATE.mode === "build" && Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
-    const [i, j] = getActiveTile();
-    const blueprintName = UI_STATE.blueprint;
-    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
+  if (container == "buildmenu") {
+    const [i, j] = getActiveGridTile();
+    UI_STATE.blueprint = BUILDMENU_GRID[i][j].blueprintName;
+    UI_STATE.mode = "build";
+  } else {
+    mouseDiffX -= event.pageX;
+    mouseDiffY -= event.pageY;
 
-    if (!blueprint) {
-      console.log("select a blueprint");
-      return;
-    }
+    if (UI_STATE.mode === "build" && Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
+      const [i, j] = getActiveTile();
+      const blueprintName = UI_STATE.blueprint;
+      const blueprint = BLUEPRINTS[UI_STATE.blueprint];
 
-    if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-      if (sufficientResources(blueprint)) {
-        serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+      if (!blueprint) {
+        console.log("select a blueprint");
+        return;
+      }
 
-        if (!UI_STATE.ctrlDown) {
-          UI_STATE.mode = "normal";
+      if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
+        if (sufficientResources(blueprint)) {
+          serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+
+          if (!UI_STATE.ctrlDown) {
+            UI_STATE.mode = "normal";
+          }
+        } else {
+          console.log("not enough resources");
         }
       } else {
-        console.log("not enough resources");
+        console.log("cannot build");
       }
-    } else {
-      console.log("cannot build");
     }
   }
 
