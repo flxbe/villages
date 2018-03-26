@@ -54,7 +54,7 @@ const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
 const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
 APPLICATION.stage.addChild(MAP_GRID_SPRITE);
 
-// renders decorations the map to highlight user selection
+// renders decorations the map to highlight blueprints
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
 
@@ -62,9 +62,13 @@ APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
 const BUILD_MENU_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(BUILD_MENU_LAYER);
 
-// renders decorations the ui to highlight user selection
+// renders decorations the ui to highlight mouse position
 const UI_DECORATION_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(UI_DECORATION_LAYER);
+
+// renders decoration the ui or map to highlight user selection
+const SELECTION_LAYER = new PIXI.Graphics();
+APPLICATION.stage.addChild(SELECTION_LAYER);
 
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);
@@ -91,6 +95,7 @@ const UI_STATE = {
   blueprint: "house",
   mode: "normal",
   grid: false,
+  selection: null,
 
   // camera
   offsetX: 200,

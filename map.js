@@ -174,9 +174,6 @@ function renderMapDecoration() {
         renderTile(MAP_DECORATION_LAYER, color, relX, relY);
       }
     }
-  } else {
-    const [relX, relY] = tile2rel(mouseI, mouseJ);
-    renderTile(MAP_DECORATION_LAYER, "0xff0000", relX, relY);
   }
 }
 

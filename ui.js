@@ -82,6 +82,47 @@ function renderDecoration() {
     case "buildmenu": renderBuildmenuDecoration(); break;
     default: throw Error("unknown container");
   }
+
+  renderSelectionDecoration();
+}
+
+function renderSelectionDecoration() {
+  SELECTION_LAYER.clear();
+
+  if (UI_STATE.selection) {
+    let relX, relY;
+    SELECTION_LAYER.alpha = 0.25;
+
+    switch (UI_STATE.selection.type) {
+      case "tile":
+        [relX, relY] = tile2rel(UI_STATE.selection.i, UI_STATE.selection.j);
+        renderTile(SELECTION_LAYER, "0xffffff", relX, relY);
+        return;
+      case "deer":
+        [relX, relY] = cart2rel(STATE.deers[UI_STATE.selection.id].x - 10, STATE.deers[UI_STATE.selection.id].y - 10);
+        break;
+      case "tree":
+        [relX, relY] = tile2rel(STATE.trees[UI_STATE.selection.id].i, STATE.trees[UI_STATE.selection.id].j);
+        break;
+      case "blueprint":
+        renderBuildmenuTile(SELECTION_LAYER, "0xffffff", UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X, UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y);
+        return;
+      default: throw Error("Unknown selection type");
+    }
+    SELECTION_LAYER.alpha = 0.5;
+    renderCircle(SELECTION_LAYER, "0xffffff", relX, relY);
+  }
+}
+
+function renderCircle(target, color, x, y) {
+  const h_2 = TILE_HEIGHT / 2;
+
+  target.lineStyle(1, color, 1);
+  target.moveTo(x, y);
+  target.lineTo(x + TILE_WIDTH, y + h_2);
+  target.lineTo(x, y + TILE_HEIGHT);
+  target.lineTo(x - TILE_WIDTH, y + h_2);
+  target.lineTo(x, y);
 }
 
 const BUILDMENU_GRID = [[{ empty: false, blueprintName: "house", color: "0x561f00" }], [{ empty: false, blueprintName: "barn", color: "0x450e00" }], [{ empty: false, blueprintName: "road", color: "0x999999" }]];
@@ -110,8 +151,6 @@ function renderBuildmenuDecoration() {
 }
 
 function renderBuildmenuTexture() {
-  //BUILD_MENU_LAYER.clear();
-
   for (let i = 0; i < BUILDMENU_GRID.length; i++) {
     for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
       const tile = BUILDMENU_GRID[i][j];
