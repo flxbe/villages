@@ -31,6 +31,7 @@ function updateState(action) {
     case "ADD_DEER": {
       const deer = action.deer;
       deer.sprite = new PIXI.Sprite();
+      deer.sprite.hitArea = DEER_HIT_AREA;
       setAnimation(deer, "STAND");
       OBJECT_CONTAINER.addChild(deer.sprite);
       STATE.deers[deer.id] = deer;
@@ -49,6 +50,7 @@ function updateState(action) {
     case "ADD_TREE": {
       const tree = action.tree;
       tree.sprite = new PIXI.Sprite();
+      tree.sprite.hitArea = PALM_HIT_AREA;
       setAnimation(tree, "PINE_TREE");
       OBJECT_CONTAINER.addChild(tree.sprite);
       STATE.trees[tree.id] = tree;

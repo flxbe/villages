@@ -31,6 +31,10 @@ window.addEventListener(
         UI_STATE.grid = !UI_STATE.grid;
         break;
       }
+      case "h": {
+        UI_STATE.renderHitAreas = !UI_STATE.renderHitAreas;
+        break;
+      }
     }
   },
   false

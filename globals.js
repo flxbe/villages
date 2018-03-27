@@ -14,8 +14,11 @@ const HEIGHT = window.innerHeight;
 // sprite specific render offsets
 const DEER_OFFSET_X = -50;
 const DEER_OFFSET_Y = -70;
+const DEER_HIT_AREA = new PIXI.Rectangle(38, 35, 24, 40);
+
 const PALM_OFFSET_X = -60;
 const PALM_OFFSET_Y = -175;
+const PALM_HIT_AREA = new PIXI.Rectangle(45, 165, 30, 30);
 
 // UI layer "buildmenu"
 const BUILDMENU_WIDTH = 50;
@@ -53,6 +56,11 @@ APPLICATION.stage.addChild(MAP_SPRITE);
 const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
 const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
 APPLICATION.stage.addChild(MAP_GRID_SPRITE);
+MAP_SPRITE.interactive = true;
+//MAP_GRID_SPRITE.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
+MAP_SPRITE.on("mousedown", event => {
+  console.log("test");
+});
 
 // renders decorations the map to highlight blueprints
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
@@ -72,6 +80,10 @@ APPLICATION.stage.addChild(SELECTION_LAYER);
 
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);
+
+// render object hotboxes for debuging
+const HITBOX_CONTAINER = new PIXI.Graphics();
+APPLICATION.stage.addChild(HITBOX_CONTAINER);
 
 const UI_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(UI_CONTAINER);
@@ -94,7 +106,10 @@ const STATE = {
 const UI_STATE = {
   blueprint: "house",
   mode: "normal",
+
+  // debug options
   grid: false,
+  renderHitAreas: true,
 
   // camera
   offsetX: 200,

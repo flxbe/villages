@@ -41,6 +41,8 @@ function gameloop(delta) {
   renderBuildmenuDecoration();
   renderSelectionDecoration();
 
+  HITBOX_CONTAINER.clear();
+
   for (let deer of Object.values(STATE.deers)) {
     move_deer(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
@@ -49,6 +51,8 @@ function gameloop(delta) {
     const [relX, relY] = cart2rel(deer.x, deer.y);
     deer.sprite.x = relX + DEER_OFFSET_X;
     deer.sprite.y = relY + DEER_OFFSET_Y;
+
+    if (UI_STATE.renderHitAreas) renderHitBox(deer);
   }
 
   for (let tree of Object.values(STATE.trees)) {
@@ -59,5 +63,23 @@ function gameloop(delta) {
     const [relX, relY] = tile2rel(tree.i, tree.j);
     tree.sprite.x = relX + PALM_OFFSET_X;
     tree.sprite.y = relY + PALM_OFFSET_Y;
+
+    if (UI_STATE.renderHitAreas) renderHitBox(tree);
   }
+}
+
+function renderHitBox({ sprite }) {
+  if (!sprite.hitArea) return;
+
+  const x = sprite.x + sprite.hitArea.x;
+  const y = sprite.y + sprite.hitArea.y;
+  const w = sprite.hitArea.width;
+  const h = sprite.hitArea.height;
+
+  HITBOX_CONTAINER.lineStyle(1, "0xffffff", 1);
+  HITBOX_CONTAINER.moveTo(x, y);
+  HITBOX_CONTAINER.lineTo(x + w, y);
+  HITBOX_CONTAINER.lineTo(x + w, y + h);
+  HITBOX_CONTAINER.lineTo(x, y + h);
+  HITBOX_CONTAINER.lineTo(x, y);
 }
