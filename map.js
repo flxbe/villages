@@ -174,14 +174,14 @@ function renderMapDecoration() {
   MAP_DECORATION_LAYER.clear();
 
   // only decorate in build mode
-  if (UI_STATE.mode !== "build") return;
+  if (!UI_STATE.selection || UI_STATE.selection.type !== "blueprint") return;
 
   // only decorate hovered tiles
   const { hoveredElement } = UI_STATE;
   if (!hoveredElement || hoveredElement.type !== "tile") return;
 
   const { i: mouseI, j: mouseJ } = hoveredElement;
-  const blueprint = BLUEPRINTS[UI_STATE.blueprint];
+  const blueprint = BLUEPRINTS[UI_STATE.selection.id];
 
   for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
     for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {

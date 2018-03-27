@@ -26,10 +26,20 @@ function initUI() {
   UI_ELEMENTS.tooltip = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
   UI_ELEMENTS.tooltip.position.set(0, 0);
+
+  UI_ELEMENTS.decoration = new PIXI.Graphics();
+  SELECTION_LAYER.addChild(UI_ELEMENTS.decoration);
+
+  UI_ELEMENTS.description = new PIXI.Text("", style);
+  SELECTION_LAYER.addChild(UI_ELEMENTS.description);
+  UI_ELEMENTS.description.position.set(10, HEIGHT - 20);
+
+  renderBuildmenuTexture();
+  BUILD_MENU_LAYER.visible = false;
 }
 
 function renderUI() {
-  UI_ELEMENTS.mode.text = [`mode: ${UI_STATE.mode}`, `(g) toggle grid`, `(b) toggle buildmenu`, `(h) toggle hitboxes`].join(
+  UI_ELEMENTS.mode.text = [`(g) toggle grid`, `(b) toggle buildmenu`, `(h) toggle hitboxes`].join(
     "    "
   );
 
@@ -64,16 +74,16 @@ function renderUI() {
 }
 
 function renderSelectionDecoration() {
-  SELECTION_LAYER.clear();
+  UI_ELEMENTS.decoration.clear();
 
   if (UI_STATE.selection) {
     let relX, relY;
-    SELECTION_LAYER.alpha = 0.25;
+    UI_ELEMENTS.decoration.alpha = 0.25;
 
     switch (UI_STATE.selection.type) {
       case "tile":
         [relX, relY] = tile2rel(UI_STATE.selection.i, UI_STATE.selection.j);
-        renderTile(SELECTION_LAYER, "0xffffff", relX, relY);
+        renderTile(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
         return;
       case "deer":
         [relX, relY] = cart2rel(
@@ -89,7 +99,7 @@ function renderSelectionDecoration() {
         break;
       case "blueprint":
         renderBuildmenuTile(
-          SELECTION_LAYER,
+          UI_ELEMENTS.decoration,
           "0xffffff",
           UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X,
           UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y
@@ -98,8 +108,8 @@ function renderSelectionDecoration() {
       default:
         throw Error("Unknown selection type");
     }
-    SELECTION_LAYER.alpha = 0.5;
-    renderCircle(SELECTION_LAYER, "0xffffff", relX, relY);
+    UI_ELEMENTS.decoration.alpha = 0.5;
+    renderCircle(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
   }
 }
 
@@ -148,17 +158,10 @@ function renderBuildmenuDecoration() {
   const { hoveredElement } = UI_STATE;
   if (!hoveredElement || hoveredElement.type !== "button") return;
 
-  // not perfect
-  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-      const tile = BUILDMENU_GRID[i][j];
-      if (tile.blueprintName !== hoveredElement.blueprintName) continue;
-
-      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-      renderBuildmenuTile(UI_DECORATION_LAYER, "0xff0000", x, y);
-    }
-  }
+  const x = hoveredElement.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+  const y = hoveredElement.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+  UI_DECORATION_LAYER.alpha = 0.25;
+  renderBuildmenuTile(UI_DECORATION_LAYER, "0xffffff", x, y);
 }
 
 function renderBuildmenuTexture() {

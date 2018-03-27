@@ -28,12 +28,11 @@ window.addEventListener(
 
     switch (event.key) {
       case "b": {
+        BUILD_MENU_LAYER.visible = !BUILD_MENU_LAYER.visible;
         UI_STATE.buildmenu = !UI_STATE.buildmenu;
-        if (UI_STATE.buildmenu) {
-          renderBuildmenuTexture();
-        } else {
-          BUILD_MENU_LAYER.clear();
-          UI_STATE.mode = "normal";
+        if (!BUILD_MENU_LAYER.visible) {
+          UI_STATE.selection = null;
+          UI_ELEMENTS.description.text = "";
         }
         break;
       }
@@ -47,22 +46,19 @@ window.addEventListener(
       }
       case "1": {
         if (UI_STATE.buildmenu) {
-          UI_STATE.mode = "build";
-          UI_STATE.blueprint = "house";
+          UI_STATE.selection = { type: "blueprint", id: "house" };
         }
         break;
       }
       case "2": {
         if (UI_STATE.buildmenu) {
-          UI_STATE.mode = "build";
-          UI_STATE.blueprint = "barn";
+          UI_STATE.selection = { type: "blueprint", id: "barn" };
         }
         break;
       }
       case "3": {
         if (UI_STATE.buildmenu) {
-          UI_STATE.mode = "build";
-          UI_STATE.blueprint = "road";
+          UI_STATE.selection = { type: "blueprint", id: "road" };
         }
         break;
       }
@@ -125,6 +121,7 @@ document.addEventListener("mouseup", event => {
 
     if (!hoveredElement) {
       UI_STATE.selection = null;
+      UI_ELEMENTS.description.text = "";
       return;
     }
 
@@ -132,7 +129,7 @@ document.addEventListener("mouseup", event => {
       // click an object
       case "deer":
       case "tree": {
-        if (UI_STATE.mode === "build") {
+        if (UI_STATE.selection && UI_STATE.selection.type === "blueprint") {
           throw Error(
             `should be imposible to hover in build mode: ${hoveredElement.type}`
           );
@@ -142,9 +139,9 @@ document.addEventListener("mouseup", event => {
 
       // click on a tile
       case "tile":
-        if (UI_STATE.mode === "build") {
+        if (UI_STATE.selection && UI_STATE.selection.type === "blueprint") {
           const { i, j } = hoveredElement;
-          const blueprintName = UI_STATE.blueprint;
+          const blueprintName = UI_STATE.selection.id;
           const blueprint = BLUEPRINTS[blueprintName];
 
           if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
@@ -152,8 +149,8 @@ document.addEventListener("mouseup", event => {
               serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
 
               if (!UI_STATE.ctrlDown) {
-                UI_STATE.mode = "normal";
                 UI_STATE.selection = null;
+                UI_ELEMENTS.description.text = "";
               }
             } else {
               console.log("not enough resources");
@@ -168,20 +165,29 @@ document.addEventListener("mouseup", event => {
 
       // UI interaction
       case "button":
-        UI_STATE.selection = null;
-        UI_STATE.blueprint = hoveredElement.blueprintName;
-        UI_STATE.mode = "build";
+        UI_STATE.selection = {type: "blueprint", id: hoveredElement.blueprintName, i: hoveredElement.i, j: hoveredElement.j };
         break;
       default:
         throw Error(`unknown element type: ${hoveredElement.type}`);
     }
+
+    function obj2str(obj) {
+      const list = [];
+      for (let p in obj) {
+          if (obj.hasOwnProperty(p)) {
+              list.push(`${p}: ${obj[p]} `);
+          }
+      }
+      return list.join("    ");
+    }
+    UI_ELEMENTS.description.text = obj2str(UI_STATE.selection);
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = false;
 
     if (movedDistanceSinceMouseDown >= 10) return;
 
-    UI_STATE.mode = "normal";
     UI_STATE.selection = null;
+    UI_ELEMENTS.description.text = "";
   }
 });
 
@@ -189,7 +195,7 @@ function updateHoveredElement() {
   const { mouseIsoX: mX, mouseIsoY: mY } = UI_STATE;
 
   // check for build menu interaction
-  if (UI_STATE.buildmenu) {
+  if (BUILD_MENU_LAYER.visible) {
     for (let i = 0; i < BUILDMENU_GRID.length; i++) {
       for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
         const tile = BUILDMENU_GRID[i][j];
@@ -200,7 +206,9 @@ function updateHoveredElement() {
         if (pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)) {
           UI_STATE.hoveredElement = {
             type: "button",
-            blueprintName: tile.blueprintName
+            blueprintName: tile.blueprintName,
+            i: i,
+            j: j
           };
           return;
         }
@@ -211,7 +219,7 @@ function updateHoveredElement() {
   const [i, j] = getActiveTile();
 
   // check for hovered objects
-  if (UI_STATE.mode === "normal") {
+  if (!UI_STATE.selection || UI_STATE.selection.type !== "blueprint") {
     let maxZ = 0;
 
     for (let deer of Object.values(STATE.deers)) {

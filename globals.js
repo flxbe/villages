@@ -62,21 +62,24 @@ MAP_SPRITE.on("mousedown", event => {
   console.log("test");
 });
 
-// renders decorations the map to highlight blueprints
+// renders decorations on the map to highlight blueprints
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
 
+const UI_CONTAINER = new PIXI.Container();
+APPLICATION.stage.addChild(UI_CONTAINER);
+
 // build menu grid
 const BUILD_MENU_LAYER = new PIXI.Graphics();
-APPLICATION.stage.addChild(BUILD_MENU_LAYER);
+UI_CONTAINER.addChild(BUILD_MENU_LAYER);
 
-// renders decorations the ui to highlight mouse position
+// renders decorations on the ui to highlight mouse position
 const UI_DECORATION_LAYER = new PIXI.Graphics();
-APPLICATION.stage.addChild(UI_DECORATION_LAYER);
+UI_CONTAINER.addChild(UI_DECORATION_LAYER);
 
-// renders decoration the ui or map to highlight user selection
+// renders decoration on the ui or map to highlight user selection
 const SELECTION_LAYER = new PIXI.Graphics();
-APPLICATION.stage.addChild(SELECTION_LAYER);
+UI_CONTAINER.addChild(SELECTION_LAYER);
 
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);
@@ -84,9 +87,6 @@ APPLICATION.stage.addChild(OBJECT_CONTAINER);
 // render object hotboxes for debuging
 const HITBOX_CONTAINER = new PIXI.Graphics();
 APPLICATION.stage.addChild(HITBOX_CONTAINER);
-
-const UI_CONTAINER = new PIXI.Container();
-APPLICATION.stage.addChild(UI_CONTAINER);
 
 // save ui elements
 const UI_ELEMENTS = {};
@@ -104,15 +104,9 @@ const STATE = {
 
 // UI STATE
 const UI_STATE = {
-  blueprint: "house",
-  mode: "normal",
-
   // debug options
   grid: false,
-  renderHitAreas: true,
-
-  // visibility of elements
-  buildmenu: false,
+  renderHitAreas: false,
 
   // camera
   offsetX: 200,
