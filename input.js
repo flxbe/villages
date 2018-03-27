@@ -19,7 +19,12 @@ function getActiveTile() {
 }
 
 function getActiveContainer() {
-  if (UI_STATE.mouseIsoX < BUILDMENU_OFFSET_X || UI_STATE.mouseIsoY < BUILDMENU_OFFSET_Y || UI_STATE.mouseIsoX > BUILDMENU_OFFSET_X + BUILDMENU_WIDTH || UI_STATE.mouseIsoY > BUILDMENU_OFFSET_Y + BUILDMENU_HEIGHT) {
+  if (
+    UI_STATE.mouseIsoX < BUILDMENU_OFFSET_X ||
+    UI_STATE.mouseIsoY < BUILDMENU_OFFSET_Y ||
+    UI_STATE.mouseIsoX > BUILDMENU_OFFSET_X + BUILDMENU_WIDTH ||
+    UI_STATE.mouseIsoY > BUILDMENU_OFFSET_Y + BUILDMENU_HEIGHT
+  ) {
     return "map";
   }
   return "buildmenu";
@@ -89,6 +94,9 @@ document.addEventListener("keyup", event => {
 });
 
 document.addEventListener("mousemove", event => {
+  UI_STATE.mouseIsoX = event.pageX;
+  UI_STATE.mouseIsoY = event.pageY;
+
   if (UI_ELEMENTS.tooltip) {
     UI_ELEMENTS.tooltip.text = "";
   }
@@ -96,7 +104,8 @@ document.addEventListener("mousemove", event => {
   const container = getActiveContainer();
 
   switch (container) {
-    case "map": const moveX = event.clientX;
+    case "map":
+      const moveX = event.clientX;
       const moveY = event.clientY;
 
       // move map
@@ -110,15 +119,16 @@ document.addEventListener("mousemove", event => {
       const [mouseI, mouseJ] = getActiveGridTile();
       if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
         if (UI_ELEMENTS.tooltip) {
-          UI_ELEMENTS.tooltip.text = BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
-          UI_ELEMENTS.tooltip.position.set(UI_STATE.mouseIsoX - 40, UI_STATE.mouseIsoY);
+          UI_ELEMENTS.tooltip.text =
+            BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
+          UI_ELEMENTS.tooltip.position.set(
+            UI_STATE.mouseIsoX - 40,
+            UI_STATE.mouseIsoY
+          );
         }
       }
       break;
   }
-
-  UI_STATE.mouseIsoX = event.pageX;
-  UI_STATE.mouseIsoY = event.pageY;
 });
 
 document.addEventListener("mousedown", event => {
@@ -194,7 +204,13 @@ function mapClick() {
 
     for (let deer of Object.values(STATE.deers)) {
       const [relX, relY] = cart2rel(deer.x, deer.y);
-      if (UI_STATE.mouseIsoX < relX + TILE_WIDTH / 2 && UI_STATE.mouseIsoX >= relX - TILE_WIDTH / 2 && UI_STATE.mouseIsoY < relY + 15 && UI_STATE.mouseIsoY >= relY - 35 && relY > maxZ) {
+      if (
+        UI_STATE.mouseIsoX < relX + TILE_WIDTH / 2 &&
+        UI_STATE.mouseIsoX >= relX - TILE_WIDTH / 2 &&
+        UI_STATE.mouseIsoY < relY + 15 &&
+        UI_STATE.mouseIsoY >= relY - 35 &&
+        relY > maxZ
+      ) {
         UI_STATE.selection = { type: "deer", id: deer.id };
         maxZ = deer.y;
       }
