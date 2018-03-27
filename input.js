@@ -1,8 +1,5 @@
 "use strict";
 
-let mouseDiffX = 0;
-let mouseDiffY = 0;
-
 function addOffsetX(delta) {
   UI_STATE.offsetX += delta;
   UI_STATE.updateMap = true;
@@ -98,7 +95,7 @@ document.addEventListener("mousemove", event => {
   const moveY = event.clientY;
 
   // move map
-  if (UI_STATE.mouseDown) {
+  if (UI_STATE.rightMouseDown) {
     UI_STATE.offsetX += moveX - UI_STATE.mouseIsoX;
     UI_STATE.offsetY += moveY - UI_STATE.mouseIsoY;
   }
@@ -113,73 +110,86 @@ document.addEventListener("mousemove", event => {
   }
 });
 
-document.addEventListener("mousedown", event => {
-  const container = getActiveContainer();
+document.addEventListener("contextmenu", event => {
+  event.preventDefault();
+});
 
-  if (container == "map") {
-    mouseDiffX = event.pageX;
-    mouseDiffY = event.pageY;
+let mouseDiffX = 0;
+let mouseDiffY = 0;
+
+document.addEventListener("mousedown", event => {
+  if (event.which == 1) {
+    UI_STATE.leftMouseDown = true;
+  } else if (event.which == 3) {
+    UI_STATE.rightMouseDown = true;
   }
 
-  UI_STATE.mouseDown = true;
+  mouseDiffX = event.clientX;
+  mouseDiffY = event.clientY;
 });
 
 document.addEventListener("mouseup", event => {
-  UI_STATE.mouseDown = false;
+  if (event.which == 1) {
+    if (Math.abs(mouseDiffX - event.clientX) + Math.abs(mouseDiffY - event.clientY) < 10) {
+      UI_STATE.leftMouseDown = false;
 
-  const { hoveredElement } = UI_STATE;
+      const { hoveredElement } = UI_STATE;
 
-  if (!hoveredElement) {
-    UI_STATE.selection = null;
-    return;
-  }
-
-  switch (hoveredElement.type) {
-    // click an object
-    case "deer":
-    case "tree": {
-      if (UI_STATE.mode === "build") {
-        throw Error(
-          `should be imposible to hover in build mode: ${hoveredElement.type}`
-        );
+      if (!hoveredElement) {
+        UI_STATE.selection = null;
+        return;
       }
-      UI_STATE.selection = hoveredElement;
-    }
 
-    // click on a tile
-    case "tile":
-      if (UI_STATE.mode === "build") {
-        const { i, j } = hoveredElement;
-        const blueprintName = UI_STATE.blueprint;
-        const blueprint = BLUEPRINTS[blueprintName];
+      switch (hoveredElement.type) {
+        // click an object
+        case "deer":
+        case "tree": {
+          if (UI_STATE.mode === "build") {
+            throw Error(
+              `should be imposible to hover in build mode: ${hoveredElement.type}`
+            );
+          }
+          UI_STATE.selection = hoveredElement;
+        }
 
-        if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-          if (sufficientResources(blueprint)) {
-            serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+        // click on a tile
+        case "tile":
+          if (UI_STATE.mode === "build") {
+            const { i, j } = hoveredElement;
+            const blueprintName = UI_STATE.blueprint;
+            const blueprint = BLUEPRINTS[blueprintName];
 
-            if (!UI_STATE.ctrlDown) {
-              UI_STATE.mode = "normal";
-              UI_STATE.selection = null;
+            if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
+              if (sufficientResources(blueprint)) {
+                serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+
+                if (!UI_STATE.ctrlDown) {
+                  UI_STATE.mode = "normal";
+                  UI_STATE.selection = null;
+                }
+              } else {
+                console.log("not enough resources");
+              }
+            } else {
+              console.log("cannot build");
             }
           } else {
-            console.log("not enough resources");
+            UI_STATE.selection = hoveredElement;
           }
-        } else {
-          console.log("cannot build");
-        }
-      } else {
-        UI_STATE.selection = hoveredElement;
-      }
-      break;
+          break;
 
-    // UI interaction
-    case "button":
-      UI_STATE.selection = null;
-      UI_STATE.blueprint = hoveredElement.blueprintName;
-      UI_STATE.mode = "build";
-      break;
-    default:
-      throw Error(`unknown element type: ${hoveredElement.type}`);
+        // UI interaction
+        case "button":
+          UI_STATE.selection = null;
+          UI_STATE.blueprint = hoveredElement.blueprintName;
+          UI_STATE.mode = "build";
+          break;
+        default:
+          throw Error(`unknown element type: ${hoveredElement.type}`);
+      }
+    }
+  } else if (event.which == 3) {
+    UI_STATE.rightMouseDown = false;
   }
 });
 
