@@ -130,9 +130,9 @@ document.addEventListener("mousedown", event => {
 
 document.addEventListener("mouseup", event => {
   if (event.which == 1) {
-    if (Math.abs(mouseDiffX - event.clientX) + Math.abs(mouseDiffY - event.clientY) < 10) {
-      UI_STATE.leftMouseDown = false;
+    UI_STATE.leftMouseDown = false;
 
+    if (Math.abs(mouseDiffX - event.clientX) + Math.abs(mouseDiffY - event.clientY) < 10) {
       const { hoveredElement } = UI_STATE;
 
       if (!hoveredElement) {
@@ -190,6 +190,11 @@ document.addEventListener("mouseup", event => {
     }
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = false;
+
+    if (Math.abs(mouseDiffX - event.clientX) + Math.abs(mouseDiffY - event.clientY) < 10) {
+      UI_STATE.mode = "normal";
+      UI_STATE.selection = null;
+    }
   }
 });
 

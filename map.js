@@ -151,17 +151,12 @@ function isBuildableTile(type) {
 function isRoadableTile(type) {
   switch (type) {
     case TILE_GRASS:
-      return true;
     case TILE_DIRT:
-      return true;
     case TILE_WATER:
       return true;
     case TILE_DEEPWATER:
-      return false;
     case TILE_TREE:
-      return false;
     case TILE_BUILDING:
-      return false;
     case TILE_ROAD:
       return false;
     default:
