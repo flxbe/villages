@@ -155,3 +155,16 @@ function rgb2hexColor(r, g, b) {
 function shade2hexColor(n) {
   return rgb2hexColor(n, n, n);
 }
+
+/**
+ *
+ * @param {number} x - hitbox x
+ * @param {number} y - hitbox y
+ * @param {number} w - hitbox width
+ * @param {number} h - hitbox height
+ * @param {number} px - point x
+ * @param {number} py - point y
+ */
+function pointInHitbox(x, y, w, h, px, py) {
+  return px >= x && px <= x + w && py >= y && py <= y + h;
+}

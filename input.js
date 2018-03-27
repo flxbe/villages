@@ -94,40 +94,22 @@ document.addEventListener("keyup", event => {
 });
 
 document.addEventListener("mousemove", event => {
+  const moveX = event.clientX;
+  const moveY = event.clientY;
+
+  // move map
+  if (UI_STATE.mouseDown) {
+    UI_STATE.offsetX += moveX - UI_STATE.mouseIsoX;
+    UI_STATE.offsetY += moveY - UI_STATE.mouseIsoY;
+  }
+
   UI_STATE.mouseIsoX = event.pageX;
   UI_STATE.mouseIsoY = event.pageY;
 
+  updateHoveredElement();
+
   if (UI_ELEMENTS.tooltip) {
     UI_ELEMENTS.tooltip.text = "";
-  }
-
-  const container = getActiveContainer();
-
-  switch (container) {
-    case "map":
-      const moveX = event.clientX;
-      const moveY = event.clientY;
-
-      // move map
-      if (UI_STATE.mouseDown) {
-        UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
-        UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
-      }
-      break;
-
-    case "buildmenu":
-      const [mouseI, mouseJ] = getActiveGridTile();
-      if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
-        if (UI_ELEMENTS.tooltip) {
-          UI_ELEMENTS.tooltip.text =
-            BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
-          UI_ELEMENTS.tooltip.position.set(
-            UI_STATE.mouseIsoX - 40,
-            UI_STATE.mouseIsoY
-          );
-        }
-      }
-      break;
   }
 });
 
@@ -143,63 +125,89 @@ document.addEventListener("mousedown", event => {
 });
 
 document.addEventListener("mouseup", event => {
-  const container = getActiveContainer();
-
-  switch (container) {
-    case "map":
-      mouseDiffX -= event.pageX;
-      mouseDiffY -= event.pageY;
-      if (Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
-        mapClick();
-      }
-      break;
-
-    case "buildmenu":
-      buildmenuClick();
-      break;
-  }
-
   UI_STATE.mouseDown = false;
-});
 
-function buildmenuClick() {
-  const [mouseI, mouseJ] = getActiveGridTile();
-  if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
-    UI_STATE.blueprint = BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
-    UI_STATE.mode = "build";
-    UI_STATE.selection = { type: "blueprint", i: mouseI, j: mouseJ };
-  } else {
-    UI_STATE.mode = "normal";
+  const { hoveredElement } = UI_STATE;
+
+  if (!hoveredElement) {
     UI_STATE.selection = null;
+    return;
   }
-}
 
-function mapClick() {
-  const [i, j] = getActiveTile();
-  if (UI_STATE.mode === "build") {
-    const blueprintName = UI_STATE.blueprint;
-    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
-
-    if (!blueprint) {
-      console.log("select a blueprint");
-      return;
+  switch (hoveredElement.type) {
+    // click an object
+    case "deer":
+    case "tree": {
+      if (UI_STATE.mode === "build") {
+        throw Error(
+          `should be imposible to hover in build mode: ${hoveredElement.type}`
+        );
+      }
+      UI_STATE.selection = hoveredElement;
     }
 
-    if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-      if (sufficientResources(blueprint)) {
-        serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+    // click on a tile
+    case "tile":
+      if (UI_STATE.mode === "build") {
+        const { i, j } = hoveredElement;
+        const blueprintName = UI_STATE.blueprint;
+        const blueprint = BLUEPRINTS[blueprintName];
 
-        if (!UI_STATE.ctrlDown) {
-          UI_STATE.mode = "normal";
-          UI_STATE.selection = null;
+        if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
+          if (sufficientResources(blueprint)) {
+            serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+
+            if (!UI_STATE.ctrlDown) {
+              UI_STATE.mode = "normal";
+              UI_STATE.selection = null;
+            }
+          } else {
+            console.log("not enough resources");
+          }
+        } else {
+          console.log("cannot build");
         }
       } else {
-        console.log("not enough resources");
+        UI_STATE.selection = hoveredElement;
       }
-    } else {
-      console.log("cannot build");
+      break;
+
+    // UI interaction
+    case "button":
+      UI_STATE.selection = null;
+      UI_STATE.blueprint = hoveredElement.blueprintName;
+      UI_STATE.mode = "build";
+      break;
+    default:
+      throw Error(`unknown element type: ${hoveredElement.type}`);
+  }
+});
+
+function updateHoveredElement() {
+  const { mouseIsoX: mX, mouseIsoY: mY } = UI_STATE;
+
+  // check for build menu interaction
+  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
+    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
+      const tile = BUILDMENU_GRID[i][j];
+      if (tile.empty) continue;
+
+      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+      if (pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)) {
+        UI_STATE.hoveredElement = {
+          type: "button",
+          blueprintName: tile.blueprintName
+        };
+        return;
+      }
     }
-  } else {
+  }
+
+  const [i, j] = getActiveTile();
+
+  // check for hovered objects
+  if (UI_STATE.mode === "normal") {
     let maxZ = 0;
 
     for (let deer of Object.values(STATE.deers)) {
@@ -211,23 +219,27 @@ function mapClick() {
         UI_STATE.mouseIsoY >= relY - 35 &&
         relY > maxZ
       ) {
-        UI_STATE.selection = { type: "deer", id: deer.id };
+        UI_STATE.hoveredElement = { type: "deer", id: deer.id };
         maxZ = deer.y;
       }
     }
+
     for (let tree of Object.values(STATE.trees)) {
       const [_, relY] = tile2rel(tree.i, tree.j);
       if (i == tree.i && j == tree.j && relY > maxZ) {
-        UI_STATE.selection = { type: "tree", id: tree.id };
+        UI_STATE.hoveredElement = { type: "tree", id: tree.id };
         maxZ = tree.y;
       }
     }
-    if (maxZ == 0) {
-      if (isTileOnMap(i, j)) {
-        UI_STATE.selection = { type: "tile", i: i, j: j };
-      } else {
-        UI_STATE.selection = null;
-      }
-    }
+
+    if (maxZ !== 0) return;
   }
+
+  // check for hovered tiles
+  if (isTileOnMap(i, j)) {
+    UI_STATE.hoveredElement = { type: "tile", i, j };
+    return;
+  }
+
+  UI_STATE.hoveredElement = null;
 }

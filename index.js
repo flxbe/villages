@@ -36,8 +36,10 @@ function gameloop(delta) {
   MAP_GRID_SPRITE.position.y = UI_STATE.offsetY;
   MAP_GRID_SPRITE.visible = UI_STATE.grid;
 
+  renderMapDecoration();
   renderUI();
-  renderDecoration();
+  renderBuildmenuDecoration();
+  renderSelectionDecoration();
 
   for (let deer of Object.values(STATE.deers)) {
     move_deer(deer, delta);

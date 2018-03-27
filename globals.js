@@ -95,7 +95,6 @@ const UI_STATE = {
   blueprint: "house",
   mode: "normal",
   grid: false,
-  selection: null,
 
   // camera
   offsetX: 200,
@@ -105,6 +104,9 @@ const UI_STATE = {
   mouseIsoX: 0,
   mouseIsoY: 0,
   mouseDown: false,
+  hoveredElement: null,
+  selection: null,
+
   ctrlDown: false
 };
 

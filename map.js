@@ -176,18 +176,25 @@ function isRoadableTile(type) {
  * TODO: only re-render, when something has changed.
  */
 function renderMapDecoration() {
-  const [mouseI, mouseJ] = getActiveTile();
+  MAP_DECORATION_LAYER.clear();
 
-  if (UI_STATE.mode === "build") {
-    const blueprint = BLUEPRINTS[UI_STATE.blueprint];
-    for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
-      for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
-        if (!isTileOnMap(i, j)) continue;
-        const tile = STATE.map[i][j];
-        const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
-        const [relX, relY] = tile2rel(i, j);
-        renderTile(MAP_DECORATION_LAYER, color, relX, relY);
-      }
+  // only decorate hovered tiles
+  const { hoveredElement } = UI_STATE;
+  if (!hoveredElement || hoveredElement.type !== "tile") return;
+
+  // only decorate in build mode
+  if (UI_STATE.mode !== "build") return;
+
+  const { i: mouseI, j: mouseJ } = hoveredElement;
+  const blueprint = BLUEPRINTS[UI_STATE.blueprint];
+
+  for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
+    for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
+      if (!isTileOnMap(i, j)) continue;
+      const tile = STATE.map[i][j];
+      const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
+      const [relX, relY] = tile2rel(i, j);
+      renderTile(MAP_DECORATION_LAYER, color, relX, relY);
     }
   }
 }
