@@ -97,7 +97,8 @@ function getTileCenter(i, j) {
 function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !isBuildableTile(STATE.map[k][l].type)) return false;
+      if (!isTileOnMap(k, l) || !isBuildableTile(STATE.map[k][l].type))
+        return false;
     }
   }
   return true;
@@ -109,14 +110,17 @@ function isAreaFreeForBuilding(i, j, height, width) {
  */
 function isWalkableTile(type) {
   switch (type) {
-    case TILE_GRASS: return true;
-    case TILE_DIRT: return true;
-    case TILE_WATER: return false;
-    case TILE_DEEPWATER: return false;
-    case TILE_TREE: return false;
-    case TILE_BUILDING: return false;
-    case TILE_ROAD: return true;
-    default: throw Error(`unknown tile type: ${type}`);
+    case TILE_GRASS:
+    case TILE_DIRT:
+    case TILE_ROAD:
+      return true;
+    case TILE_WATER:
+    case TILE_DEEPWATER:
+    case TILE_TREE:
+    case TILE_BUILDING:
+      return false;
+    default:
+      throw Error(`unknown tile type: ${type}`);
   }
 }
 
@@ -126,14 +130,17 @@ function isWalkableTile(type) {
  */
 function isBuildableTile(type) {
   switch (type) {
-    case TILE_GRASS: return true;
-    case TILE_DIRT: return true;
-    case TILE_WATER: return false;
-    case TILE_DEEPWATER: return false;
-    case TILE_TREE: return false;
-    case TILE_BUILDING: return false;
-    case TILE_ROAD: return false;
-    default: throw Error(`unknown tile type: ${type}`);
+    case TILE_GRASS:
+    case TILE_DIRT:
+      return true;
+    case TILE_WATER:
+    case TILE_DEEPWATER:
+    case TILE_TREE:
+    case TILE_BUILDING:
+    case TILE_ROAD:
+      return false;
+    default:
+      throw Error(`unknown tile type: ${type}`);
   }
 }
 
@@ -143,14 +150,22 @@ function isBuildableTile(type) {
  */
 function isRoadableTile(type) {
   switch (type) {
-    case TILE_GRASS: return true;
-    case TILE_DIRT: return true;
-    case TILE_WATER: return true;
-    case TILE_DEEPWATER: return false;
-    case TILE_TREE: return false;
-    case TILE_BUILDING: return false;
-    case TILE_ROAD: return false;
-    default: throw Error(`unknown tile type: ${type}`);
+    case TILE_GRASS:
+      return true;
+    case TILE_DIRT:
+      return true;
+    case TILE_WATER:
+      return true;
+    case TILE_DEEPWATER:
+      return false;
+    case TILE_TREE:
+      return false;
+    case TILE_BUILDING:
+      return false;
+    case TILE_ROAD:
+      return false;
+    default:
+      throw Error(`unknown tile type: ${type}`);
   }
 }
 
@@ -259,10 +274,8 @@ function updateMapTexture(updates) {
 function renderTile(target, color, x, y) {
   const h_2 = TILE_HEIGHT / 2;
 
-  const lineColor = UI_STATE.grid ? "0x444" : color;
-
   target.beginFill(color);
-  target.lineStyle(1, lineColor, 1);
+  target.lineStyle(1, color, 1);
   target.moveTo(x, y);
   target.lineTo(x + TILE_WIDTH, y + h_2);
   target.lineTo(x, y + TILE_HEIGHT);
