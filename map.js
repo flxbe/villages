@@ -176,8 +176,6 @@ function isRoadableTile(type) {
  * TODO: only re-render, when something has changed.
  */
 function renderMapDecoration() {
-  MAP_DECORATION_LAYER.clear();
-
   const [mouseI, mouseJ] = getActiveTile();
 
   if (UI_STATE.mode === "build") {
@@ -191,9 +189,6 @@ function renderMapDecoration() {
         renderTile(MAP_DECORATION_LAYER, color, relX, relY);
       }
     }
-  } else {
-    const [relX, relY] = tile2rel(mouseI, mouseJ);
-    renderTile(MAP_DECORATION_LAYER, "0xff0000", relX, relY);
   }
 }
 

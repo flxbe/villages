@@ -18,6 +18,18 @@ function getActiveTile() {
   return abs2tile(absX, absY);
 }
 
+function getActiveContainer() {
+  if (
+    UI_STATE.mouseIsoX < BUILDMENU_OFFSET_X ||
+    UI_STATE.mouseIsoY < BUILDMENU_OFFSET_Y ||
+    UI_STATE.mouseIsoX > BUILDMENU_OFFSET_X + BUILDMENU_WIDTH ||
+    UI_STATE.mouseIsoY > BUILDMENU_OFFSET_Y + BUILDMENU_HEIGHT
+  ) {
+    return "map";
+  }
+  return "buildmenu";
+}
+
 window.addEventListener(
   "keydown",
   event => {
@@ -82,34 +94,89 @@ document.addEventListener("keyup", event => {
 });
 
 document.addEventListener("mousemove", event => {
-  // TODO: difference clientX vs pageX
-  const moveX = event.clientX;
-  const moveY = event.clientY;
-
-  // move map
-  if (UI_STATE.mouseDown) {
-    UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
-    UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
-  }
-
   UI_STATE.mouseIsoX = event.pageX;
   UI_STATE.mouseIsoY = event.pageY;
+
+  if (UI_ELEMENTS.tooltip) {
+    UI_ELEMENTS.tooltip.text = "";
+  }
+
+  const container = getActiveContainer();
+
+  switch (container) {
+    case "map":
+      const moveX = event.clientX;
+      const moveY = event.clientY;
+
+      // move map
+      if (UI_STATE.mouseDown) {
+        UI_STATE.offsetX += (moveX - UI_STATE.mouseIsoX) * 0.75;
+        UI_STATE.offsetY += (moveY - UI_STATE.mouseIsoY) * 0.75;
+      }
+      break;
+
+    case "buildmenu":
+      const [mouseI, mouseJ] = getActiveGridTile();
+      if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
+        if (UI_ELEMENTS.tooltip) {
+          UI_ELEMENTS.tooltip.text =
+            BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
+          UI_ELEMENTS.tooltip.position.set(
+            UI_STATE.mouseIsoX - 40,
+            UI_STATE.mouseIsoY
+          );
+        }
+      }
+      break;
+  }
 });
 
 document.addEventListener("mousedown", event => {
-  // TODO: add support to check, whether the building can be placed
-  mouseDiffX = event.pageX;
-  mouseDiffY = event.pageY;
+  const container = getActiveContainer();
+
+  if (container == "map") {
+    mouseDiffX = event.pageX;
+    mouseDiffY = event.pageY;
+  }
 
   UI_STATE.mouseDown = true;
 });
 
 document.addEventListener("mouseup", event => {
-  mouseDiffX -= event.pageX;
-  mouseDiffY -= event.pageY;
+  const container = getActiveContainer();
 
-  if (UI_STATE.mode === "build" && Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
-    const [i, j] = getActiveTile();
+  switch (container) {
+    case "map":
+      mouseDiffX -= event.pageX;
+      mouseDiffY -= event.pageY;
+      if (Math.abs(mouseDiffX) + Math.abs(mouseDiffY) < 10) {
+        mapClick();
+      }
+      break;
+
+    case "buildmenu":
+      buildmenuClick();
+      break;
+  }
+
+  UI_STATE.mouseDown = false;
+});
+
+function buildmenuClick() {
+  const [mouseI, mouseJ] = getActiveGridTile();
+  if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
+    UI_STATE.blueprint = BUILDMENU_GRID[mouseI][mouseJ].blueprintName;
+    UI_STATE.mode = "build";
+    UI_STATE.selection = { type: "blueprint", i: mouseI, j: mouseJ };
+  } else {
+    UI_STATE.mode = "normal";
+    UI_STATE.selection = null;
+  }
+}
+
+function mapClick() {
+  const [i, j] = getActiveTile();
+  if (UI_STATE.mode === "build") {
     const blueprintName = UI_STATE.blueprint;
     const blueprint = BLUEPRINTS[UI_STATE.blueprint];
 
@@ -124,6 +191,7 @@ document.addEventListener("mouseup", event => {
 
         if (!UI_STATE.ctrlDown) {
           UI_STATE.mode = "normal";
+          UI_STATE.selection = null;
         }
       } else {
         console.log("not enough resources");
@@ -131,7 +199,35 @@ document.addEventListener("mouseup", event => {
     } else {
       console.log("cannot build");
     }
-  }
+  } else {
+    let maxZ = 0;
 
-  UI_STATE.mouseDown = false;
-});
+    for (let deer of Object.values(STATE.deers)) {
+      const [relX, relY] = cart2rel(deer.x, deer.y);
+      if (
+        UI_STATE.mouseIsoX < relX + TILE_WIDTH / 2 &&
+        UI_STATE.mouseIsoX >= relX - TILE_WIDTH / 2 &&
+        UI_STATE.mouseIsoY < relY + 15 &&
+        UI_STATE.mouseIsoY >= relY - 35 &&
+        relY > maxZ
+      ) {
+        UI_STATE.selection = { type: "deer", id: deer.id };
+        maxZ = deer.y;
+      }
+    }
+    for (let tree of Object.values(STATE.trees)) {
+      const [_, relY] = tile2rel(tree.i, tree.j);
+      if (i == tree.i && j == tree.j && relY > maxZ) {
+        UI_STATE.selection = { type: "tree", id: tree.id };
+        maxZ = tree.y;
+      }
+    }
+    if (maxZ == 0) {
+      if (isTileOnMap(i, j)) {
+        UI_STATE.selection = { type: "tile", i: i, j: j };
+      } else {
+        UI_STATE.selection = null;
+      }
+    }
+  }
+}
