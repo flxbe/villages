@@ -45,11 +45,11 @@ function renderUI() {
   UI_ELEMENTS.buildHelp.text =
     UI_STATE.mode === "build"
       ? [
-        `current building: ${UI_STATE.blueprint}`,
-        `(1) house (40 wood)`,
-        `(2) barn (100 wood)`,
-        `(3) road (10 wood)`
-      ].join("    ")
+          `current building: ${UI_STATE.blueprint}`,
+          `(1) house (40 wood)`,
+          `(2) barn (100 wood)`,
+          `(3) road (10 wood)`
+        ].join("    ")
       : "";
 
   UI_ELEMENTS.storage.text = [
@@ -69,21 +69,14 @@ function renderUI() {
     `Inventory: ${STATE.deers["deer2"].inventory} (${STATE.deers["deer2"]
       .item || "nothing"})`
   ].join("\n");
-}
 
-function renderDecoration() {
-  MAP_DECORATION_LAYER.clear();
-  UI_DECORATION_LAYER.clear();
-
-  const container = getActiveContainer();
-
-  switch (container) {
-    case "map": renderMapDecoration(); break;
-    case "buildmenu": renderBuildmenuDecoration(); break;
-    default: throw Error("unknown container");
+  // only decorate hovered buttons
+  const { hoveredElement } = UI_STATE;
+  if (hoveredElement && hoveredElement.type === "button") {
+    UI_ELEMENTS.tooltip.text = hoveredElement.blueprintName;
+    UI_ELEMENTS.tooltip.position.x = UI_STATE.mouseIsoX - 40;
+    UI_ELEMENTS.tooltip.position.y = UI_STATE.mouseIsoY;
   }
-
-  renderSelectionDecoration();
 }
 
 function renderSelectionDecoration() {
@@ -99,15 +92,27 @@ function renderSelectionDecoration() {
         renderTile(SELECTION_LAYER, "0xffffff", relX, relY);
         return;
       case "deer":
-        [relX, relY] = cart2rel(STATE.deers[UI_STATE.selection.id].x - 10, STATE.deers[UI_STATE.selection.id].y - 10);
+        [relX, relY] = cart2rel(
+          STATE.deers[UI_STATE.selection.id].x - 10,
+          STATE.deers[UI_STATE.selection.id].y - 10
+        );
         break;
       case "tree":
-        [relX, relY] = tile2rel(STATE.trees[UI_STATE.selection.id].i, STATE.trees[UI_STATE.selection.id].j);
+        [relX, relY] = tile2rel(
+          STATE.trees[UI_STATE.selection.id].i,
+          STATE.trees[UI_STATE.selection.id].j
+        );
         break;
       case "blueprint":
-        renderBuildmenuTile(SELECTION_LAYER, "0xffffff", UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X, UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y);
+        renderBuildmenuTile(
+          SELECTION_LAYER,
+          "0xffffff",
+          UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X,
+          UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y
+        );
         return;
-      default: throw Error("Unknown selection type");
+      default:
+        throw Error("Unknown selection type");
     }
     SELECTION_LAYER.alpha = 0.5;
     renderCircle(SELECTION_LAYER, "0xffffff", relX, relY);
@@ -125,28 +130,50 @@ function renderCircle(target, color, x, y) {
   target.lineTo(x, y);
 }
 
-const BUILDMENU_GRID = [[{ empty: false, blueprintName: "house", color: "0x561f00" }], [{ empty: false, blueprintName: "barn", color: "0x450e00" }], [{ empty: false, blueprintName: "road", color: "0x999999" }]];
+const BUILDMENU_GRID = [
+  [{ empty: false, blueprintName: "house", color: "0x561f00" }],
+  [{ empty: false, blueprintName: "barn", color: "0x450e00" }],
+  [{ empty: false, blueprintName: "road", color: "0x999999" }]
+];
 for (let k = 3; k < 5; k++) {
   BUILDMENU_GRID.push([{ empty: true, blueprintName: "", color: "0x000000" }]);
 }
 
 function getActiveGridTile() {
-  const j = Math.floor((UI_STATE.mouseIsoX - BUILDMENU_OFFSET_X) / BUILDMENU_TILESIZE);
-  const i = Math.floor((UI_STATE.mouseIsoY - BUILDMENU_OFFSET_Y) / BUILDMENU_TILESIZE);
+  const j = Math.floor(
+    (UI_STATE.mouseIsoX - BUILDMENU_OFFSET_X) / BUILDMENU_TILESIZE
+  );
+  const i = Math.floor(
+    (UI_STATE.mouseIsoY - BUILDMENU_OFFSET_Y) / BUILDMENU_TILESIZE
+  );
   return [i, j];
 }
 
 function isOccupiedBuildmenuTile(i, j) {
-  return i < BUILDMENU_GRID.length && j < BUILDMENU_GRID[i].length && !BUILDMENU_GRID[i][j].empty;
+  return (
+    i < BUILDMENU_GRID.length &&
+    j < BUILDMENU_GRID[i].length &&
+    !BUILDMENU_GRID[i][j].empty
+  );
 }
 
 function renderBuildmenuDecoration() {
-  const [mouseI, mouseJ] = getActiveGridTile();
-  if (isOccupiedBuildmenuTile(mouseI, mouseJ)) {
-    const x = mouseJ * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-    const y = mouseI * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+  UI_DECORATION_LAYER.clear();
 
-    renderBuildmenuTile(UI_DECORATION_LAYER, "0xff0000", x, y);
+  // only decorate hovered buttons
+  const { hoveredElement } = UI_STATE;
+  if (!hoveredElement || hoveredElement.type !== "button") return;
+
+  // not perfect
+  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
+    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
+      const tile = BUILDMENU_GRID[i][j];
+      if (tile.blueprintName !== hoveredElement.blueprintName) continue;
+
+      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+      renderBuildmenuTile(UI_DECORATION_LAYER, "0xff0000", x, y);
+    }
   }
 }
 
