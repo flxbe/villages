@@ -11,10 +11,6 @@ function initUI() {
   UI_CONTAINER.addChild(UI_ELEMENTS.mode);
   UI_ELEMENTS.mode.position.set(10, 10);
 
-  UI_ELEMENTS.buildHelp = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.buildHelp);
-  UI_ELEMENTS.buildHelp.position.set(10, 30);
-
   UI_ELEMENTS.storage = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.storage);
   UI_ELEMENTS.storage.position.set(10, 50);
@@ -35,22 +31,9 @@ function initUI() {
 }
 
 function renderUI() {
-  UI_ELEMENTS.mode.text = [
-    `mode: ${UI_STATE.mode}`,
-    `(n) normal`,
-    `(b) build`,
-    `(g) toggle grid`
-  ].join("    ");
-
-  UI_ELEMENTS.buildHelp.text =
-    UI_STATE.mode === "build"
-      ? [
-          `current building: ${UI_STATE.blueprint}`,
-          `(1) house (40 wood)`,
-          `(2) barn (100 wood)`,
-          `(3) road (10 wood)`
-        ].join("    ")
-      : "";
+  UI_ELEMENTS.mode.text = [`mode: ${UI_STATE.mode}`, `(g) toggle grid`].join(
+    "    "
+  );
 
   UI_ELEMENTS.storage.text = [
     "Storage",
@@ -73,9 +56,12 @@ function renderUI() {
   // only decorate hovered buttons
   const { hoveredElement } = UI_STATE;
   if (hoveredElement && hoveredElement.type === "button") {
+    UI_ELEMENTS.tooltip.visible = true;
     UI_ELEMENTS.tooltip.text = hoveredElement.blueprintName;
     UI_ELEMENTS.tooltip.position.x = UI_STATE.mouseIsoX - 40;
     UI_ELEMENTS.tooltip.position.y = UI_STATE.mouseIsoY;
+  } else {
+    UI_ELEMENTS.tooltip.visible = false;
   }
 }
 
