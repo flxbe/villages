@@ -30,8 +30,6 @@ function initUI() {
   UI_ELEMENTS.tooltip = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
   UI_ELEMENTS.tooltip.position.set(0, 0);
-
-  renderBuildmenuTexture();
 }
 
 function renderUI() {

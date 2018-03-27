@@ -94,7 +94,10 @@ const STATE = {
 const UI_STATE = {
   blueprint: "house",
   mode: "normal",
+
+  // visibility of elements
   grid: false,
+  buildmenu: false,
 
   // camera
   offsetX: 200,

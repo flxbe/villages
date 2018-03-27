@@ -50,7 +50,13 @@ window.addEventListener(
 
     switch (event.key) {
       case "b": {
-        UI_STATE.mode = "build";
+        UI_STATE.buildmenu = !UI_STATE.buildmenu;
+        if (UI_STATE.buildmenu) {
+          renderBuildmenuTexture();
+        } else {
+          BUILD_MENU_LAYER.clear();
+          UI_STATE.mode = "normal";
+        }
         break;
       }
       case "n": {
@@ -62,19 +68,22 @@ window.addEventListener(
         break;
       }
       case "1": {
-        if (UI_STATE.mode === "build") {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.mode = "build";
           UI_STATE.blueprint = "house";
         }
         break;
       }
       case "2": {
-        if (UI_STATE.mode === "build") {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.mode = "build";
           UI_STATE.blueprint = "barn";
         }
         break;
       }
       case "3": {
-        if (UI_STATE.mode === "build") {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.mode = "build";
           UI_STATE.blueprint = "road";
         }
         break;
@@ -202,19 +211,21 @@ function updateHoveredElement() {
   const { mouseIsoX: mX, mouseIsoY: mY } = UI_STATE;
 
   // check for build menu interaction
-  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-      const tile = BUILDMENU_GRID[i][j];
-      if (tile.empty) continue;
+  if (UI_STATE.buildmenu) {
+    for (let i = 0; i < BUILDMENU_GRID.length; i++) {
+      for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
+        const tile = BUILDMENU_GRID[i][j];
+        if (tile.empty) continue;
 
-      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-      if (pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)) {
-        UI_STATE.hoveredElement = {
-          type: "button",
-          blueprintName: tile.blueprintName
-        };
-        return;
+        const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+        const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+        if (pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)) {
+          UI_STATE.hoveredElement = {
+            type: "button",
+            blueprintName: tile.blueprintName
+          };
+          return;
+        }
       }
     }
   }
