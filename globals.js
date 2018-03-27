@@ -111,6 +111,9 @@ const UI_STATE = {
   grid: false,
   renderHitAreas: true,
 
+  // visibility of elements
+  buildmenu: false,
+
   // camera
   offsetX: 200,
   offsetY: 200,

@@ -26,12 +26,10 @@ function initUI() {
   UI_ELEMENTS.tooltip = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
   UI_ELEMENTS.tooltip.position.set(0, 0);
-
-  renderBuildmenuTexture();
 }
 
 function renderUI() {
-  UI_ELEMENTS.mode.text = [`mode: ${UI_STATE.mode}`, `(g) toggle grid`].join(
+  UI_ELEMENTS.mode.text = [`mode: ${UI_STATE.mode}`, `(g) toggle grid`, `(b) toggle buildmenu`, `(h) toggle hitboxes`].join(
     "    "
   );
 
