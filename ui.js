@@ -7,27 +7,30 @@ function initUI() {
     fill: "white"
   });
 
-  UI_ELEMENTS.mode = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.mode);
-  UI_ELEMENTS.mode.position.set(10, 10);
+  UI_ELEMENTS.help = new PIXI.Text(
+    "(g) toggle grid    (b) toggle buildmenu    (h) toggle hitboxes",
+    style
+  );
+  UI_CONTAINER.addChild(UI_ELEMENTS.help);
+  UI_ELEMENTS.help.position.set(100, 10);
 
   UI_ELEMENTS.storage = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.storage);
-  UI_ELEMENTS.storage.position.set(10, 50);
-
-  UI_ELEMENTS.deer1 = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.deer1);
-  UI_ELEMENTS.deer1.position.set(150, 50);
-
-  UI_ELEMENTS.deer2 = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.deer2);
-  UI_ELEMENTS.deer2.position.set(300, 50);
+  UI_ELEMENTS.storage.position.set(10, 10);
 
   UI_ELEMENTS.tooltip = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
   UI_ELEMENTS.tooltip.position.set(0, 0);
 
+  UI_ELEMENTS.decoration = new PIXI.Graphics();
+  SELECTION_LAYER.addChild(UI_ELEMENTS.decoration);
+
+  UI_ELEMENTS.description = new PIXI.Text("", style);
+  SELECTION_LAYER.addChild(UI_ELEMENTS.description);
+  UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * 1 - 5);
+
   renderBuildmenuTexture();
+  BUILD_MENU_LAYER.visible = false;
 }
 
 function renderUI() {
@@ -43,18 +46,6 @@ function renderUI() {
     `Wood: ${STATE.storage.wood}`
   ].join("\n");
 
-  UI_ELEMENTS.deer1.text = [
-    "Deer 1",
-    `Inventory: ${STATE.deers["deer1"].inventory} (${STATE.deers["deer1"]
-      .item || "nothing"})`
-  ].join("\n");
-
-  UI_ELEMENTS.deer2.text = [
-    "Deer 2",
-    `Inventory: ${STATE.deers["deer2"].inventory} (${STATE.deers["deer2"]
-      .item || "nothing"})`
-  ].join("\n");
-
   // only decorate hovered buttons
   const { hoveredElement } = UI_STATE;
   if (hoveredElement && hoveredElement.type === "button") {
@@ -65,19 +56,57 @@ function renderUI() {
   } else {
     UI_ELEMENTS.tooltip.visible = false;
   }
+
+  // set description
+  function obj2array(obj) {
+    const array = [];
+    for (let p in obj) {
+      if (obj.hasOwnProperty(p)) {
+        array.push(`${p}: ${obj[p]} `);
+      }
+    }
+    return array;
+  }
+
+  let array = [];
+  if (UI_STATE.selection) {
+    switch (UI_STATE.selection.type) {
+      case "deer":
+        array = obj2array(STATE.deers[UI_STATE.selection.id]);
+        break;
+      case "tree":
+        array = obj2array(STATE.trees[UI_STATE.selection.id]);
+        break;
+      case "tile":
+        array = obj2array(UI_STATE.selection);
+        array.push(
+          `tileType: ${
+            STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type
+          }`
+        );
+        break;
+      case "blueprint":
+        array = obj2array(UI_STATE.selection);
+        array = array.concat(obj2array(BLUEPRINTS[UI_STATE.selection.id]));
+        break;
+    }
+  }
+
+  UI_ELEMENTS.description.text = array.join("\n");
+  UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * array.length - 5);
 }
 
 function renderSelectionDecoration() {
-  SELECTION_LAYER.clear();
+  UI_ELEMENTS.decoration.clear();
 
   if (UI_STATE.selection) {
     let relX, relY;
-    SELECTION_LAYER.alpha = 0.25;
+    UI_ELEMENTS.decoration.alpha = 0.25;
 
     switch (UI_STATE.selection.type) {
       case "tile":
         [relX, relY] = tile2rel(UI_STATE.selection.i, UI_STATE.selection.j);
-        renderTile(SELECTION_LAYER, "0xffffff", relX, relY);
+        renderTile(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
         return;
       case "deer":
         [relX, relY] = cart2rel(
@@ -93,7 +122,7 @@ function renderSelectionDecoration() {
         break;
       case "blueprint":
         renderBuildmenuTile(
-          SELECTION_LAYER,
+          UI_ELEMENTS.decoration,
           "0xffffff",
           UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X,
           UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y
@@ -102,8 +131,8 @@ function renderSelectionDecoration() {
       default:
         throw Error("Unknown selection type");
     }
-    SELECTION_LAYER.alpha = 0.5;
-    renderCircle(SELECTION_LAYER, "0xffffff", relX, relY);
+    UI_ELEMENTS.decoration.alpha = 0.5;
+    renderCircle(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
   }
 }
 
@@ -152,17 +181,10 @@ function renderBuildmenuDecoration() {
   const { hoveredElement } = UI_STATE;
   if (!hoveredElement || hoveredElement.type !== "button") return;
 
-  // not perfect
-  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-      const tile = BUILDMENU_GRID[i][j];
-      if (tile.blueprintName !== hoveredElement.blueprintName) continue;
-
-      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-      renderBuildmenuTile(UI_DECORATION_LAYER, "0xff0000", x, y);
-    }
-  }
+  const x = hoveredElement.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+  const y = hoveredElement.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+  UI_DECORATION_LAYER.alpha = 0.25;
+  renderBuildmenuTile(UI_DECORATION_LAYER, "0xffffff", x, y);
 }
 
 function renderBuildmenuTexture() {

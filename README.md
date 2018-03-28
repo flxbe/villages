@@ -14,8 +14,9 @@
 
 ## Controls
 
+* `b`: Toggle build-menu.
 * `g`: Toggle map grid.
-* `h`: Toggle hit areas.
+* `h`: Toggle hitboxes.
 
 ## Assets
 

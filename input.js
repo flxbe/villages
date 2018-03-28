@@ -85,12 +85,38 @@ window.addEventListener(
     }
 
     switch (event.key) {
+      case "b": {
+        BUILD_MENU_LAYER.visible = !BUILD_MENU_LAYER.visible;
+        UI_STATE.buildmenu = !UI_STATE.buildmenu;
+        if (!BUILD_MENU_LAYER.visible) {
+          UI_STATE.selection = null;
+        }
+        break;
+      }
       case "g": {
         UI_STATE.grid = !UI_STATE.grid;
         break;
       }
       case "h": {
         UI_STATE.renderHitAreas = !UI_STATE.renderHitAreas;
+        break;
+      }
+      case "1": {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.selection = { type: "blueprint", id: "house" };
+        }
+        break;
+      }
+      case "2": {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.selection = { type: "blueprint", id: "barn" };
+        }
+        break;
+      }
+      case "3": {
+        if (UI_STATE.buildmenu) {
+          UI_STATE.selection = { type: "blueprint", id: "road" };
+        }
         break;
       }
     }
@@ -164,9 +190,12 @@ document.addEventListener("mouseup", event => {
 
       // UI interaction
       case "button":
-        UI_STATE.selection = null;
-        UI_STATE.blueprint = hoveredElement.blueprintName;
-        UI_STATE.mode = "build";
+        UI_STATE.selection = {
+          type: "blueprint",
+          id: hoveredElement.blueprintName,
+          i: hoveredElement.i,
+          j: hoveredElement.j
+        };
         break;
       default:
         throw Error(`unknown element type: ${hoveredElement.type}`);
@@ -176,7 +205,6 @@ document.addEventListener("mouseup", event => {
 
     if (movedDistanceSinceMouseDown >= 10) return;
 
-    UI_STATE.mode = "normal";
     UI_STATE.selection = null;
   }
 });
@@ -185,19 +213,25 @@ function updateHoveredElement() {
   const { mouseIsoX: mX, mouseIsoY: mY } = UI_STATE;
 
   // check for build menu interaction
-  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-      const tile = BUILDMENU_GRID[i][j];
-      if (tile.empty) continue;
+  if (BUILD_MENU_LAYER.visible) {
+    for (let i = 0; i < BUILDMENU_GRID.length; i++) {
+      for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
+        const tile = BUILDMENU_GRID[i][j];
+        if (tile.empty) continue;
 
-      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-      if (pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)) {
-        UI_STATE.hoveredElement = {
-          type: "button",
-          blueprintName: tile.blueprintName
-        };
-        return;
+        const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
+        const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
+        if (
+          pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)
+        ) {
+          UI_STATE.hoveredElement = {
+            type: "button",
+            blueprintName: tile.blueprintName,
+            i: i,
+            j: j
+          };
+          return;
+        }
       }
     }
   }
@@ -205,28 +239,40 @@ function updateHoveredElement() {
   const [i, j] = getActiveTile();
 
   // check for hovered objects
-  if (UI_STATE.mode === "normal") {
+  if (!UI_STATE.selection || UI_STATE.selection.type !== "blueprint") {
     let maxZ = 0;
 
     for (let deer of Object.values(STATE.deers)) {
-      const [relX, relY] = cart2rel(deer.x, deer.y);
       if (
-        UI_STATE.mouseIsoX < relX + TILE_WIDTH / 2 &&
-        UI_STATE.mouseIsoX >= relX - TILE_WIDTH / 2 &&
-        UI_STATE.mouseIsoY < relY + 15 &&
-        UI_STATE.mouseIsoY >= relY - 35 &&
-        relY > maxZ
+        pointInHitbox(
+          deer.sprite.x + deer.sprite.hitArea.x,
+          deer.sprite.y + deer.sprite.hitArea.y,
+          deer.sprite.hitArea.width,
+          deer.sprite.hitArea.height,
+          UI_STATE.mouseIsoX,
+          UI_STATE.mouseIsoY
+        ) &&
+        maxZ < deer.sprite.zIndex
       ) {
         UI_STATE.hoveredElement = { type: "deer", id: deer.id };
-        maxZ = deer.y;
+        maxZ = deer.sprite.zIndex;
       }
     }
 
     for (let tree of Object.values(STATE.trees)) {
-      const [_, relY] = tile2rel(tree.i, tree.j);
-      if (i == tree.i && j == tree.j && relY > maxZ) {
+      if (
+        pointInHitbox(
+          tree.sprite.x + tree.sprite.hitArea.x,
+          tree.sprite.y + tree.sprite.hitArea.y,
+          tree.sprite.hitArea.width,
+          tree.sprite.hitArea.height,
+          UI_STATE.mouseIsoX,
+          UI_STATE.mouseIsoY
+        ) &&
+        maxZ < tree.sprite.zIndex
+      ) {
         UI_STATE.hoveredElement = { type: "tree", id: tree.id };
-        maxZ = tree.y;
+        maxZ = tree.sprite.zIndex;
       }
     }
 

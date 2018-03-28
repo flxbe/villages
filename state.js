@@ -31,6 +31,7 @@ function updateState(action) {
     case "ADD_DEER": {
       const deer = action.deer;
       deer.sprite = new PIXI.Sprite();
+      deer.sprite.zIndex = deer.y;
       deer.sprite.hitArea = DEER_HIT_AREA;
       deer.sprite.interactive = true;
       deer.sprite.on("mouseup", event => {
@@ -60,6 +61,7 @@ function updateState(action) {
       const tree = action.tree;
       tree.sprite = new PIXI.Sprite();
       tree.sprite.hitArea = PALM_HIT_AREA;
+<<<<<<< HEAD
       tree.sprite.interactive = true;
       tree.sprite.on("mouseup", event => {
         UI_STATE.selection = { type: "tree", id: tree.id };
@@ -69,6 +71,10 @@ function updateState(action) {
         UI_STATE.hoveredElement = { type: "tree", id: tree.id };
         event.stopPropagation();
       });
+=======
+      const [_, relY] = getTileCenter(tree.i, tree.j);
+      tree.sprite.zIndex = relY;
+>>>>>>> 94700ddef87d3f780013771945e036351a52f020
       setAnimation(tree, "PINE_TREE");
       OBJECT_CONTAINER.addChild(tree.sprite);
       STATE.trees[tree.id] = tree;
