@@ -18,19 +18,58 @@ function initUI() {
   UI_CONTAINER.addChild(UI_ELEMENTS.storage);
   UI_ELEMENTS.storage.position.set(10, 10);
 
-  UI_ELEMENTS.tooltip = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
-  UI_ELEMENTS.tooltip.position.set(0, 0);
-
-  UI_ELEMENTS.decoration = new PIXI.Graphics();
-  SELECTION_LAYER.addChild(UI_ELEMENTS.decoration);
-
   UI_ELEMENTS.description = new PIXI.Text("", style);
   SELECTION_LAYER.addChild(UI_ELEMENTS.description);
   UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * 1 - 5);
 
-  renderBuildmenuTexture();
-  BUILD_MENU_LAYER.visible = false;
+  // menu buttons, just tmp
+  function createButton(color, blueprintName) {
+    const button = new PIXI.Graphics();
+    button.hitArea = new PIXI.Rectangle(
+      0,
+      0,
+      BUILDMENU_TILESIZE,
+      BUILDMENU_TILESIZE
+    );
+    button.interactive = true;
+
+    button.on("mouseup", event => {
+      UI_STATE.mode = "build";
+      UI_STATE.blueprintName = blueprintName;
+      event.stopPropagation();
+    });
+
+    button.on("mousemove", event => {
+      UI_STATE.hoveredElement = { type: "button", tooltip: blueprintName };
+      event.stopPropagation();
+    });
+
+    renderBuildmenuTile(button, color, 0, 0);
+
+    return button;
+  }
+
+  UI_ELEMENTS.houseButton = createButton("0x561f00", "house");
+  UI_CONTAINER.addChild(UI_ELEMENTS.houseButton);
+  UI_ELEMENTS.houseButton.position.set(WIDTH - BUILDMENU_TILESIZE - 10, 10);
+
+  UI_ELEMENTS.barnButton = createButton("0x450e00", "barn");
+  UI_CONTAINER.addChild(UI_ELEMENTS.barnButton);
+  UI_ELEMENTS.barnButton.position.set(
+    WIDTH - BUILDMENU_TILESIZE - 10,
+    20 + BUILDMENU_TILESIZE
+  );
+
+  UI_ELEMENTS.roadButton = createButton("0x999999", "road");
+  UI_CONTAINER.addChild(UI_ELEMENTS.roadButton);
+  UI_ELEMENTS.roadButton.position.set(
+    WIDTH - BUILDMENU_TILESIZE - 10,
+    30 + 2 * BUILDMENU_TILESIZE
+  );
+
+  UI_ELEMENTS.tooltip = new PIXI.Text("", style);
+  UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
+  UI_ELEMENTS.tooltip.position.set(0, 0);
 }
 
 function renderUI() {
@@ -40,13 +79,13 @@ function renderUI() {
     `Wood: ${STATE.storage.wood}`
   ].join("\n");
 
-  // only decorate hovered buttons
+  // show tooltip, if there is any
   const { hoveredElement } = UI_STATE;
-  if (hoveredElement && hoveredElement.type === "button") {
+  if (hoveredElement && hoveredElement.tooltip) {
     UI_ELEMENTS.tooltip.visible = true;
-    UI_ELEMENTS.tooltip.text = hoveredElement.blueprintName;
-    UI_ELEMENTS.tooltip.position.x = UI_STATE.mouseIsoX - 40;
-    UI_ELEMENTS.tooltip.position.y = UI_STATE.mouseIsoY;
+    UI_ELEMENTS.tooltip.text = hoveredElement.tooltip;
+    UI_ELEMENTS.tooltip.position.x = UI_STATE.mouseIsoX;
+    UI_ELEMENTS.tooltip.position.y = UI_STATE.mouseIsoY + 20;
   } else {
     UI_ELEMENTS.tooltip.visible = false;
   }
@@ -90,46 +129,6 @@ function renderUI() {
   UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * array.length - 5);
 }
 
-function renderSelectionDecoration() {
-  UI_ELEMENTS.decoration.clear();
-
-  if (UI_STATE.selection) {
-    let relX, relY;
-    UI_ELEMENTS.decoration.alpha = 0.25;
-
-    switch (UI_STATE.selection.type) {
-      case "tile":
-        [relX, relY] = tile2rel(UI_STATE.selection.i, UI_STATE.selection.j);
-        renderTile(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
-        return;
-      case "deer":
-        [relX, relY] = cart2rel(
-          STATE.deers[UI_STATE.selection.id].x - 10,
-          STATE.deers[UI_STATE.selection.id].y - 10
-        );
-        break;
-      case "tree":
-        [relX, relY] = tile2rel(
-          STATE.trees[UI_STATE.selection.id].i,
-          STATE.trees[UI_STATE.selection.id].j
-        );
-        break;
-      case "blueprint":
-        renderBuildmenuTile(
-          UI_ELEMENTS.decoration,
-          "0xffffff",
-          UI_STATE.selection.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X,
-          UI_STATE.selection.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y
-        );
-        return;
-      default:
-        throw Error("Unknown selection type");
-    }
-    UI_ELEMENTS.decoration.alpha = 0.5;
-    renderCircle(UI_ELEMENTS.decoration, "0xffffff", relX, relY);
-  }
-}
-
 function renderCircle(target, color, x, y) {
   const h_2 = TILE_HEIGHT / 2;
 
@@ -139,58 +138,6 @@ function renderCircle(target, color, x, y) {
   target.lineTo(x, y + TILE_HEIGHT);
   target.lineTo(x - TILE_WIDTH, y + h_2);
   target.lineTo(x, y);
-}
-
-const BUILDMENU_GRID = [
-  [{ empty: false, blueprintName: "house", color: "0x561f00" }],
-  [{ empty: false, blueprintName: "barn", color: "0x450e00" }],
-  [{ empty: false, blueprintName: "road", color: "0x999999" }]
-];
-for (let k = 3; k < 5; k++) {
-  BUILDMENU_GRID.push([{ empty: true, blueprintName: "", color: "0x000000" }]);
-}
-
-function getActiveGridTile() {
-  const j = Math.floor(
-    (UI_STATE.mouseIsoX - BUILDMENU_OFFSET_X) / BUILDMENU_TILESIZE
-  );
-  const i = Math.floor(
-    (UI_STATE.mouseIsoY - BUILDMENU_OFFSET_Y) / BUILDMENU_TILESIZE
-  );
-  return [i, j];
-}
-
-function isOccupiedBuildmenuTile(i, j) {
-  return (
-    i < BUILDMENU_GRID.length &&
-    j < BUILDMENU_GRID[i].length &&
-    !BUILDMENU_GRID[i][j].empty
-  );
-}
-
-function renderBuildmenuDecoration() {
-  UI_DECORATION_LAYER.clear();
-
-  // only decorate hovered buttons
-  const { hoveredElement } = UI_STATE;
-  if (!hoveredElement || hoveredElement.type !== "button") return;
-
-  const x = hoveredElement.j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-  const y = hoveredElement.i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-  UI_DECORATION_LAYER.alpha = 0.25;
-  renderBuildmenuTile(UI_DECORATION_LAYER, "0xffffff", x, y);
-}
-
-function renderBuildmenuTexture() {
-  for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-    for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-      const tile = BUILDMENU_GRID[i][j];
-      const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-      const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-
-      renderBuildmenuTile(BUILD_MENU_LAYER, tile.color, x, y);
-    }
-  }
 }
 
 function renderBuildmenuTile(target, color, x, y) {

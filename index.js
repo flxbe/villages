@@ -37,9 +37,8 @@ function gameloop(delta) {
   MAP_GRID_SPRITE.visible = UI_STATE.grid;
 
   renderMapDecoration();
-  renderUI();
-  renderBuildmenuDecoration();
   renderSelectionDecoration();
+  renderUI();
 
   HITBOX_CONTAINER.clear();
 
@@ -68,7 +67,9 @@ function gameloop(delta) {
     if (UI_STATE.renderHitAreas) renderHitBox(tree);
   }
 
-  OBJECT_CONTAINER.children.sort((child1, child2) => child1.zIndex - child2.zIndex);
+  OBJECT_CONTAINER.children.sort(
+    (child1, child2) => child1.zIndex - child2.zIndex
+  );
 }
 
 function renderHitBox({ sprite }) {

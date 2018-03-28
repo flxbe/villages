@@ -174,14 +174,14 @@ function renderMapDecoration() {
   MAP_DECORATION_LAYER.clear();
 
   // only decorate in build mode
-  if (!UI_STATE.selection || UI_STATE.selection.type !== "blueprint") return;
+  if (UI_STATE.mode !== "build") return;
 
   // only decorate hovered tiles
   const { hoveredElement } = UI_STATE;
   if (!hoveredElement || hoveredElement.type !== "tile") return;
 
   const { i: mouseI, j: mouseJ } = hoveredElement;
-  const blueprint = BLUEPRINTS[UI_STATE.selection.id];
+  const blueprint = BLUEPRINTS[UI_STATE.blueprintName];
 
   for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
     for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
@@ -192,6 +192,42 @@ function renderMapDecoration() {
       renderTile(MAP_DECORATION_LAYER, color, relX, relY);
     }
   }
+}
+
+/**
+ * Render the object or tile selection on the map.
+ */
+function renderSelectionDecoration() {
+  SELECTION_LAYER.clear();
+
+  if (!UI_STATE.selection) return;
+
+  let relX = 0;
+  let relY = 0;
+  switch (UI_STATE.selection.type) {
+    case "tile":
+      [relX, relY] = tile2rel(UI_STATE.selection.i, UI_STATE.selection.j);
+      SELECTION_LAYER.alpha = 0.25;
+      renderTile(SELECTION_LAYER, "0xffffff", relX, relY);
+      return;
+    case "deer":
+      [relX, relY] = cart2rel(
+        STATE.deers[UI_STATE.selection.id].x - 10,
+        STATE.deers[UI_STATE.selection.id].y - 10
+      );
+      break;
+    case "tree":
+      [relX, relY] = tile2rel(
+        STATE.trees[UI_STATE.selection.id].i,
+        STATE.trees[UI_STATE.selection.id].j
+      );
+      break;
+    default:
+      throw Error("Unknown selection type");
+  }
+
+  SELECTION_LAYER.alpha = 0.5;
+  renderCircle(SELECTION_LAYER, "0xffffff", relX, relY);
 }
 
 /**
