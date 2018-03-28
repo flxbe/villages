@@ -215,7 +215,6 @@ function updateHoveredElement() {
     let maxZ = 0;
 
     for (let deer of Object.values(STATE.deers)) {
-      const [relX, relY] = cart2rel(deer.x, deer.y);
       if (pointInHitbox(
         deer.sprite.x + deer.sprite.hitArea.x,
         deer.sprite.y + deer.sprite.hitArea.y,
@@ -223,15 +222,14 @@ function updateHoveredElement() {
         deer.sprite.hitArea.height,
         UI_STATE.mouseIsoX,
         UI_STATE.mouseIsoY) &&
-        maxZ < deer.y
+        maxZ < deer.sprite.zIndex
       ) {
         UI_STATE.hoveredElement = { type: "deer", id: deer.id };
-        maxZ = deer.y;
+        maxZ = deer.sprite.zIndex;
       }
     }
 
     for (let tree of Object.values(STATE.trees)) {
-      const [_, relY] = getTileCenter(tree.i, tree.j);
       if (pointInHitbox(
         tree.sprite.x + tree.sprite.hitArea.x,
         tree.sprite.y + tree.sprite.hitArea.y,
@@ -239,10 +237,10 @@ function updateHoveredElement() {
         tree.sprite.hitArea.height,
         UI_STATE.mouseIsoX,
         UI_STATE.mouseIsoY) &&
-        maxZ < relY
+        maxZ < tree.sprite.zIndex
       ) {
         UI_STATE.hoveredElement = { type: "tree", id: tree.id };
-        maxZ = relY;
+        maxZ = tree.sprite.zIndex;
       }
     }
 
