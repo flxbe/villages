@@ -7,21 +7,13 @@ function initUI() {
     fill: "white"
   });
 
-  UI_ELEMENTS.mode = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.mode);
-  UI_ELEMENTS.mode.position.set(10, 10);
+  UI_ELEMENTS.help = new PIXI.Text("(g) toggle grid    (b) toggle buildmenu    (h) toggle hitboxes", style);
+  UI_CONTAINER.addChild(UI_ELEMENTS.help);
+  UI_ELEMENTS.help.position.set(100, 10);
 
   UI_ELEMENTS.storage = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.storage);
-  UI_ELEMENTS.storage.position.set(10, 50);
-
-  UI_ELEMENTS.deer1 = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.deer1);
-  UI_ELEMENTS.deer1.position.set(150, 50);
-
-  UI_ELEMENTS.deer2 = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.deer2);
-  UI_ELEMENTS.deer2.position.set(300, 50);
+  UI_ELEMENTS.storage.position.set(10, 10);
 
   UI_ELEMENTS.tooltip = new PIXI.Text("", style);
   UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
@@ -39,26 +31,10 @@ function initUI() {
 }
 
 function renderUI() {
-  UI_ELEMENTS.mode.text = [`(g) toggle grid`, `(b) toggle buildmenu`, `(h) toggle hitboxes`].join(
-    "    "
-  );
-
   UI_ELEMENTS.storage.text = [
     "Storage",
     `Food: ${STATE.storage.food}`,
     `Wood: ${STATE.storage.wood}`
-  ].join("\n");
-
-  UI_ELEMENTS.deer1.text = [
-    "Deer 1",
-    `Inventory: ${STATE.deers["deer1"].inventory} (${STATE.deers["deer1"]
-      .item || "nothing"})`
-  ].join("\n");
-
-  UI_ELEMENTS.deer2.text = [
-    "Deer 2",
-    `Inventory: ${STATE.deers["deer2"].inventory} (${STATE.deers["deer2"]
-      .item || "nothing"})`
   ].join("\n");
 
   // only decorate hovered buttons
@@ -72,10 +48,7 @@ function renderUI() {
     UI_ELEMENTS.tooltip.visible = false;
   }
 
-  setDescription();
-}
-
-function setDescription() {
+  // set description
   function obj2array(obj) {
     const array = [];
     for (let p in obj) {
@@ -101,6 +74,7 @@ function setDescription() {
         break;
       case "blueprint":
         array = obj2array(UI_STATE.selection);
+        array = array.concat(obj2array(BLUEPRINTS[UI_STATE.selection.id]));
         break;
     }
   }
