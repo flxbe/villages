@@ -32,7 +32,7 @@ function initUI() {
 
   UI_ELEMENTS.description = new PIXI.Text("", style);
   SELECTION_LAYER.addChild(UI_ELEMENTS.description);
-  UI_ELEMENTS.description.position.set(10, HEIGHT - (200 / 14));
+  UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * 1 - 5);
 
   renderBuildmenuTexture();
   BUILD_MENU_LAYER.visible = false;
@@ -106,7 +106,7 @@ function setDescription() {
   }
 
   UI_ELEMENTS.description.text = array.join("\n");
-  UI_ELEMENTS.description.position.set(10, HEIGHT - (200 / 14) * array.length);
+  UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * array.length - 5);
 }
 
 function renderSelectionDecoration() {
