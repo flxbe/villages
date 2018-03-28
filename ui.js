@@ -32,7 +32,7 @@ function initUI() {
 
   UI_ELEMENTS.description = new PIXI.Text("", style);
   SELECTION_LAYER.addChild(UI_ELEMENTS.description);
-  UI_ELEMENTS.description.position.set(10, HEIGHT - 20);
+  UI_ELEMENTS.description.position.set(10, HEIGHT - (200 / 14));
 
   renderBuildmenuTexture();
   BUILD_MENU_LAYER.visible = false;
@@ -71,6 +71,42 @@ function renderUI() {
   } else {
     UI_ELEMENTS.tooltip.visible = false;
   }
+
+  setDescription();
+}
+
+function setDescription() {
+  function obj2array(obj) {
+    const array = [];
+    for (let p in obj) {
+      if (obj.hasOwnProperty(p)) {
+        array.push(`${p}: ${obj[p]} `);
+      }
+    }
+    return array;
+  }
+
+  let array = [];
+  if (UI_STATE.selection) {
+    switch (UI_STATE.selection.type) {
+      case "deer":
+        array = obj2array(STATE.deers[UI_STATE.selection.id]);
+        break;
+      case "tree":
+        array = obj2array(STATE.trees[UI_STATE.selection.id]);
+        break;
+      case "tile":
+        array = obj2array(UI_STATE.selection);
+        array.push(`tileType: ${STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type}`);
+        break;
+      case "blueprint":
+        array = obj2array(UI_STATE.selection);
+        break;
+    }
+  }
+
+  UI_ELEMENTS.description.text = array.join("\n");
+  UI_ELEMENTS.description.position.set(10, HEIGHT - (200 / 14) * array.length);
 }
 
 function renderSelectionDecoration() {

@@ -32,7 +32,6 @@ window.addEventListener(
         UI_STATE.buildmenu = !UI_STATE.buildmenu;
         if (!BUILD_MENU_LAYER.visible) {
           UI_STATE.selection = null;
-          UI_ELEMENTS.description.text = "";
         }
         break;
       }
@@ -121,21 +120,27 @@ document.addEventListener("mouseup", event => {
 
     if (!hoveredElement) {
       UI_STATE.selection = null;
-      UI_ELEMENTS.description.text = "";
       return;
     }
 
     switch (hoveredElement.type) {
       // click an object
       case "deer":
-      case "tree": {
         if (UI_STATE.selection && UI_STATE.selection.type === "blueprint") {
           throw Error(
             `should be imposible to hover in build mode: ${hoveredElement.type}`
           );
         }
         UI_STATE.selection = hoveredElement;
-      }
+        break;
+      case "tree":
+        if (UI_STATE.selection && UI_STATE.selection.type === "blueprint") {
+          throw Error(
+            `should be imposible to hover in build mode: ${hoveredElement.type}`
+          );
+        }
+        UI_STATE.selection = hoveredElement;
+        break;
 
       // click on a tile
       case "tile":
@@ -150,7 +155,6 @@ document.addEventListener("mouseup", event => {
 
               if (!UI_STATE.ctrlDown) {
                 UI_STATE.selection = null;
-                UI_ELEMENTS.description.text = "";
               }
             } else {
               console.log("not enough resources");
@@ -165,29 +169,17 @@ document.addEventListener("mouseup", event => {
 
       // UI interaction
       case "button":
-        UI_STATE.selection = {type: "blueprint", id: hoveredElement.blueprintName, i: hoveredElement.i, j: hoveredElement.j };
+        UI_STATE.selection = { type: "blueprint", id: hoveredElement.blueprintName, i: hoveredElement.i, j: hoveredElement.j };
         break;
       default:
         throw Error(`unknown element type: ${hoveredElement.type}`);
     }
-
-    function obj2str(obj) {
-      const list = [];
-      for (let p in obj) {
-          if (obj.hasOwnProperty(p)) {
-              list.push(`${p}: ${obj[p]} `);
-          }
-      }
-      return list.join("    ");
-    }
-    UI_ELEMENTS.description.text = obj2str(UI_STATE.selection);
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = false;
 
     if (movedDistanceSinceMouseDown >= 10) return;
 
     UI_STATE.selection = null;
-    UI_ELEMENTS.description.text = "";
   }
 });
 
@@ -224,12 +216,14 @@ function updateHoveredElement() {
 
     for (let deer of Object.values(STATE.deers)) {
       const [relX, relY] = cart2rel(deer.x, deer.y);
-      if (
-        UI_STATE.mouseIsoX < relX + TILE_WIDTH / 2 &&
-        UI_STATE.mouseIsoX >= relX - TILE_WIDTH / 2 &&
-        UI_STATE.mouseIsoY < relY + 15 &&
-        UI_STATE.mouseIsoY >= relY - 35 &&
-        relY > maxZ
+      if (pointInHitbox(
+        deer.sprite.x + deer.sprite.hitArea.x,
+        deer.sprite.y + deer.sprite.hitArea.y,
+        deer.sprite.hitArea.width,
+        deer.sprite.hitArea.height,
+        UI_STATE.mouseIsoX,
+        UI_STATE.mouseIsoY) &&
+        maxZ < deer.y
       ) {
         UI_STATE.hoveredElement = { type: "deer", id: deer.id };
         maxZ = deer.y;
@@ -237,10 +231,18 @@ function updateHoveredElement() {
     }
 
     for (let tree of Object.values(STATE.trees)) {
-      const [_, relY] = tile2rel(tree.i, tree.j);
-      if (i == tree.i && j == tree.j && relY > maxZ) {
+      const [_, relY] = getTileCenter(tree.i, tree.j);
+      if (pointInHitbox(
+        tree.sprite.x + tree.sprite.hitArea.x,
+        tree.sprite.y + tree.sprite.hitArea.y,
+        tree.sprite.hitArea.width,
+        tree.sprite.hitArea.height,
+        UI_STATE.mouseIsoX,
+        UI_STATE.mouseIsoY) &&
+        maxZ < relY
+      ) {
         UI_STATE.hoveredElement = { type: "tree", id: tree.id };
-        maxZ = tree.y;
+        maxZ = relY;
       }
     }
 
