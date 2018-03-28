@@ -5,6 +5,64 @@ function getActiveTile() {
   return abs2tile(absX, absY);
 }
 
+// nothing under the mouse
+APPLICATION.stage.on("mousemove", event => {
+  UI_STATE.hoveredElement = null;
+});
+
+// nothing under the mouse
+APPLICATION.stage.on("mouseup", event => {
+  UI_STATE.selection = null;
+});
+
+// update hovered tile
+MAP_SPRITE.on("mousemove", event => {
+  const [i, j] = getActiveTile();
+
+  if (!isTileOnMap(i, j)) return;
+
+  UI_STATE.hoveredElement = { type: "tile", i, j };
+  event.stopPropagation();
+});
+
+// handle tile click
+MAP_SPRITE.on("mouseup", event => {
+  const [i, j] = getActiveTile();
+
+  if (!isTileOnMap(i, j)) return;
+
+  // select tile in normal mode
+  if (UI_STATE.mode === "normal") {
+    UI_STATE.selection = { type: "tile", i, j };
+    event.stopPropagation();
+    return;
+  }
+
+  // try to place a building in build mode
+  if (UI_STATE === "build") {
+    const blueprintName = UI_STATE.blueprint;
+    const blueprint = BLUEPRINTS[blueprintName];
+
+    if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
+      if (sufficientResources(blueprint)) {
+        serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+
+        if (!UI_STATE.ctrlDown) {
+          UI_STATE.mode = "normal";
+        }
+      } else {
+        console.log("not enough resources");
+      }
+    } else {
+      console.log("cannot build");
+    }
+
+    UI_STATE.selection = null;
+    event.stopPropagation();
+    return;
+  }
+});
+
 window.addEventListener(
   "keydown",
   event => {
@@ -60,7 +118,7 @@ document.addEventListener("mousemove", event => {
   UI_STATE.mouseIsoX = newX;
   UI_STATE.mouseIsoY = newY;
 
-  updateHoveredElement();
+  // updateHoveredElement();
 });
 
 document.addEventListener("contextmenu", event => {
@@ -100,40 +158,9 @@ document.addEventListener("mouseup", event => {
     switch (hoveredElement.type) {
       // click an object
       case "deer":
-      case "tree": {
-        if (UI_STATE.mode === "build") {
-          throw Error(
-            `should be imposible to hover in build mode: ${hoveredElement.type}`
-          );
-        }
-        UI_STATE.selection = hoveredElement;
-      }
-
-      // click on a tile
+      case "tree":
       case "tile":
-        if (UI_STATE.mode === "build") {
-          const { i, j } = hoveredElement;
-          const blueprintName = UI_STATE.blueprint;
-          const blueprint = BLUEPRINTS[blueprintName];
-
-          if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-            if (sufficientResources(blueprint)) {
-              serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
-
-              if (!UI_STATE.ctrlDown) {
-                UI_STATE.mode = "normal";
-                UI_STATE.selection = null;
-              }
-            } else {
-              console.log("not enough resources");
-            }
-          } else {
-            console.log("cannot build");
-          }
-        } else {
-          UI_STATE.selection = hoveredElement;
-        }
-        break;
+        return;
 
       // UI interaction
       case "button":

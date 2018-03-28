@@ -31,9 +31,11 @@ function initUI() {
 }
 
 function renderUI() {
-  UI_ELEMENTS.mode.text = [`mode: ${UI_STATE.mode}`, `(g) toggle grid`].join(
-    "    "
-  );
+  UI_ELEMENTS.mode.text = [
+    `mode: ${UI_STATE.mode}`,
+    `(g) toggle grid`,
+    `(h) toggle hit areas`
+  ].join("    ");
 
   UI_ELEMENTS.storage.text = [
     "Storage",

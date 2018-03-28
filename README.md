@@ -14,9 +14,8 @@
 
 ## Controls
 
-* `b`: Activate building mode.
-* `n`: Activate normal mode.
 * `g`: Toggle map grid.
+* `h`: Toggle hit areas.
 
 ## Assets
 

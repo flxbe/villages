@@ -32,6 +32,15 @@ function updateState(action) {
       const deer = action.deer;
       deer.sprite = new PIXI.Sprite();
       deer.sprite.hitArea = DEER_HIT_AREA;
+      deer.sprite.interactive = true;
+      deer.sprite.on("mouseup", event => {
+        UI_STATE.selection = { type: "deer", id: deer.id };
+        event.stopPropagation();
+      });
+      deer.sprite.on("mousemove", event => {
+        UI_STATE.hoveredElement = { type: "deer", id: deer.id };
+        event.stopPropagation();
+      });
       setAnimation(deer, "STAND");
       OBJECT_CONTAINER.addChild(deer.sprite);
       STATE.deers[deer.id] = deer;
@@ -51,6 +60,15 @@ function updateState(action) {
       const tree = action.tree;
       tree.sprite = new PIXI.Sprite();
       tree.sprite.hitArea = PALM_HIT_AREA;
+      tree.sprite.interactive = true;
+      tree.sprite.on("mouseup", event => {
+        UI_STATE.selection = { type: "tree", id: tree.id };
+        event.stopPropagation();
+      });
+      tree.sprite.on("mousemove", event => {
+        UI_STATE.hoveredElement = { type: "tree", id: tree.id };
+        event.stopPropagation();
+      });
       setAnimation(tree, "PINE_TREE");
       OBJECT_CONTAINER.addChild(tree.sprite);
       STATE.trees[tree.id] = tree;

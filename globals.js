@@ -46,21 +46,20 @@ const APPLICATION = new PIXI.Application({
   width: WIDTH,
   height: HEIGHT
 });
+APPLICATION.stage.interactive = true;
+APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
+APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
 
 // map
 const MAP_TEXTURE = PIXI.RenderTexture.create();
 const MAP_SPRITE = new PIXI.Sprite(MAP_TEXTURE);
+MAP_SPRITE.interactive = true;
 APPLICATION.stage.addChild(MAP_SPRITE);
 
 // map grid
 const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
 const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
 APPLICATION.stage.addChild(MAP_GRID_SPRITE);
-MAP_SPRITE.interactive = true;
-//MAP_GRID_SPRITE.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
-MAP_SPRITE.on("mousedown", event => {
-  console.log("test");
-});
 
 // renders decorations the map to highlight blueprints
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
