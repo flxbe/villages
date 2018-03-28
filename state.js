@@ -32,6 +32,7 @@ function updateState(action) {
       const deer = action.deer;
       deer.sprite = new PIXI.Sprite();
       deer.sprite.hitArea = DEER_HIT_AREA;
+      deer.sprite.zIndex = deer.y;
       setAnimation(deer, "STAND");
       OBJECT_CONTAINER.addChild(deer.sprite);
       STATE.deers[deer.id] = deer;
@@ -51,6 +52,8 @@ function updateState(action) {
       const tree = action.tree;
       tree.sprite = new PIXI.Sprite();
       tree.sprite.hitArea = PALM_HIT_AREA;
+      const [_, relY] = getTileCenter(tree.i, tree.j);
+      tree.sprite.zIndex = relY;
       setAnimation(tree, "PINE_TREE");
       OBJECT_CONTAINER.addChild(tree.sprite);
       STATE.trees[tree.id] = tree;

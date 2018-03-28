@@ -47,6 +47,7 @@ function gameloop(delta) {
     move_deer(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
+    deer.sprite.zIndex = deer.y;
 
     const [relX, relY] = cart2rel(deer.x, deer.y);
     deer.sprite.x = relX + DEER_OFFSET_X;
@@ -66,6 +67,8 @@ function gameloop(delta) {
 
     if (UI_STATE.renderHitAreas) renderHitBox(tree);
   }
+
+  OBJECT_CONTAINER.children.sort((child1, child2) => child1.zIndex - child2.zIndex);
 }
 
 function renderHitBox({ sprite }) {
