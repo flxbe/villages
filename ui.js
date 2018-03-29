@@ -66,10 +66,6 @@ function initUI() {
     WIDTH - BUILDMENU_TILESIZE - 10,
     30 + 2 * BUILDMENU_TILESIZE
   );
-
-  UI_ELEMENTS.tooltip = new PIXI.Text("", style);
-  UI_CONTAINER.addChild(UI_ELEMENTS.tooltip);
-  UI_ELEMENTS.tooltip.position.set(0, 0);
 }
 
 function renderUI() {
@@ -82,12 +78,12 @@ function renderUI() {
   // show tooltip, if there is any
   const { hoveredElement } = UI_STATE;
   if (hoveredElement && hoveredElement.tooltip) {
-    UI_ELEMENTS.tooltip.visible = true;
-    UI_ELEMENTS.tooltip.text = hoveredElement.tooltip;
-    UI_ELEMENTS.tooltip.position.x = UI_STATE.mouseIsoX;
-    UI_ELEMENTS.tooltip.position.y = UI_STATE.mouseIsoY + 20;
+    TOOLTIP_LAYER.visible = true;
+    TOOLTIP_LAYER.text = hoveredElement.tooltip;
+    TOOLTIP_LAYER.position.x = UI_STATE.mouseIsoX;
+    TOOLTIP_LAYER.position.y = UI_STATE.mouseIsoY + 20;
   } else {
-    UI_ELEMENTS.tooltip.visible = false;
+    TOOLTIP_LAYER.visible = false;
   }
 
   // set description
