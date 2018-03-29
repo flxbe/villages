@@ -150,3 +150,9 @@ function renderBuildmenuTile(target, color, x, y) {
   target.lineTo(x, y);
   target.endFill();
 }
+
+function resetUI_STATE() {
+  UI_STATE.mode = "normal";
+  UI_STATE.blueprintName = null;
+  UI_STATE.selection = null;
+}
