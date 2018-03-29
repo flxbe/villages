@@ -10,11 +10,6 @@ APPLICATION.stage.on("mousemove", event => {
   UI_STATE.hoveredElement = null;
 });
 
-// nothing under the mouse
-APPLICATION.stage.on("mouseup", event => {
-  UI_STATE.selection = null;
-});
-
 // update hovered tile
 MAP_SPRITE.on("mousemove", event => {
   const [i, j] = getActiveTile();
@@ -29,7 +24,10 @@ MAP_SPRITE.on("mousemove", event => {
 MAP_SPRITE.on("mouseup", event => {
   const [i, j] = getActiveTile();
 
-  if (!isTileOnMap(i, j)) return;
+  if (!isTileOnMap(i, j)) {
+    UI_STATE.selection = null;
+    return;
+  }
 
   // select tile in normal mode
   if (UI_STATE.mode === "normal") {
@@ -39,8 +37,8 @@ MAP_SPRITE.on("mouseup", event => {
   }
 
   // try to place a building in build mode
-  if (UI_STATE === "build") {
-    const blueprintName = UI_STATE.blueprint;
+  if (UI_STATE.mode === "build") {
+    const { blueprintName } = UI_STATE;
     const blueprint = BLUEPRINTS[blueprintName];
 
     if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
@@ -143,16 +141,11 @@ document.addEventListener("mousemove", event => {
 
   UI_STATE.mouseIsoX = newX;
   UI_STATE.mouseIsoY = newY;
-
-  // updateHoveredElement();
 });
 
 document.addEventListener("contextmenu", event => {
   event.preventDefault();
 });
-
-let mouseDiffX = 0;
-let mouseDiffY = 0;
 
 document.addEventListener("mousedown", event => {
   if (event.which == 1) {
@@ -160,130 +153,12 @@ document.addEventListener("mousedown", event => {
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = true;
   }
-
-  mouseDiffX = event.clientX;
-  mouseDiffY = event.clientY;
 });
 
 document.addEventListener("mouseup", event => {
-  const movedDistanceSinceMouseDown =
-    Math.abs(mouseDiffX - event.clientX) + Math.abs(mouseDiffY - event.clientY);
-
   if (event.which == 1) {
     UI_STATE.leftMouseDown = false;
-
-    if (movedDistanceSinceMouseDown >= 10) return;
-
-    const { hoveredElement } = UI_STATE;
-
-    if (!hoveredElement) {
-      UI_STATE.selection = null;
-      return;
-    }
-
-    switch (hoveredElement.type) {
-      // click an object
-      case "deer":
-      case "tree":
-      case "tile":
-        return;
-
-      // UI interaction
-      case "button":
-        UI_STATE.selection = {
-          type: "blueprint",
-          id: hoveredElement.blueprintName,
-          i: hoveredElement.i,
-          j: hoveredElement.j
-        };
-        break;
-      default:
-        throw Error(`unknown element type: ${hoveredElement.type}`);
-    }
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = false;
-
-    if (movedDistanceSinceMouseDown >= 10) return;
-
-    UI_STATE.selection = null;
   }
 });
-
-function updateHoveredElement() {
-  const { mouseIsoX: mX, mouseIsoY: mY } = UI_STATE;
-
-  // check for build menu interaction
-  if (BUILD_MENU_LAYER.visible) {
-    for (let i = 0; i < BUILDMENU_GRID.length; i++) {
-      for (let j = 0; j < BUILDMENU_GRID[i].length; j++) {
-        const tile = BUILDMENU_GRID[i][j];
-        if (tile.empty) continue;
-
-        const x = j * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_X;
-        const y = i * BUILDMENU_TILESIZE + BUILDMENU_OFFSET_Y;
-        if (
-          pointInHitbox(x, y, BUILDMENU_TILESIZE, BUILDMENU_TILESIZE, mX, mY)
-        ) {
-          UI_STATE.hoveredElement = {
-            type: "button",
-            blueprintName: tile.blueprintName,
-            i: i,
-            j: j
-          };
-          return;
-        }
-      }
-    }
-  }
-
-  const [i, j] = getActiveTile();
-
-  // check for hovered objects
-  if (!UI_STATE.selection || UI_STATE.selection.type !== "blueprint") {
-    let maxZ = 0;
-
-    for (let deer of Object.values(STATE.deers)) {
-      if (
-        pointInHitbox(
-          deer.sprite.x + deer.sprite.hitArea.x,
-          deer.sprite.y + deer.sprite.hitArea.y,
-          deer.sprite.hitArea.width,
-          deer.sprite.hitArea.height,
-          UI_STATE.mouseIsoX,
-          UI_STATE.mouseIsoY
-        ) &&
-        maxZ < deer.sprite.zIndex
-      ) {
-        UI_STATE.hoveredElement = { type: "deer", id: deer.id };
-        maxZ = deer.sprite.zIndex;
-      }
-    }
-
-    for (let tree of Object.values(STATE.trees)) {
-      if (
-        pointInHitbox(
-          tree.sprite.x + tree.sprite.hitArea.x,
-          tree.sprite.y + tree.sprite.hitArea.y,
-          tree.sprite.hitArea.width,
-          tree.sprite.hitArea.height,
-          UI_STATE.mouseIsoX,
-          UI_STATE.mouseIsoY
-        ) &&
-        maxZ < tree.sprite.zIndex
-      ) {
-        UI_STATE.hoveredElement = { type: "tree", id: tree.id };
-        maxZ = tree.sprite.zIndex;
-      }
-    }
-
-    if (maxZ !== 0) return;
-  }
-
-  // check for hovered tiles
-  if (isTileOnMap(i, j)) {
-    UI_STATE.hoveredElement = { type: "tile", i, j };
-    return;
-  }
-
-  UI_STATE.hoveredElement = null;
-}

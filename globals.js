@@ -50,42 +50,38 @@ APPLICATION.stage.interactive = true;
 APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
 APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
 
-// map
+/**
+ * map layers
+ */
 const MAP_TEXTURE = PIXI.RenderTexture.create();
 const MAP_SPRITE = new PIXI.Sprite(MAP_TEXTURE);
 MAP_SPRITE.interactive = true;
 APPLICATION.stage.addChild(MAP_SPRITE);
 
-// map grid
 const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
 const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
 APPLICATION.stage.addChild(MAP_GRID_SPRITE);
 
-// renders decorations on the map to highlight blueprints
 const MAP_DECORATION_LAYER = new PIXI.Graphics();
 APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
 
-const UI_CONTAINER = new PIXI.Container();
-APPLICATION.stage.addChild(UI_CONTAINER);
-
-// build menu grid
-const BUILD_MENU_LAYER = new PIXI.Graphics();
-UI_CONTAINER.addChild(BUILD_MENU_LAYER);
-
-// renders decorations on the ui to highlight mouse position
-const UI_DECORATION_LAYER = new PIXI.Graphics();
-UI_CONTAINER.addChild(UI_DECORATION_LAYER);
-
-// renders decoration on the ui or map to highlight user selection
 const SELECTION_LAYER = new PIXI.Graphics();
-UI_CONTAINER.addChild(SELECTION_LAYER);
+APPLICATION.stage.addChild(SELECTION_LAYER);
 
+/**
+ * object layers
+ */
 const OBJECT_CONTAINER = new PIXI.Container();
 APPLICATION.stage.addChild(OBJECT_CONTAINER);
 
-// render object hotboxes for debuging
 const HITBOX_CONTAINER = new PIXI.Graphics();
 APPLICATION.stage.addChild(HITBOX_CONTAINER);
+
+/**
+ * UI layers
+ */
+const UI_CONTAINER = new PIXI.Container();
+APPLICATION.stage.addChild(UI_CONTAINER);
 
 // save ui elements
 const UI_ELEMENTS = {};
@@ -103,6 +99,11 @@ const STATE = {
 
 // UI STATE
 const UI_STATE = {
+  mode: "normal",
+
+  // build mode
+  blueprintName: null,
+
   // debug options
   grid: false,
   renderHitAreas: false,
