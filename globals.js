@@ -115,6 +115,8 @@ const UI_STATE = {
   // mouse state
   mouseIsoX: 0,
   mouseIsoY: 0,
+  clickStartX: 0,
+  clickStartY: 0,
   leftMouseDown: false,
   rightMouseDown: false,
   hoveredElement: null,

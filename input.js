@@ -24,6 +24,8 @@ MAP_SPRITE.on("mousemove", event => {
 MAP_SPRITE.on("mouseup", event => {
   const [i, j] = getActiveTile();
 
+  console.log(event);
+
   if (!isTileOnMap(i, j)) {
     UI_STATE.selection = null;
     return;
@@ -148,6 +150,9 @@ document.addEventListener("contextmenu", event => {
 });
 
 document.addEventListener("mousedown", event => {
+  UI_STATE.clickStartX = event.clientX;
+  UI_STATE.clickStartY = event.clientY;
+
   if (event.which == 1) {
     UI_STATE.leftMouseDown = true;
   } else if (event.which == 3) {
@@ -156,9 +161,14 @@ document.addEventListener("mousedown", event => {
 });
 
 document.addEventListener("mouseup", event => {
+  const movedSignificantly = Math.abs(UI_STATE.clickStartX - UI_STATE.mouseIsoX) + Math.abs(UI_STATE.clickStartY - UI_STATE.mouseIsoY) >= 10;
+
   if (event.which == 1) {
     UI_STATE.leftMouseDown = false;
   } else if (event.which == 3) {
     UI_STATE.rightMouseDown = false;
+    if (!movedSignificantly) {
+      resetUI_STATE();
+    }
   }
 });
