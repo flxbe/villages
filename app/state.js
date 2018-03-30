@@ -1,15 +1,32 @@
+import { setAnimation } from "./animations.js";
+import { renderMapTexture, updateMapTexture } from "./map.js";
+import { getTileCenter } from "./util.js";
+
 /**
  * Defines the current STATE of the complete game.
  */
+const STATE = {
+  map: undefined,
+  storage: {
+    food: 500,
+    wood: 500
+  },
+  deers: {},
+  trees: {}
+};
 
-"use strict";
+export default { get, update };
+
+function get() {
+  return STATE;
+}
 
 /**
  * Update the current STATE by applying an update from the server.
  *
  * @param {object} action
  */
-function updateState(action) {
+function update(action) {
   console.log(`STATE: ${action.type}`);
 
   switch (action.type) {
@@ -78,4 +95,10 @@ function updateState(action) {
       break;
     }
   }
+}
+
+function resetUI_STATE() {
+  UI_STATE.mode = "normal";
+  UI_STATE.blueprintName = null;
+  UI_STATE.selection = null;
 }

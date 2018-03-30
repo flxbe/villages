@@ -1,4 +1,12 @@
-"use strict";
+import { initUI, renderUI } from "./ui.js";
+import { getAssets } from "./assets.js";
+import { getAnimationFrame } from "./animations.js";
+import "./input.js";
+import { renderMapDecoration, renderSelectionDecoration } from "./map.js";
+import { startServer } from "./mock-server/server.js";
+import { move_deer } from "./movement.js";
+import State from "./state.js";
+import { tile2rel, cart2rel } from "./util.js";
 
 /**
  * Initialize global variables that are used throughout the app.
@@ -11,19 +19,20 @@ document.body.appendChild(APPLICATION.view);
 /**
  * Start loading necessary ASSETS
  */
-PIXI.loader.add(Array.from(ASSETS)).load(setup);
 
+PIXI.loader.add(getAssets()).load(setup);
 /**
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
+  startServer();
   initUI();
 
   APPLICATION.ticker.add(gameloop);
 }
 
 /**
- * Proceed the game logic and render the current STATE.
+ * Proceed the game logic and render the current State.get().
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
@@ -42,7 +51,7 @@ function gameloop(delta) {
 
   HITBOX_CONTAINER.clear();
 
-  for (let deer of Object.values(STATE.deers)) {
+  for (let deer of Object.values(State.get().deers)) {
     move_deer(deer, delta);
     const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
     deer.sprite.texture = PIXI.loader.resources[frame].texture;
@@ -55,7 +64,7 @@ function gameloop(delta) {
     if (UI_STATE.renderHitAreas) renderHitBox(deer);
   }
 
-  for (let tree of Object.values(STATE.trees)) {
+  for (let tree of Object.values(State.get().trees)) {
     tree.animationTime += delta * 0.66;
     const frame = getAnimationFrame(tree.currentAnimation, tree.animationTime);
     tree.sprite.texture = PIXI.loader.resources[frame].texture;

@@ -1,4 +1,5 @@
-"use strict";
+import State from "../state.js";
+import { isWalkableTile, isTileOnMap, getTileCenter } from "../util.js";
 
 const directions = [
   [0, -1],
@@ -21,12 +22,12 @@ function BinaryHeap(scoreFunction) {
 }
 
 BinaryHeap.prototype = {
-  push: function (element) {
+  push: function(element) {
     this.content.push(element);
     this.bubbleUp(this.content.length - 1);
   },
 
-  pop: function () {
+  pop: function() {
     const first = this.content[0];
     const last = this.content.pop();
     if (this.content.length > 0) {
@@ -36,11 +37,11 @@ BinaryHeap.prototype = {
     return first;
   },
 
-  size: function () {
+  size: function() {
     return this.content.length;
   },
 
-  remove: function (node) {
+  remove: function(node) {
     let i = 0;
     while (i < this.size() && this.content[i] != node) {
       i++;
@@ -52,7 +53,7 @@ BinaryHeap.prototype = {
     this.sinkDown(i);
   },
 
-  bubbleUp: function (i) {
+  bubbleUp: function(i) {
     const element = this.content[i];
     const score = this.scoreFunction(element);
     while (i > 0) {
@@ -65,7 +66,7 @@ BinaryHeap.prototype = {
     }
   },
 
-  sinkDown: function (i) {
+  sinkDown: function(i) {
     const element = this.content[i];
     const elementScore = this.scoreFunction(element);
 
@@ -97,18 +98,35 @@ BinaryHeap.prototype = {
     }
   },
 
-  rescoreElement: function (element) {
+  rescoreElement: function(element) {
     this.sinkDown(this.content.indexOf(element));
   }
 };
 
-function astar([si, sj], [ti, tj], weightFunction = function (i, j) { if (STATE.map[i][j].type == TILE_ROAD) return 1; return 2; }) {
+export default function astar(
+  [si, sj],
+  [ti, tj],
+  weightFunction = function(i, j) {
+    if (State.get().map[i][j].type == TILE_ROAD) return 1;
+    return 2;
+  }
+) {
   let map = [];
 
   for (let i = 0; i < MAP_WIDTH; i++) {
     let line = [];
     for (let j = 0; j < MAP_HEIGHT; j++) {
-      line.push({ i: i, j: j, walkable: isWalkableTile(STATE.map[i][j].type), visited: false, closed: false, pred: null, f: undefined, g: undefined, cost: weightFunction(i, j) });
+      line.push({
+        i: i,
+        j: j,
+        walkable: isWalkableTile(State.get().map[i][j].type),
+        visited: false,
+        closed: false,
+        pred: null,
+        f: undefined,
+        g: undefined,
+        cost: weightFunction(i, j)
+      });
     }
     map.push(line);
   }
@@ -143,7 +161,10 @@ function astar([si, sj], [ti, tj], weightFunction = function (i, j) { if (STATE.
       let neighbour = map[ni][nj];
 
       if (neighbour.closed || !neighbour.walkable) continue;
-      const g = ni != current.i && nj != current.j ? current.g + neighbour.cost * 1.5 : current.g + neighbour.cost;
+      const g =
+        ni != current.i && nj != current.j
+          ? current.g + neighbour.cost * 1.5
+          : current.g + neighbour.cost;
 
       if (neighbour.visited && g >= neighbour.g) continue;
       neighbour.pred = current;

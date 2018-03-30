@@ -1,4 +1,16 @@
-"use strict";
+import { setAnimation } from "./animations.js";
+import {
+  distance,
+  getDirection,
+  isNorth,
+  isNorthEast,
+  isEast,
+  isSouthEast,
+  isSouth,
+  isSouthWest,
+  isWest,
+  isNorthWest
+} from "./util.js";
 
 function updatePath(object) {
   if (object.targetDistance > 0) return;
@@ -24,7 +36,7 @@ function updatePath(object) {
   }
 }
 
-function move_deer(object, delta) {
+export function move_deer(object, delta) {
   object.animationTime += delta;
 
   const direction = object.direction;

@@ -1,18 +1,35 @@
-"use strict";
+import { addAssets } from "./assets.js";
 
-function addAnimation(name, frames) {
-  ASSETS.addArray(frames);
+/**
+ * Create all the possible animations and save the necessary assets to a list.
+ */
+const ANIMATIONS = {};
+
+/**
+ * Add an animation to the global animation map.
+ *
+ * @param {string} name - the animation name
+ * @param {string[]} frames - frames in the animation
+ */
+export function addAnimation(name, frames) {
+  addAssets(frames);
   ANIMATIONS[name] = frames;
 }
 
-function setAnimation(object, name) {
+/**
+ * Asssign an animation to an object
+ *
+ * @param {Object} object - a renderable object
+ * @param {string} name - the animation name
+ */
+export function setAnimation(object, name) {
   if (object.currentAnimation !== name) {
     object.currentAnimation = name;
     object.animationTime = 0;
   }
 }
 
-function getAnimationFrame(name, time, timePerFrame = 7.5) {
+export function getAnimationFrame(name, time, timePerFrame = 7.5) {
   const animation = ANIMATIONS[name];
 
   const frames = animation.length;

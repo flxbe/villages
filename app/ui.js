@@ -1,4 +1,4 @@
-"use strict";
+import State from "./state.js";
 
 function resize() {
   WIDTH = window.innerWidth;
@@ -16,7 +16,7 @@ function resize() {
 }
 window.onresize = resize;
 
-function initUI() {
+export function initUI() {
   const style = new PIXI.TextStyle({
     fontFamily: "Arial",
     fontSize: 12,
@@ -84,11 +84,11 @@ function initUI() {
   );
 }
 
-function renderUI() {
+export function renderUI() {
   UI_ELEMENTS.storage.text = [
     "Storage",
-    `Food: ${STATE.storage.food}`,
-    `Wood: ${STATE.storage.wood}`
+    `Food: ${State.get().storage.food}`,
+    `Wood: ${State.get().storage.wood}`
   ].join("\n");
 
   // show tooltip, if there is any
@@ -117,16 +117,16 @@ function renderUI() {
   if (UI_STATE.selection) {
     switch (UI_STATE.selection.type) {
       case "deer":
-        array = obj2array(STATE.deers[UI_STATE.selection.id]);
+        array = obj2array(State.get().deers[UI_STATE.selection.id]);
         break;
       case "tree":
-        array = obj2array(STATE.trees[UI_STATE.selection.id]);
+        array = obj2array(State.get().trees[UI_STATE.selection.id]);
         break;
       case "tile":
         array = obj2array(UI_STATE.selection);
         array.push(
           `tileType: ${
-          STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type
+            State.get().map[UI_STATE.selection.i][UI_STATE.selection.j].type
           }`
         );
         break;
@@ -141,17 +141,6 @@ function renderUI() {
   UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * array.length - 5);
 }
 
-function renderCircle(target, color, x, y) {
-  const h_2 = TILE_HEIGHT / 2;
-
-  target.lineStyle(1, color, 1);
-  target.moveTo(x, y);
-  target.lineTo(x + TILE_WIDTH, y + h_2);
-  target.lineTo(x, y + TILE_HEIGHT);
-  target.lineTo(x - TILE_WIDTH, y + h_2);
-  target.lineTo(x, y);
-}
-
 function renderBuildmenuTile(target, color, x, y) {
   target.beginFill(color);
   target.lineStyle(1, "0x000000", 1);
@@ -161,10 +150,4 @@ function renderBuildmenuTile(target, color, x, y) {
   target.lineTo(x, y + BUILDMENU_TILESIZE);
   target.lineTo(x, y);
   target.endFill();
-}
-
-function resetUI_STATE() {
-  UI_STATE.mode = "normal";
-  UI_STATE.blueprintName = null;
-  UI_STATE.selection = null;
 }

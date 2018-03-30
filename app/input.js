@@ -1,4 +1,11 @@
-"use strict";
+import {
+  abs2tile,
+  rel2abs,
+  isTileOnMap,
+  isAreaFreeForBuilding,
+  sufficientResources
+} from "./util.js";
+import { serverRequest } from "./mock-server/server.js";
 
 function getActiveTile() {
   const [absX, absY] = rel2abs(UI_STATE.mouseIsoX, UI_STATE.mouseIsoY);
@@ -103,7 +110,10 @@ window.addEventListener(
         UI_STATE.offsetY -= 20;
         break;
       case 122:
-        if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.mozFullScreen || document.webkitIsFullScreen)) {
+        if (
+          (document.fullScreenElement && document.fullScreenElement !== null) ||
+          (document.mozFullScreen || document.webkitIsFullScreen)
+        ) {
           exitFullscreen();
         } else {
           enterFullscreen();
@@ -113,14 +123,6 @@ window.addEventListener(
     }
 
     switch (event.key) {
-      case "b": {
-        BUILD_MENU_LAYER.visible = !BUILD_MENU_LAYER.visible;
-        UI_STATE.buildmenu = !UI_STATE.buildmenu;
-        if (!BUILD_MENU_LAYER.visible) {
-          UI_STATE.selection = null;
-        }
-        break;
-      }
       case "g": {
         UI_STATE.grid = !UI_STATE.grid;
         break;
@@ -189,7 +191,10 @@ document.addEventListener("mousedown", event => {
 });
 
 document.addEventListener("mouseup", event => {
-  const movedSignificantly = Math.abs(UI_STATE.clickStartX - UI_STATE.mouseIsoX) + Math.abs(UI_STATE.clickStartY - UI_STATE.mouseIsoY) >= 10;
+  const movedSignificantly =
+    Math.abs(UI_STATE.clickStartX - UI_STATE.mouseIsoX) +
+      Math.abs(UI_STATE.clickStartY - UI_STATE.mouseIsoY) >=
+    10;
 
   if (event.which == 1) {
     UI_STATE.leftMouseDown = false;
