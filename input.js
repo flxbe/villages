@@ -24,8 +24,6 @@ MAP_SPRITE.on("mousemove", event => {
 MAP_SPRITE.on("mouseup", event => {
   const [i, j] = getActiveTile();
 
-  console.log(event);
-
   if (!isTileOnMap(i, j)) {
     UI_STATE.selection = null;
     return;
@@ -66,6 +64,28 @@ MAP_SPRITE.on("mouseup", event => {
 window.addEventListener(
   "keydown",
   event => {
+    function enterFullscreen() {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      }
+    }
+
+    function exitFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+
     switch (event.keyCode) {
       case 17:
         UI_STATE.ctrlDown = true;
@@ -81,6 +101,14 @@ window.addEventListener(
         break;
       case 40:
         UI_STATE.offsetY -= 20;
+        break;
+      case 122:
+        if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.mozFullScreen || document.webkitIsFullScreen)) {
+          exitFullscreen();
+        } else {
+          enterFullscreen();
+        }
+        event.preventDefault();
         break;
     }
 
