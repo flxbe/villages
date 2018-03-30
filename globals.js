@@ -7,9 +7,8 @@
 
 "use strict";
 
-// TODO: window resize
-const WIDTH = window.innerWidth;
-const HEIGHT = window.innerHeight;
+let WIDTH = window.innerWidth;
+let HEIGHT = window.innerHeight;
 
 // sprite specific render offsets
 const DEER_OFFSET_X = -50;

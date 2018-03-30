@@ -1,5 +1,21 @@
 "use strict";
 
+function resize() {
+  WIDTH = window.innerWidth;
+  HEIGHT = window.innerHeight;
+  APPLICATION.renderer.resize(WIDTH, HEIGHT);
+  UI_ELEMENTS.houseButton.position.set(WIDTH - BUILDMENU_TILESIZE - 10, 10);
+  UI_ELEMENTS.barnButton.position.set(
+    WIDTH - BUILDMENU_TILESIZE - 10,
+    20 + BUILDMENU_TILESIZE
+  );
+  UI_ELEMENTS.roadButton.position.set(
+    WIDTH - BUILDMENU_TILESIZE - 10,
+    30 + 2 * BUILDMENU_TILESIZE
+  );
+}
+window.onresize = resize;
+
 function initUI() {
   const style = new PIXI.TextStyle({
     fontFamily: "Arial",
@@ -110,7 +126,7 @@ function renderUI() {
         array = obj2array(UI_STATE.selection);
         array.push(
           `tileType: ${
-            STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type
+          STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type
           }`
         );
         break;
