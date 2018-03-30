@@ -87,3 +87,23 @@ where an `Element` is defined is:
   // ?
 }
 ```
+
+## Controls
+
+### Mouse controls
+
+* `left click` (location: `button`, mode: _any_): Execute button script.
+* `left click` (location: `object`, mode: `normal`): Select object.
+* `left click` (location: `object`, mode: `build`): Ignore object. Try to lay foundation underneath.
+* `left click` (location: `map`, mode: `normal`): Select map tile.
+* `left click` (location: `map`, mode: `build`): Try to lay foundation.
+* `right drag` (startlocation: `map`, endlocation: _any_, mode: _any_): Move the offset of the map.
+* `right drag` (startlocation: _any_, endlocation: _any_, mode: _any_): Ignore.
+* `right click` (location: _any_, mode: _any_): Deselect and enter `normal mode`.
+
+### Keyboard controls
+
+* `g`: Toggle map grid.
+* `h`: Toggle hitboxes.
+* `F11`: Toggle fullscreen.
+* `b`: Toggle buildmenu.
