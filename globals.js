@@ -86,6 +86,19 @@ APPLICATION.stage.addChild(UI_CONTAINER);
 // save ui elements
 const UI_ELEMENTS = {};
 
+/**
+ * tooltip layer
+ */
+const tooltipStyle = new PIXI.TextStyle({
+  fontFamily: "Arial",
+  fontSize: 12,
+  fill: "white"
+});
+
+const TOOLTIP_LAYER = new PIXI.Text("", tooltipStyle);
+APPLICATION.stage.addChild(TOOLTIP_LAYER);
+TOOLTIP_LAYER.position.set(0, 0);
+
 // Server STATE
 const STATE = {
   map: undefined,
