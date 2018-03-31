@@ -148,7 +148,14 @@ export default function astar(
         path.push(getTileCenter(current.i, current.j));
         current = current.pred;
       }
-      return path;
+
+      // return new format
+      let time = Date.now();
+      return path.reverse().map(([x, y]) => {
+        const result = { x, y, timestamp: time };
+        time += 1000;
+        return result;
+      });
     }
 
     current.closed = true;

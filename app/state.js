@@ -1,5 +1,5 @@
 import { setAnimation } from "./animations.js";
-import { renderMapTexture, updateMapTexture } from "./map.js";
+import Map from "./map.js";
 import { getTileCenter } from "./util.js";
 
 /**
@@ -32,14 +32,14 @@ function update(action) {
   switch (action.type) {
     case "SET_MAP": {
       STATE.map = action.map;
-      renderMapTexture();
+      Map.renderTexture();
       break;
     }
     case "UPDATE_MAP": {
       for (let update of action.mapUpdates) {
         STATE.map[update.i][update.j] = update.tile;
       }
-      updateMapTexture(action.mapUpdates);
+      Map.updateTexture(action.mapUpdates);
     }
     case "UPDATE_STORAGE": {
       Object.assign(STATE.storage, action.storage);
@@ -47,21 +47,8 @@ function update(action) {
     }
     case "ADD_DEER": {
       const deer = action.deer;
-      deer.sprite = new PIXI.Sprite();
-      deer.sprite.zIndex = deer.y;
-      deer.sprite.hitArea = DEER_HIT_AREA;
-      deer.sprite.interactive = true;
-      deer.sprite.on("mouseup", event => {
-        UI_STATE.selection = { type: "deer", id: deer.id };
-        event.stopPropagation();
-      });
-      deer.sprite.on("mousemove", event => {
-        UI_STATE.hoveredElement = { type: "deer", id: deer.id };
-        event.stopPropagation();
-      });
-      setAnimation(deer, "STAND");
-      OBJECT_CONTAINER.addChild(deer.sprite);
       STATE.deers[deer.id] = deer;
+      Map.addDeer(deer);
       break;
     }
     case "UPDATE_DEER": {
@@ -76,29 +63,9 @@ function update(action) {
     }
     case "ADD_TREE": {
       const tree = action.tree;
-      tree.sprite = new PIXI.Sprite();
-      const [_, relY] = getTileCenter(tree.i, tree.j);
-      tree.sprite.zIndex = relY;
-      tree.sprite.hitArea = PALM_HIT_AREA;
-      tree.sprite.interactive = true;
-      tree.sprite.on("mouseup", event => {
-        UI_STATE.selection = { type: "tree", id: tree.id };
-        event.stopPropagation();
-      });
-      tree.sprite.on("mousemove", event => {
-        UI_STATE.hoveredElement = { type: "tree", id: tree.id };
-        event.stopPropagation();
-      });
-      setAnimation(tree, "PINE_TREE");
-      OBJECT_CONTAINER.addChild(tree.sprite);
       STATE.trees[tree.id] = tree;
+      Map.addTree(tree);
       break;
     }
   }
-}
-
-function resetUI_STATE() {
-  UI_STATE.mode = "normal";
-  UI_STATE.blueprintName = null;
-  UI_STATE.selection = null;
 }

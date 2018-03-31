@@ -1,12 +1,8 @@
 import { initUI, renderUI } from "./ui.js";
 import { getAssets } from "./assets.js";
-import { getAnimationFrame } from "./animations.js";
 import "./input.js";
-import { renderMapDecoration, renderSelectionDecoration } from "./map.js";
+import Map from "./map.js";
 import { startServer } from "./mock-server/server.js";
-import { move_deer } from "./movement.js";
-import State from "./state.js";
-import { tile2rel, cart2rel } from "./util.js";
 
 /**
  * Initialize global variables that are used throughout the app.
@@ -25,6 +21,15 @@ PIXI.loader.add(getAssets()).load(setup);
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
+  Map.init();
+  APPLICATION.stage.addChild(Map);
+
+  APPLICATION.stage.addChild(UI_CONTAINER);
+
+  APPLICATION.stage.addChild(TOOLTIP_LAYER);
+  TOOLTIP_LAYER.position.set(0, 0);
+
+  Map.init();
   startServer();
   initUI();
 
@@ -36,63 +41,6 @@ function setup() {
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  // map
-  MAP_SPRITE.position.x = UI_STATE.offsetX - UI_STATE.mapOffsetX;
-  MAP_SPRITE.position.y = UI_STATE.offsetY;
-
-  // map grid
-  MAP_GRID_SPRITE.position.x = UI_STATE.offsetX - UI_STATE.mapOffsetX;
-  MAP_GRID_SPRITE.position.y = UI_STATE.offsetY;
-  MAP_GRID_SPRITE.visible = UI_STATE.grid;
-
-  renderMapDecoration();
-  renderSelectionDecoration();
+  Map.render(delta);
   renderUI();
-
-  HITBOX_CONTAINER.clear();
-
-  for (let deer of Object.values(State.get().deers)) {
-    move_deer(deer, delta);
-    const frame = getAnimationFrame(deer.currentAnimation, deer.animationTime);
-    deer.sprite.texture = PIXI.loader.resources[frame].texture;
-    deer.sprite.zIndex = deer.y;
-
-    const [relX, relY] = cart2rel(deer.x, deer.y);
-    deer.sprite.x = relX + DEER_OFFSET_X;
-    deer.sprite.y = relY + DEER_OFFSET_Y;
-
-    if (UI_STATE.renderHitAreas) renderHitBox(deer);
-  }
-
-  for (let tree of Object.values(State.get().trees)) {
-    tree.animationTime += delta * 0.66;
-    const frame = getAnimationFrame(tree.currentAnimation, tree.animationTime);
-    tree.sprite.texture = PIXI.loader.resources[frame].texture;
-
-    const [relX, relY] = tile2rel(tree.i, tree.j);
-    tree.sprite.x = relX + PALM_OFFSET_X;
-    tree.sprite.y = relY + PALM_OFFSET_Y;
-
-    if (UI_STATE.renderHitAreas) renderHitBox(tree);
-  }
-
-  OBJECT_CONTAINER.children.sort(
-    (child1, child2) => child1.zIndex - child2.zIndex
-  );
-}
-
-function renderHitBox({ sprite }) {
-  if (!sprite.hitArea) return;
-
-  const x = sprite.x + sprite.hitArea.x;
-  const y = sprite.y + sprite.hitArea.y;
-  const w = sprite.hitArea.width;
-  const h = sprite.hitArea.height;
-
-  HITBOX_CONTAINER.lineStyle(1, "0xffffff", 1);
-  HITBOX_CONTAINER.moveTo(x, y);
-  HITBOX_CONTAINER.lineTo(x + w, y);
-  HITBOX_CONTAINER.lineTo(x + w, y + h);
-  HITBOX_CONTAINER.lineTo(x, y + h);
-  HITBOX_CONTAINER.lineTo(x, y);
 }

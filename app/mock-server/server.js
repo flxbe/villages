@@ -2,6 +2,7 @@ import astar from "./astar.js";
 import * as Actions from "./actions.js";
 import State from "../state.js";
 import { cart2tile } from "../util.js";
+import { getPosition } from "../movement.js";
 
 /**
  * Send a request to the server.
@@ -83,8 +84,13 @@ export function startServer() {
 
     counter -= 20;
 
+    const timestamp = Date.now();
+
     for (let deer of Object.values(State.get().deers)) {
-      const deerTile = cart2tile(deer.x, deer.y);
+      const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
+      const deerTile = cart2tile(cartX, cartY);
+
+      const isWalking = deer.path[deer.path.length - 1].timestamp > timestamp;
 
       if (deer.job === "wood") {
         // job: wood
@@ -94,7 +100,7 @@ export function startServer() {
             State.update(
               Actions.updateDeer({ id: deer.id, inventory, item: "wood" })
             );
-          } else if (!deer.path) {
+          } else if (!isWalking) {
             const path = astar(deerTile, treeTile);
             State.update(Actions.updateDeer({ id: deer.id, path }));
           }
@@ -109,7 +115,7 @@ export function startServer() {
             State.update(
               Actions.updateDeer({ id: deer.id, inventory, item: "food" })
             );
-          } else if (!deer.path) {
+          } else if (!isWalking) {
             const path = astar(deerTile, foodTile);
             State.update(Actions.updateDeer({ id: deer.id, path }));
           }
@@ -129,7 +135,7 @@ export function startServer() {
               })
             );
             State.update(Actions.updateDeer({ id: deer.id, inventory: 0 }));
-          } else if (!deer.path) {
+          } else if (!isWalking) {
             const path = astar(deerTile, storageTile);
             State.update(Actions.updateDeer({ id: deer.id, path }));
           }
@@ -257,8 +263,7 @@ function generateRandomMap() {
   State.update(
     Actions.addDeer({
       id: "deer1",
-      x: 0,
-      y: 0,
+      path: [{ x: 0, y: 0, timestamp: Date.now() }],
       inventory: 0,
       profession: "wood"
     })
@@ -266,8 +271,7 @@ function generateRandomMap() {
   State.update(
     Actions.addDeer({
       id: "deer2",
-      x: 0,
-      y: 50,
+      path: [{ x: 0, y: 0, timestamp: Date.now() }],
       inventory: 0,
       profession: "food"
     })

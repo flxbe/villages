@@ -17,24 +17,35 @@ export function addAnimation(name, frames) {
 }
 
 /**
- * Asssign an animation to an object
+ * Asssign an animation to a sprite.
  *
- * @param {Object} object - a renderable object
+ * @param {PIXI.Sprite} sprite - a renderable object
  * @param {string} name - the animation name
  */
-export function setAnimation(object, name) {
-  if (object.currentAnimation !== name) {
-    object.currentAnimation = name;
-    object.animationTime = 0;
+export function setAnimation(sprite, name) {
+  const animation = ANIMATIONS[name];
+  if (sprite.animation !== animation) {
+    sprite.animation = animation;
+    sprite.animationTime = 0;
   }
 }
 
-export function getAnimationFrame(name, time, timePerFrame = 7.5) {
-  const animation = ANIMATIONS[name];
+/**
+ * Animate a sprite that previously got an animation assigend.
+ *
+ * @param {PIXI.Sprite} sprite - the target sprite
+ * @param {number} delta - the frame weight
+ * @param {number} timePerFrame - rendercycles per animation frame
+ */
+export function animate(sprite, delta, timePerFrame = 7.5) {
+  if (!sprite.animation) throw Error(`not animation found: ${sprite}`);
 
-  const frames = animation.length;
-  const index = Math.floor((time / timePerFrame) % frames);
-  return animation[index];
+  sprite.animationTime += delta;
+  const frames = sprite.animation.length;
+  const index = Math.floor((sprite.animationTime / timePerFrame) % frames);
+  const frame = sprite.animation[index];
+
+  sprite.texture = PIXI.loader.resources[frame].texture;
 }
 
 const standAnimation = ["ASSETS/deer/0_0img0.png"];

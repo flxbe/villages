@@ -1,4 +1,5 @@
 import State from "./state.js";
+import UiState from "./ui-state.js";
 
 /**
  * Convert absolute to relative coordinates.
@@ -6,7 +7,7 @@ import State from "./state.js";
  * @param {number} absY
  */
 export function abs2rel(absX, absY) {
-  return [absX + UI_STATE.offsetX, absY + UI_STATE.offsetY];
+  return [absX + UiState.offsetX, absY + UiState.offsetY];
 }
 
 /**
@@ -15,7 +16,7 @@ export function abs2rel(absX, absY) {
  * @param {number} relY
  */
 export function rel2abs(relX, relY) {
-  return [relX - UI_STATE.offsetX, relY - UI_STATE.offsetY];
+  return [relX - UiState.offsetX, relY - UiState.offsetY];
 }
 
 /**
@@ -328,4 +329,9 @@ export function isRoadableTile(type) {
     default:
       throw Error(`unknown tile type: ${type}`);
   }
+}
+
+export function getActiveTile() {
+  const [absX, absY] = rel2abs(UiState.mouseIsoX, UiState.mouseIsoY);
+  return abs2tile(absX, absY);
 }

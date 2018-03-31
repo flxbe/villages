@@ -20,11 +20,7 @@ const PALM_OFFSET_Y = -175;
 const PALM_HIT_AREA = new PIXI.Rectangle(45, 165, 30, 30);
 
 // UI layer "buildmenu"
-const BUILDMENU_WIDTH = 50;
-const BUILDMENU_HEIGHT = 250;
 const BUILDMENU_TILESIZE = 50;
-const BUILDMENU_OFFSET_X = innerWidth - BUILDMENU_WIDTH - 5;
-const BUILDMENU_OFFSET_Y = 5;
 
 const MAP_HEIGHT = 100;
 const MAP_WIDTH = 100;
@@ -50,40 +46,9 @@ APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, WIDTH, HEIGHT);
 APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
 
 /**
- * map layers
- */
-const MAP_TEXTURE = PIXI.RenderTexture.create();
-const MAP_SPRITE = new PIXI.Sprite(MAP_TEXTURE);
-MAP_SPRITE.interactive = true;
-APPLICATION.stage.addChild(MAP_SPRITE);
-
-const MAP_GRID_TEXTURE = PIXI.RenderTexture.create();
-const MAP_GRID_SPRITE = new PIXI.Sprite(MAP_GRID_TEXTURE);
-APPLICATION.stage.addChild(MAP_GRID_SPRITE);
-
-const MAP_DECORATION_LAYER = new PIXI.Graphics();
-APPLICATION.stage.addChild(MAP_DECORATION_LAYER);
-
-const SELECTION_LAYER = new PIXI.Graphics();
-APPLICATION.stage.addChild(SELECTION_LAYER);
-
-/**
- * object layers
- */
-const OBJECT_CONTAINER = new PIXI.Container();
-APPLICATION.stage.addChild(OBJECT_CONTAINER);
-
-const HITBOX_CONTAINER = new PIXI.Graphics();
-APPLICATION.stage.addChild(HITBOX_CONTAINER);
-
-/**
  * UI layers
  */
 const UI_CONTAINER = new PIXI.Container();
-APPLICATION.stage.addChild(UI_CONTAINER);
-
-// save ui elements
-const UI_ELEMENTS = {};
 
 /**
  * tooltip layer
@@ -95,53 +60,6 @@ const tooltipStyle = new PIXI.TextStyle({
 });
 
 const TOOLTIP_LAYER = new PIXI.Text("", tooltipStyle);
-APPLICATION.stage.addChild(TOOLTIP_LAYER);
-TOOLTIP_LAYER.position.set(0, 0);
-
-// Server STATE
-const STATE = {
-  map: undefined,
-  storage: {
-    food: 500,
-    wood: 500
-  },
-  deers: {},
-  trees: {}
-};
-
-// UI STATE
-const UI_STATE = {
-  mode: "normal",
-
-  // build mode
-  blueprintName: null,
-
-  // debug options
-  grid: false,
-  renderHitAreas: false,
-
-  // camera
-  offsetX: 200,
-  offsetY: 200,
-
-  // mouse state
-  mouseIsoX: 0,
-  mouseIsoY: 0,
-  clickStartX: 0,
-  clickStartY: 0,
-  leftMouseDown: false,
-  rightMouseDown: false,
-  hoveredElement: null,
-  selection: null,
-
-  ctrlDown: false
-};
-
-// Animation buffer
-const ANIMATIONS = {};
-
-// asset buffer
-let ASSETS;
 
 // blueprint config
 const BLUEPRINTS = {
