@@ -53,8 +53,8 @@ export function initUI() {
     button.interactive = true;
 
     button.on("click", event => {
-      UiState.mode = "build";
-      UiState.blueprintName = blueprintName;
+      UiState.setMode("build");
+      UiState.setBlueprint(blueprintName);
       event.stopPropagation();
     });
 
@@ -129,7 +129,7 @@ export function renderUI() {
         array = obj2array(UiState.selection);
         array.push(
           `tileType: ${
-            State.get().map[UiState.selection.i][UiState.selection.j].type
+          State.get().map[UiState.selection.i][UiState.selection.j].type
           }`
         );
         break;

@@ -12,7 +12,8 @@ const STATE = {
     wood: 500
   },
   deers: {},
-  trees: {}
+  trees: {},
+  buildings: {}
 };
 
 export default { get, update };
@@ -65,6 +66,12 @@ function update(action) {
       const tree = action.tree;
       STATE.trees[tree.id] = tree;
       Map.addTree(tree);
+      break;
+    }
+    case "ADD_BUILDING": {
+      const building = action.building;
+      STATE.buildings[building.id] = building;
+      Map.addBuilding(building);
       break;
     }
   }

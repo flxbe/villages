@@ -43,6 +43,15 @@ function placeBuilding(i, j, blueprintName) {
     })
   );
 
+  State.update(
+    Actions.addBuilding({
+      type: blueprintName,
+      id: `${blueprintName}${Date.now()}`,
+      i: i,
+      j: j
+    })
+  );
+
   // update map
   const mapUpdates = [];
   for (let k = i - blueprint.height + 1; k <= i; k++) {
@@ -161,8 +170,8 @@ function noise(width, height, frequency) {
     for (let j = 0; j < height; j++) {
       line.push(
         Math.sin(2 * Math.PI * frequency[0] * i / width + sinPhase) *
-          Math.cos(2 * Math.PI * frequency[1] * j / height + cosPhase) +
-          1
+        Math.cos(2 * Math.PI * frequency[1] * j / height + cosPhase) +
+        1
       );
     }
     map.push(line);
@@ -217,7 +226,7 @@ function generateRandomNoiseMap(width, height) {
     width,
     height,
     frequencies,
-    function([f, g]) {
+    function ([f, g]) {
       return (1 / f + 1 / g) / 2;
     },
     seed
