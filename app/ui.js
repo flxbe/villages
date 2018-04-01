@@ -1,4 +1,7 @@
-"use strict";
+import State from "./state.js";
+import UiState from "./ui-state.js";
+
+const UI_ELEMENTS = {};
 
 function resize() {
   WIDTH = window.innerWidth;
@@ -16,7 +19,7 @@ function resize() {
 }
 window.onresize = resize;
 
-function initUI() {
+export function initUI() {
   const style = new PIXI.TextStyle({
     fontFamily: "Arial",
     fontSize: 12,
@@ -35,8 +38,8 @@ function initUI() {
   UI_ELEMENTS.storage.position.set(10, 10);
 
   UI_ELEMENTS.description = new PIXI.Text("", style);
-  SELECTION_LAYER.addChild(UI_ELEMENTS.description);
-  UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * 1 - 5);
+  //SELECTION_LAYER.addChild(UI_ELEMENTS.description);
+  //UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * 1 - 5);
 
   // menu buttons, just tmp
   function createButton(color, blueprintName) {
@@ -49,14 +52,14 @@ function initUI() {
     );
     button.interactive = true;
 
-    button.on("mouseup", event => {
-      UI_STATE.mode = "build";
-      UI_STATE.blueprintName = blueprintName;
+    button.on("click", event => {
+      UiState.mode = "build";
+      UiState.blueprintName = blueprintName;
       event.stopPropagation();
     });
 
     button.on("mousemove", event => {
-      UI_STATE.hoveredElement = { type: "button", tooltip: blueprintName };
+      UiState.hoveredElement = { type: "button", tooltip: blueprintName };
       event.stopPropagation();
     });
 
@@ -84,20 +87,20 @@ function initUI() {
   );
 }
 
-function renderUI() {
+export function renderUI() {
   UI_ELEMENTS.storage.text = [
     "Storage",
-    `Food: ${STATE.storage.food}`,
-    `Wood: ${STATE.storage.wood}`
+    `Food: ${State.get().storage.food}`,
+    `Wood: ${State.get().storage.wood}`
   ].join("\n");
 
   // show tooltip, if there is any
-  const { hoveredElement } = UI_STATE;
+  const { hoveredElement } = UiState;
   if (hoveredElement && hoveredElement.tooltip) {
     TOOLTIP_LAYER.visible = true;
     TOOLTIP_LAYER.text = hoveredElement.tooltip;
-    TOOLTIP_LAYER.position.x = UI_STATE.mouseIsoX;
-    TOOLTIP_LAYER.position.y = UI_STATE.mouseIsoY + 20;
+    TOOLTIP_LAYER.position.x = UiState.mouseIsoX;
+    TOOLTIP_LAYER.position.y = UiState.mouseIsoY + 20;
   } else {
     TOOLTIP_LAYER.visible = false;
   }
@@ -114,42 +117,31 @@ function renderUI() {
   }
 
   let array = [];
-  if (UI_STATE.selection) {
-    switch (UI_STATE.selection.type) {
+  if (UiState.selection) {
+    switch (UiState.selection.type) {
       case "deer":
-        array = obj2array(STATE.deers[UI_STATE.selection.id]);
+        array = obj2array(State.get().deers[UiState.selection.id]);
         break;
       case "tree":
-        array = obj2array(STATE.trees[UI_STATE.selection.id]);
+        array = obj2array(State.get().trees[UiState.selection.id]);
         break;
       case "tile":
-        array = obj2array(UI_STATE.selection);
+        array = obj2array(UiState.selection);
         array.push(
           `tileType: ${
-          STATE.map[UI_STATE.selection.i][UI_STATE.selection.j].type
+            State.get().map[UiState.selection.i][UiState.selection.j].type
           }`
         );
         break;
       case "blueprint":
-        array = obj2array(UI_STATE.selection);
-        array = array.concat(obj2array(BLUEPRINTS[UI_STATE.selection.id]));
+        array = obj2array(UiState.selection);
+        array = array.concat(obj2array(BLUEPRINTS[UiState.selection.id]));
         break;
     }
   }
 
   UI_ELEMENTS.description.text = array.join("\n");
   UI_ELEMENTS.description.position.set(10, HEIGHT - 14 * array.length - 5);
-}
-
-function renderCircle(target, color, x, y) {
-  const h_2 = TILE_HEIGHT / 2;
-
-  target.lineStyle(1, color, 1);
-  target.moveTo(x, y);
-  target.lineTo(x + TILE_WIDTH, y + h_2);
-  target.lineTo(x, y + TILE_HEIGHT);
-  target.lineTo(x - TILE_WIDTH, y + h_2);
-  target.lineTo(x, y);
 }
 
 function renderBuildmenuTile(target, color, x, y) {
@@ -161,10 +153,4 @@ function renderBuildmenuTile(target, color, x, y) {
   target.lineTo(x, y + BUILDMENU_TILESIZE);
   target.lineTo(x, y);
   target.endFill();
-}
-
-function resetUI_STATE() {
-  UI_STATE.mode = "normal";
-  UI_STATE.blueprintName = null;
-  UI_STATE.selection = null;
 }

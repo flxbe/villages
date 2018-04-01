@@ -1,4 +1,8 @@
-"use strict";
+import astar from "./astar.js";
+import * as Actions from "./actions.js";
+import State from "../state.js";
+import { cart2tile } from "../util.js";
+import { getPosition } from "../movement.js";
 
 /**
  * Send a request to the server.
@@ -7,7 +11,7 @@
  * change by the server. This will be replaced by a real server.
  * @param {objext} request
  */
-function serverRequest(request) {
+export function serverRequest(request) {
   switch (request.type) {
     case "PLACE_BUILDING": {
       const { i, j, blueprintName } = request;
@@ -28,14 +32,14 @@ function placeBuilding(i, j, blueprintName) {
   const blueprint = BLUEPRINTS[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
 
-  if (STATE.storage.wood < blueprint.wood) {
+  if (State.get().storage.wood < blueprint.wood) {
     throw Error("not enough wood");
   }
 
   // reduce resources
-  updateState(
+  State.update(
     Actions.updateStorage({
-      wood: STATE.storage.wood - blueprint.wood
+      wood: State.get().storage.wood - blueprint.wood
     })
   );
 
@@ -55,7 +59,7 @@ function placeBuilding(i, j, blueprintName) {
   }
 
   // dispatch map updates
-  updateState(Actions.updateMap(mapUpdates));
+  State.update(Actions.updateMap(mapUpdates));
 }
 
 /**
@@ -64,7 +68,7 @@ function placeBuilding(i, j, blueprintName) {
  * This registers a task, that is executed periodically and issues STATE
  * updates. This will eventually be replaced by a real server implementation.
  */
-function startServer() {
+export function startServer() {
   const treeTile = [7, 10];
   const foodTile = [9, 13];
   const storageTile = [3, 3];
@@ -80,38 +84,43 @@ function startServer() {
 
     counter -= 20;
 
-    for (let deer of Object.values(STATE.deers)) {
-      const deerTile = cart2tile(deer.x, deer.y);
+    const timestamp = Date.now();
+
+    for (let deer of Object.values(State.get().deers)) {
+      const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
+      const deerTile = cart2tile(cartX, cartY);
+
+      const isWalking = deer.path[deer.path.length - 1].timestamp > timestamp;
 
       if (deer.job === "wood") {
         // job: wood
         if (deer.inventory < 20) {
           if (deerTile[0] === treeTile[0] && deerTile[1] === treeTile[1]) {
             const inventory = Math.min(deer.inventory + 1, 20);
-            updateState(
+            State.update(
               Actions.updateDeer({ id: deer.id, inventory, item: "wood" })
             );
-          } else if (!deer.path) {
+          } else if (!isWalking) {
             const path = astar(deerTile, treeTile);
-            updateState(Actions.updateDeer({ id: deer.id, path }));
+            State.update(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState(Actions.updateDeer({ id: deer.id, job: "storage" }));
+          State.update(Actions.updateDeer({ id: deer.id, job: "storage" }));
         }
       } else if (deer.job === "food") {
         // job: food
         if (deer.inventory < 20) {
           if (deerTile[0] === foodTile[0] && deerTile[1] === foodTile[1]) {
             const inventory = Math.min(deer.inventory + 1, 20);
-            updateState(
+            State.update(
               Actions.updateDeer({ id: deer.id, inventory, item: "food" })
             );
-          } else if (!deer.path) {
+          } else if (!isWalking) {
             const path = astar(deerTile, foodTile);
-            updateState(Actions.updateDeer({ id: deer.id, path }));
+            State.update(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState(Actions.updateDeer({ id: deer.id, job: "storage" }));
+          State.update(Actions.updateDeer({ id: deer.id, job: "storage" }));
         }
       } else if (deer.job === "storage") {
         // job: storage
@@ -120,30 +129,28 @@ function startServer() {
             deerTile[0] === storageTile[0] &&
             deerTile[1] === storageTile[1]
           ) {
-            updateState(
+            State.update(
               Actions.updateStorage({
-                [deer.item]: STATE.storage[deer.item] + deer.inventory
+                [deer.item]: State.get().storage[deer.item] + deer.inventory
               })
             );
-            updateState(Actions.updateDeer({ id: deer.id, inventory: 0 }));
-          } else if (!deer.path) {
+            State.update(Actions.updateDeer({ id: deer.id, inventory: 0 }));
+          } else if (!isWalking) {
             const path = astar(deerTile, storageTile);
-            updateState(Actions.updateDeer({ id: deer.id, path }));
+            State.update(Actions.updateDeer({ id: deer.id, path }));
           }
         } else {
-          updateState(
+          State.update(
             Actions.updateDeer({ id: deer.id, job: deer.profession })
           );
         }
       } else {
         // no job
-        updateState(Actions.updateDeer({ id: deer.id, job: deer.profession }));
+        State.update(Actions.updateDeer({ id: deer.id, job: deer.profession }));
       }
     }
   }
 }
-
-startServer();
 
 function noise(width, height, frequency) {
   const sinPhase = Math.floor(Math.random() * 2 * Math.PI);
@@ -251,22 +258,20 @@ function generateRandomMap() {
   map[3][3].shade = "0x551A8B";
   map[3][3].type = TILE_ROAD;
 
-  updateState(Actions.setMap(map));
+  State.update(Actions.setMap(map));
 
-  updateState(
+  State.update(
     Actions.addDeer({
       id: "deer1",
-      x: 0,
-      y: 0,
+      path: [{ x: 0, y: 0, timestamp: Date.now() }],
       inventory: 0,
       profession: "wood"
     })
   );
-  updateState(
+  State.update(
     Actions.addDeer({
       id: "deer2",
-      x: 0,
-      y: 50,
+      path: [{ x: 0, y: 0, timestamp: Date.now() }],
       inventory: 0,
       profession: "food"
     })
@@ -283,6 +288,6 @@ function setTree(id, i, j) {
     type: TILE_TREE,
     shade: "0x269a41"
   };
-  updateState(Actions.updateMap([{ i, j, tile }]));
-  updateState(Actions.addTree({ id, i, j }));
+  State.update(Actions.updateMap([{ i, j, tile }]));
+  State.update(Actions.addTree({ id, i, j }));
 }

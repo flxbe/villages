@@ -1,20 +1,13 @@
 /**
- * Predefine all possible actions.
- */
-"use strict";
-
-const Actions = {};
-
-/**
  * Set the map.
  * @param {Map} map
  */
-Actions.setMap = function(map) {
+export function setMap(map) {
   return {
     type: "SET_MAP",
     map
   };
-};
+}
 
 /**
  * Update map tiles.
@@ -24,64 +17,64 @@ Actions.setMap = function(map) {
  *
  * @param {MapUpdate[]} mapUpdates
  */
-Actions.updateMap = function(mapUpdates) {
+export function updateMap(mapUpdates) {
   return {
     type: "UPDATE_MAP",
     mapUpdates
   };
-};
+}
 
 /**
  * Add a new deer to the server STATE.
  * @param {Deer} deer
  */
-Actions.addDeer = function(deer) {
+export function addDeer(deer) {
   return {
     type: "ADD_DEER",
     deer
   };
-};
+}
 
 /**
  * Update an already existing deer.
  * @param {DeerUpdate} deer
  */
-Actions.updateDeer = function(deer) {
+export function updateDeer(deer) {
   return {
     type: "UPDATE_DEER",
     deer
   };
-};
+}
 
 /**
  * Remove the deer specified by the id.
  * @param {string} id The deer id.
  */
-Actions.removeDeer = function(id) {
+export function removeDeer(id) {
   return {
     type: "REMOVE_DEER",
     id
   };
-};
+}
 
 /**
  * Add a new tree.
  * @param {Tree} tree
  */
-Actions.addTree = function(tree) {
+export function addTree(tree) {
   return {
     type: "ADD_TREE",
     tree
   };
-};
+}
 
 /**
  * Update the storage STATE.
  * @param {StorageUpdate} storage
  */
-Actions.updateStorage = function(storage) {
+export function updateStorage(storage) {
   return {
     type: "UPDATE_STORAGE",
     storage
   };
-};
+}
