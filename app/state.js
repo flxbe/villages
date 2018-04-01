@@ -58,7 +58,7 @@ function update(action) {
     }
     case "REMOVE_DEER": {
       const deer = STATE.deers[action.id];
-      OBJECT_CONTAINER.removeChild(deer.sprite);
+      Map.removeDeer(deer);
       delete STATE.deers[action.id];
       break;
     }
@@ -72,6 +72,12 @@ function update(action) {
       const building = action.building;
       STATE.buildings[building.id] = building;
       Map.addBuilding(building);
+      break;
+    }
+    case "REMOVE_BUILDING": {
+      const building = STATE.buildings[action.id];
+      Map.removeBuilding(building);
+      delete STATE.buildings[action.id];
       break;
     }
   }

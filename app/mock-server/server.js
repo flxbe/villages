@@ -16,8 +16,38 @@ export function serverRequest(request) {
     case "PLACE_BUILDING": {
       const { i, j, blueprintName } = request;
       placeBuilding(i, j, blueprintName);
+      break;
+    }
+    case "DEMOLISH_BUILDING":
+      const { id } = request;
+      demolishBuilding(id);
+      break;
+  }
+}
+
+export function demolishBuilding(id) {
+  const building = State.get().buildings[id];
+  const blueprint = BLUEPRINTS[building.type];
+
+  State.update(Actions.removeBuilding(id));
+
+  // update map
+  const mapUpdates = [];
+  for (let k = building.i - blueprint.height + 1; k <= building.i; k++) {
+    for (let l = building.j - blueprint.width + 1; l <= building.j; l++) {
+      mapUpdates.push({
+        i: k,
+        j: l,
+        tile: {
+          type: TILE_DIRT,
+          shade: "0x561f00"
+        }
+      });
     }
   }
+
+  // dispatch map updates
+  State.update(Actions.updateMap(mapUpdates));
 }
 
 /**

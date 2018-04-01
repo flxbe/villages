@@ -89,3 +89,14 @@ export function addBuilding(building) {
     building
   };
 }
+
+/**
+ * Remove the building specified by the id.
+ * @param {string} id The building id.
+ */
+export function removeBuilding(id) {
+  return {
+    type: "REMOVE_BUILDING",
+    id
+  };
+}

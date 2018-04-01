@@ -172,6 +172,11 @@ Map.addDeer = function (deer) {
   deerSprites[deer.id] = sprite;
 };
 
+Map.removeDeer = function (deer) {
+  Map.objects.removeChild(deerSprites[deer.id]);
+  delete deerSprites[deer.id];
+};
+
 Map.addTree = function (tree) {
   const sprite = new PIXI.Sprite();
   sprite.hitArea = PALM_HIT_AREA;
@@ -212,7 +217,12 @@ Map.addBuilding = function (building) {
 
   Map.objects.addChild(sprite);
   buildingSprites[building.id] = sprite;
-}
+};
+
+Map.removeBuilding = function (building) {
+  Map.objects.removeChild(buildingSprites[building.id]);
+  delete buildingSprites[building.id];
+};
 
 /**
  * Render the next map frame.
