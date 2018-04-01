@@ -196,6 +196,7 @@ Map.addBuilding = function (building) {
   switch (building.type) {
     case "house": sprite.hitArea = HOUSE_HIT_AREA; break;
     case "barn": sprite.hitArea = BARN_HIT_AREA; break;
+    case "road": sprite.hitArea = ROAD_HIT_AREA; break;
     default: throw Error("building type unknown");
   }
   sprite.interactive = true;
@@ -376,6 +377,10 @@ Map.render = function (delta) {
           sprite.x = relX + BARN_OFFSET_X;
           sprite.y = relY + BARN_OFFSET_Y;
           break;
+        case "road":
+          sprite.x = relX + ROAD_OFFSET_X;
+          sprite.y = relY + ROAD_OFFSET_Y;
+          break;
         default: throw Error("building type unknown");
       }
 
@@ -505,10 +510,10 @@ function renderCircle(target, color, x, y) {
 function renderHitBox(sprite) {
   if (!sprite.hitArea) return;
 
-  if(sprite.hitArea.points) {
+  if (sprite.hitArea.points) {
     Map.hitAreas.lineStyle(1, "0xffffff", 1);
     Map.hitAreas.moveTo(sprite.x + sprite.hitArea.points[0], sprite.y + sprite.hitArea.points[1]);
-    for(let k = 1; k < sprite.hitArea.points.length / 2; k++) {
+    for (let k = 1; k < sprite.hitArea.points.length / 2; k++) {
       Map.hitAreas.lineTo(sprite.x + sprite.hitArea.points[2 * k], sprite.y + sprite.hitArea.points[2 * k + 1]);
     }
     Map.hitAreas.lineTo(sprite.x + sprite.hitArea.points[0], sprite.y + sprite.hitArea.points[1]);

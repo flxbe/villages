@@ -27,6 +27,10 @@ const BARN_OFFSET_X = 0;
 const BARN_OFFSET_Y = 20;
 const BARN_HIT_AREA = new PIXI.Polygon(0, 0, -80, -40, 40, -100, 120, -60);
 
+const ROAD_OFFSET_X = 0;
+const ROAD_OFFSET_Y = 20;
+const ROAD_HIT_AREA = new PIXI.Polygon(0, 0, -20, -10, 0, -20, 20, -10);
+
 // UI layer "buildmenu"
 const BUILDMENU_TILESIZE = 50;
 
