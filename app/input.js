@@ -6,6 +6,7 @@ import {
   sufficientResources
 } from "./util.js";
 import UiState from "./ui-state.js";
+import { serverRequest } from "./mock-server/server.js";
 
 // nothing under the mouse
 APPLICATION.stage.on("mousemove", event => {
@@ -52,6 +53,12 @@ window.addEventListener(
         break;
       case 40:
         UiState.offsetY -= 20;
+        break;
+      case 46:
+        if (UiState.selection && UiState.selection.type === "building") {
+          serverRequest({ type: "DEMOLISH_BUILDING", id: UiState.selection.id });
+          UiState.selection = null;
+        }
         break;
       case 122:
         if (

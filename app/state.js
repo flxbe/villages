@@ -12,7 +12,8 @@ const STATE = {
     wood: 500
   },
   deers: {},
-  trees: {}
+  trees: {},
+  buildings: {}
 };
 
 export default { get, update };
@@ -57,7 +58,7 @@ function update(action) {
     }
     case "REMOVE_DEER": {
       const deer = STATE.deers[action.id];
-      OBJECT_CONTAINER.removeChild(deer.sprite);
+      Map.removeDeer(deer);
       delete STATE.deers[action.id];
       break;
     }
@@ -65,6 +66,18 @@ function update(action) {
       const tree = action.tree;
       STATE.trees[tree.id] = tree;
       Map.addTree(tree);
+      break;
+    }
+    case "ADD_BUILDING": {
+      const building = action.building;
+      STATE.buildings[building.id] = building;
+      Map.addBuilding(building);
+      break;
+    }
+    case "REMOVE_BUILDING": {
+      const building = STATE.buildings[action.id];
+      Map.removeBuilding(building);
+      delete STATE.buildings[action.id];
       break;
     }
   }

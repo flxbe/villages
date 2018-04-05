@@ -31,6 +31,7 @@ export default (Map = new PIXI.Container());
 const renderer = PIXI.autoDetectRenderer();
 const deerSprites = {};
 const treeSprites = {};
+const buildingSprites = {};
 
 // internal sscrolling state
 let clickStartX;
@@ -43,7 +44,7 @@ let scrolling = false;
  *
  * TODO: input
  */
-Map.init = function() {
+Map.init = function () {
   Map.texture = PIXI.RenderTexture.create();
   Map.sprite = new PIXI.Sprite(Map.texture);
   Map.sprite.interactive = true;
@@ -137,7 +138,7 @@ Map.init = function() {
           serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
 
           if (!UiState.ctrlDown) {
-            UiState.mode = "normal";
+            UiState.setMode("normal");
           }
         } else {
           console.log("not enough resources");
@@ -146,14 +147,13 @@ Map.init = function() {
         console.log("cannot build");
       }
 
-      UiState.selection = null;
       event.stopPropagation();
       return;
     }
   });
 };
 
-Map.addDeer = function(deer) {
+Map.addDeer = function (deer) {
   const sprite = new PIXI.Sprite();
   sprite.hitArea = DEER_HIT_AREA;
   sprite.interactive = true;
@@ -172,7 +172,12 @@ Map.addDeer = function(deer) {
   deerSprites[deer.id] = sprite;
 };
 
-Map.addTree = function(tree) {
+Map.removeDeer = function (deer) {
+  Map.objects.removeChild(deerSprites[deer.id]);
+  delete deerSprites[deer.id];
+};
+
+Map.addTree = function (tree) {
   const sprite = new PIXI.Sprite();
   sprite.hitArea = PALM_HIT_AREA;
   sprite.interactive = true;
@@ -191,10 +196,38 @@ Map.addTree = function(tree) {
   treeSprites[tree.id] = sprite;
 };
 
+Map.addBuilding = function (building) {
+  const sprite = new PIXI.Sprite();
+  switch (building.type) {
+    case "house": sprite.hitArea = HOUSE_HIT_AREA; break;
+    case "barn": sprite.hitArea = BARN_HIT_AREA; break;
+    case "road": sprite.hitArea = ROAD_HIT_AREA; break;
+    default: throw Error("building type unknown");
+  }
+  sprite.interactive = true;
+
+  sprite.on("mouseup", event => {
+    UiState.selection = { type: "building", id: building.id };
+    event.stopPropagation();
+  });
+  sprite.on("mousemove", event => {
+    UiState.hoveredElement = { type: "building", id: building.id };
+    event.stopPropagation();
+  });
+
+  Map.objects.addChild(sprite);
+  buildingSprites[building.id] = sprite;
+};
+
+Map.removeBuilding = function (building) {
+  Map.objects.removeChild(buildingSprites[building.id]);
+  delete buildingSprites[building.id];
+};
+
 /**
  * Render the next map frame.
  */
-Map.render = function(delta) {
+Map.render = function (delta) {
   const timestamp = Date.now();
 
   const { mode, mapOffsetX, offsetX, offsetY, grid } = UiState;
@@ -277,6 +310,14 @@ Map.render = function(delta) {
         Map.selection.alpha = 0.5;
         renderCircle(Map.selection, "0xffffff", relX, relY);
         break;
+      case "building":
+        [relX, relY] = tile2rel(
+          State.get().buildings[selection.id].i,
+          State.get().buildings[selection.id].j
+        );
+        Map.selection.alpha = 0.5;
+        renderCircle(Map.selection, "0xffffff", relX, relY);
+        break;
       default:
         throw Error(`Unknown selection type: ${selection}`);
     }
@@ -332,6 +373,30 @@ Map.render = function(delta) {
       if (renderHitAreas) renderHitBox(sprite);
     }
 
+    for (let building of Object.values(State.get().buildings)) {
+      const sprite = buildingSprites[building.id];
+
+      const [relX, relY] = tile2rel(building.i, building.j);
+      sprite.zIndex = relY;
+      switch (building.type) {
+        case "house":
+          sprite.x = relX + HOUSE_OFFSET_X;
+          sprite.y = relY + HOUSE_OFFSET_Y;
+          break;
+        case "barn":
+          sprite.x = relX + BARN_OFFSET_X;
+          sprite.y = relY + BARN_OFFSET_Y;
+          break;
+        case "road":
+          sprite.x = relX + ROAD_OFFSET_X;
+          sprite.y = relY + ROAD_OFFSET_Y;
+          break;
+        default: throw Error("building type unknown");
+      }
+
+      if (renderHitAreas) renderHitBox(sprite);
+    }
+
     Map.objects.children.sort((c1, c2) => c1.zIndex - c2.zIndex);
   }
 };
@@ -345,7 +410,7 @@ Map.render = function(delta) {
  * add the half of the width as an offset. The same offset must be substracted
  * when rendering the map.
  */
-Map.renderTexture = function() {
+Map.renderTexture = function () {
   // calculate texture size
   const xDim = State.get().map.length;
   const yDim = State.get().map[0].length;
@@ -387,7 +452,7 @@ Map.renderTexture = function() {
  *
  * @param {MapUpdate[]} updates - the updated tiles
  */
-Map.updateTexture = function(updates) {
+Map.updateTexture = function (updates) {
   const map = new PIXI.Graphics();
   map.fillAlpha = 0;
   const offsetX = UiState.mapOffsetX;
@@ -454,6 +519,16 @@ function renderCircle(target, color, x, y) {
 
 function renderHitBox(sprite) {
   if (!sprite.hitArea) return;
+
+  if (sprite.hitArea.points) {
+    Map.hitAreas.lineStyle(1, "0xffffff", 1);
+    Map.hitAreas.moveTo(sprite.x + sprite.hitArea.points[0], sprite.y + sprite.hitArea.points[1]);
+    for (let k = 1; k < sprite.hitArea.points.length / 2; k++) {
+      Map.hitAreas.lineTo(sprite.x + sprite.hitArea.points[2 * k], sprite.y + sprite.hitArea.points[2 * k + 1]);
+    }
+    Map.hitAreas.lineTo(sprite.x + sprite.hitArea.points[0], sprite.y + sprite.hitArea.points[1]);
+    return;
+  }
 
   const x = sprite.x + sprite.hitArea.x;
   const y = sprite.y + sprite.hitArea.y;

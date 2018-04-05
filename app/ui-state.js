@@ -1,3 +1,5 @@
+import Map from "./map.js";
+
 const UiState = {
   mode: "normal",
 
@@ -27,23 +29,30 @@ const UiState = {
 
 export default UiState;
 
-UiState.reset = function() {
+UiState.reset = function () {
   UiState.setMode("normal");
   UiState.selection = null;
 };
 
-UiState.setMode = function(mode, options) {
+UiState.setMode = function (mode, options) {
   if (UiState.mode === mode) return;
 
   switch (mode) {
     case "normal":
       UiState.mode = "normal";
       UiState.blueprintName = null;
+      Map.objects.interactiveChildren = true;
       break;
     case "build":
       UiState.mode = "build";
-      UiState.blueprintName = options.blueprintName;
       UiState.selection = null;
+      Map.objects.interactiveChildren = false;
       break;
   }
+};
+
+UiState.setBlueprint = function (blueprintName) {
+  if (UiState.mode !== "build") throw Error("setting blueprint only allowed in build mode");
+
+  UiState.blueprintName = blueprintName;
 };

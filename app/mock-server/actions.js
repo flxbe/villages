@@ -78,3 +78,25 @@ export function updateStorage(storage) {
     storage
   };
 }
+
+/**
+ * Add a new building.
+ * @param {Building} building
+ */
+export function addBuilding(building) {
+  return {
+    type: "ADD_BUILDING",
+    building
+  };
+}
+
+/**
+ * Remove the building specified by the id.
+ * @param {string} id The building id.
+ */
+export function removeBuilding(id) {
+  return {
+    type: "REMOVE_BUILDING",
+    id
+  };
+}

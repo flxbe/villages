@@ -19,6 +19,18 @@ const PALM_OFFSET_X = -60;
 const PALM_OFFSET_Y = -175;
 const PALM_HIT_AREA = new PIXI.Rectangle(45, 165, 30, 30);
 
+const HOUSE_OFFSET_X = 0;
+const HOUSE_OFFSET_Y = 20;
+const HOUSE_HIT_AREA = new PIXI.Polygon(0, 0, -80, -40, 0, -80, 80, -40);
+
+const BARN_OFFSET_X = 0;
+const BARN_OFFSET_Y = 20;
+const BARN_HIT_AREA = new PIXI.Polygon(0, 0, -80, -40, 40, -100, 120, -60);
+
+const ROAD_OFFSET_X = 0;
+const ROAD_OFFSET_Y = 20;
+const ROAD_HIT_AREA = new PIXI.Polygon(0, 0, -20, -10, 0, -20, 20, -10);
+
 // UI layer "buildmenu"
 const BUILDMENU_TILESIZE = 50;
 
