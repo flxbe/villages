@@ -22,7 +22,9 @@ const UiState = {
   hoveredElement: null,
   selection: null,
 
-  ctrlDown: false
+  ctrlDown: false,
+  
+  currentMusicTitle: null
 };
 
 export default UiState;

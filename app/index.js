@@ -3,6 +3,7 @@ import { getAssets } from "./assets.js";
 import "./input.js";
 import Map from "./map.js";
 import { startServer } from "./mock-server/server.js";
+import { playMusic } from "./sound.js";
 
 /**
  * Initialize global variables that are used throughout the app.
@@ -21,6 +22,7 @@ PIXI.loader.add(getAssets()).load(setup);
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
+  playMusic();
   Map.init();
   APPLICATION.stage.addChild(Map);
 
