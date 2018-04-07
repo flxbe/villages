@@ -25,6 +25,7 @@ import {
 } from "./util.js";
 import { getPosition } from "./movement.js";
 import { setAnimation, animate } from "./animations.js";
+import { setObjectSound } from "./sound.js";
 
 export default (Map = new PIXI.Container());
 
@@ -43,7 +44,7 @@ let scrolling = false;
  *
  * TODO: input
  */
-Map.init = function() {
+Map.init = function () {
   Map.texture = PIXI.RenderTexture.create();
   Map.sprite = new PIXI.Sprite(Map.texture);
   Map.sprite.interactive = true;
@@ -153,7 +154,7 @@ Map.init = function() {
   });
 };
 
-Map.addDeer = function(deer) {
+Map.addDeer = function (deer) {
   const sprite = new PIXI.Sprite();
   sprite.hitArea = DEER_HIT_AREA;
   sprite.interactive = true;
@@ -172,7 +173,7 @@ Map.addDeer = function(deer) {
   deerSprites[deer.id] = sprite;
 };
 
-Map.addTree = function(tree) {
+Map.addTree = function (tree) {
   const sprite = new PIXI.Sprite();
   sprite.hitArea = PALM_HIT_AREA;
   sprite.interactive = true;
@@ -194,7 +195,7 @@ Map.addTree = function(tree) {
 /**
  * Render the next map frame.
  */
-Map.render = function(delta) {
+Map.render = function (delta) {
   const timestamp = Date.now();
 
   const { mode, mapOffsetX, offsetX, offsetY, grid } = UiState;
@@ -296,19 +297,20 @@ Map.render = function(delta) {
       const sprite = deerSprites[deer.id];
       const position = getPosition(deer.path, Date.now());
 
-      let animation;
-      if (!position.direction) animation = "STAND";
-      else if (isNorth(position.direction)) animation = "GO_N";
-      else if (isNorthEast(position.direction)) animation = "GO_NE";
-      else if (isEast(position.direction)) animation = "GO_E";
-      else if (isSouthEast(position.direction)) animation = "GO_SE";
-      else if (isSouth(position.direction)) animation = "GO_S";
-      else if (isSouthWest(position.direction)) animation = "GO_SW";
-      else if (isWest(position.direction)) animation = "GO_W";
-      else if (isNorthWest(position.direction)) animation = "GO_NW";
-      else animation = "STAND";
+      let action;
+      if (!position.direction) action = "STAND";
+      else if (isNorth(position.direction)) action = "GO_N";
+      else if (isNorthEast(position.direction)) action = "GO_NE";
+      else if (isEast(position.direction)) action = "GO_E";
+      else if (isSouthEast(position.direction)) action = "GO_SE";
+      else if (isSouth(position.direction)) action = "GO_S";
+      else if (isSouthWest(position.direction)) action = "GO_SW";
+      else if (isWest(position.direction)) action = "GO_W";
+      else if (isNorthWest(position.direction)) action = "GO_NW";
+      else action = "STAND";
 
-      setAnimation(sprite, animation);
+      setObjectSound(deer.id, action);
+      setAnimation(sprite, action);
       animate(sprite, delta);
 
       const [relX, relY] = cart2rel(position.x, position.y);
@@ -345,7 +347,7 @@ Map.render = function(delta) {
  * add the half of the width as an offset. The same offset must be substracted
  * when rendering the map.
  */
-Map.renderTexture = function() {
+Map.renderTexture = function () {
   // calculate texture size
   const xDim = State.get().map.length;
   const yDim = State.get().map[0].length;
@@ -387,7 +389,7 @@ Map.renderTexture = function() {
  *
  * @param {MapUpdate[]} updates - the updated tiles
  */
-Map.updateTexture = function(updates) {
+Map.updateTexture = function (updates) {
   const map = new PIXI.Graphics();
   map.fillAlpha = 0;
   const offsetX = UiState.mapOffsetX;

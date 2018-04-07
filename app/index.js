@@ -3,7 +3,7 @@ import { getAssets } from "./assets.js";
 import "./input.js";
 import Map from "./map.js";
 import { startServer } from "./mock-server/server.js";
-import { playMusic } from "./sound.js";
+import { playMusic, ambientSounds } from "./sound.js";
 
 /**
  * Initialize global variables that are used throughout the app.
@@ -44,5 +44,6 @@ function setup() {
  */
 function gameloop(delta) {
   Map.render(delta);
+  ambientSounds();
   renderUI();
 }
