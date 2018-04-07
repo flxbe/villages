@@ -35,24 +35,21 @@ for (let sound in sounds) PIXI.sound.add(sound, { url: sounds[sound], preload: t
 
 export function adjustMusicVolume(delta) {
     for (let title in musicTitles) {
-        const vol = Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.find(title).volume + delta)))) / 100;
-        PIXI.sound.find(title).volume = vol;
-        console.log(`music volume: ${vol}`);
+        PIXI.sound.volume(title, Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.volume(title) + delta)))) / 100);
+        console.log(`music volume: ${PIXI.sound.volume(title)}`);
     }
 }
 
 export function adjustSoundVolume(delta) {
     for (let sound in sounds) {
-        const vol = Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.find(sound).volume + delta)))) / 100;
-        PIXI.sound.find(sound).volume = vol;
-        console.log(`sound volume: ${vol}`);
+        PIXI.sound.volume(sound, Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.volume(sound) + delta)))) / 100);
+        console.log(`sound volume: ${PIXI.sound.volume(sound)}`);
     }
 }
 
 export function adjustMasterVolume(delta) {
-    const vol = Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.volumeAll + delta)))) / 100;
-    PIXI.sound.volumeAll = vol;
-    console.log(`master volume: ${vol}`);
+    PIXI.sound.volumeAll = Math.round(Math.max(0, Math.min(100, 100 * (PIXI.sound.volumeAll + delta)))) / 100;
+    console.log(`master volume: ${PIXI.sound.volumeAll}`);
 }
 
 function chooseRandomMusic() {
@@ -93,14 +90,27 @@ const objectSounds = {};
 
 export function setObjectSound(id, action) {
     if (!objectSounds[id]) {
-        objectSounds[id] = action;
+        if (PIXI.sound.exists(action)) {
+            const speed = 0.5 + Math.random();
+            const sound = PIXI.sound.play(action, { loop: true, speed: speed });
+            objectSounds[id] = { action, sound };
+        } else {
+            objectSounds[id] = { action };
+        }
         return;
     }
 
-    if (objectSounds[id] != action) {
-        if (PIXI.sound.exists(objectSounds[id])) PIXI.sound.stop(objectSounds[id]);
-        if (PIXI.sound.exists(action)) PIXI.sound.play(action, { loop: true });
-        objectSounds[id] = action;
+    if (objectSounds[id].action != action) {
+        if (objectSounds[id].sound) objectSounds[id].sound.stop();
+
+        if (PIXI.sound.exists(action)) {
+            const speed = 0.5 + Math.random();
+            console.log(speed);
+            const sound = PIXI.sound.play(action, { loop: true, speed: speed });
+            objectSounds[id] = { action, sound };
+        } else {
+            objectSounds[id] = { action };
+        }
     }
 }
 
