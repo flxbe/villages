@@ -16,21 +16,28 @@ describe("State", () => {
     });
   });
 
-  describe("register", () => {
+  describe("on", () => {
     it("should add a new callback", () => {
       const cb = sinon.spy();
-      State.subscribe(cb);
-      State.update();
+      State.on("TEST_EVENT", cb);
+      State.update({ type: "TEST_EVENT" });
       expect(cb.called);
+    });
+
+    it("should only subscribe to the correct event", () => {
+      const cb = sinon.spy();
+      State.on("TEST_EVENT", cb);
+      State.update({ type: "OTHER_EVENT" });
+      expect(!cb.called);
     });
   });
 
-  describe("unregister", () => {
+  describe("off", () => {
     it("should remove a registered callback", () => {
       const cb = sinon.spy();
-      State.subscribe(cb);
-      State.unsubscribe(cb);
-      State.update();
+      State.on("TEST_EVENT", cb);
+      State.off("TEST_EVENT", cb);
+      State.update({ type: "TEST_EVENT" });
       expect(!cb.called);
     });
   });

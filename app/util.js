@@ -1,5 +1,5 @@
+import * as Constants from "./constants.js";
 import State from "./state.js";
-import UiState from "./ui-state.js";
 
 /**
  * Convert absolute to relative coordinates.
@@ -7,7 +7,8 @@ import UiState from "./ui-state.js";
  * @param {number} absY
  */
 export function abs2rel(absX, absY) {
-  return [absX + UiState.offsetX, absY + UiState.offsetY];
+  const { offsetX, offsetY } = State.get();
+  return [absX + offsetX, absY + offsetY];
 }
 
 /**
@@ -16,7 +17,8 @@ export function abs2rel(absX, absY) {
  * @param {number} relY
  */
 export function rel2abs(relX, relY) {
-  return [relX - UiState.offsetX, relY - UiState.offsetY];
+  const { offsetX, offsetY } = State.get();
+  return [relX - offsetX, relY - offsetY];
 }
 
 /**
@@ -180,8 +182,8 @@ export function sufficientResources(blueprint) {
  * @param {number} cartY
  */
 export function cart2tile(cartX, cartY) {
-  const j = Math.floor(cartX / TILE_WIDTH);
-  const i = Math.floor(cartY / TILE_HEIGHT);
+  const j = Math.floor(cartX / Constants.TILE_WIDTH);
+  const i = Math.floor(cartY / Constants.TILE_HEIGHT);
 
   return [i, j];
 }
@@ -192,7 +194,7 @@ export function cart2tile(cartX, cartY) {
  * @param {number} j
  */
 export function tile2cart(i, j) {
-  return [j * TILE_WIDTH, i * TILE_HEIGHT];
+  return [j * Constants.TILE_WIDTH, i * Constants.TILE_HEIGHT];
 }
 
 /**
@@ -241,7 +243,9 @@ export function abs2tile(absX, absY) {
  * @param {number} j
  */
 export function isTileOnMap(i, j) {
-  return j >= 0 && j < MAP_WIDTH && i >= 0 && i < MAP_HEIGHT;
+  return (
+    j >= 0 && j < Constants.MAP_WIDTH && i >= 0 && i < Constants.MAP_HEIGHT
+  );
 }
 
 /**
@@ -250,7 +254,7 @@ export function isTileOnMap(i, j) {
  * @param {number} j
  */
 export function getTileCenter(i, j) {
-  return [(j + 0.5) * TILE_WIDTH, (i + 0.5) * TILE_HEIGHT];
+  return [(j + 0.5) * Constants.TILE_WIDTH, (i + 0.5) * Constants.TILE_HEIGHT];
 }
 
 /**
@@ -277,14 +281,14 @@ export function isAreaFreeForBuilding(i, j, height, width) {
  */
 export function isWalkableTile(type) {
   switch (type) {
-    case TILE_GRASS:
-    case TILE_DIRT:
-    case TILE_ROAD:
+    case Constants.TILE_GRASS:
+    case Constants.TILE_DIRT:
+    case Constants.TILE_ROAD:
       return true;
-    case TILE_WATER:
-    case TILE_DEEPWATER:
-    case TILE_TREE:
-    case TILE_BUILDING:
+    case Constants.TILE_WATER:
+    case Constants.TILE_DEEPWATER:
+    case Constants.TILE_TREE:
+    case Constants.TILE_BUILDING:
       return false;
     default:
       throw Error(`unknown tile type: ${type}`);
@@ -297,14 +301,14 @@ export function isWalkableTile(type) {
  */
 export function isBuildableTile(type) {
   switch (type) {
-    case TILE_GRASS:
-    case TILE_DIRT:
+    case Constants.TILE_GRASS:
+    case Constants.TILE_DIRT:
       return true;
-    case TILE_WATER:
-    case TILE_DEEPWATER:
-    case TILE_TREE:
-    case TILE_BUILDING:
-    case TILE_ROAD:
+    case Constants.TILE_WATER:
+    case Constants.TILE_DEEPWATER:
+    case Constants.TILE_TREE:
+    case Constants.TILE_BUILDING:
+    case Constants.TILE_ROAD:
       return false;
     default:
       throw Error(`unknown tile type: ${type}`);
@@ -317,14 +321,14 @@ export function isBuildableTile(type) {
  */
 export function isRoadableTile(type) {
   switch (type) {
-    case TILE_GRASS:
-    case TILE_DIRT:
-    case TILE_WATER:
+    case Constants.TILE_GRASS:
+    case Constants.TILE_DIRT:
+    case Constants.TILE_WATER:
       return true;
-    case TILE_DEEPWATER:
-    case TILE_TREE:
-    case TILE_BUILDING:
-    case TILE_ROAD:
+    case Constants.TILE_DEEPWATER:
+    case Constants.TILE_TREE:
+    case Constants.TILE_BUILDING:
+    case Constants.TILE_ROAD:
       return false;
     default:
       throw Error(`unknown tile type: ${type}`);
@@ -332,6 +336,7 @@ export function isRoadableTile(type) {
 }
 
 export function getActiveTile() {
-  const [absX, absY] = rel2abs(UiState.mouseIsoX, UiState.mouseIsoY);
+  const { mouseIsoX, mouseIsoY } = State.get();
+  const [absX, absY] = rel2abs(mouseIsoX, mouseIsoY);
   return abs2tile(absX, absY);
 }

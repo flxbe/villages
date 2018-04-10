@@ -4,6 +4,9 @@ import State from "../state.js";
 import { cart2tile } from "../util.js";
 import { getPosition } from "../movement.js";
 
+import * as Blueprints from "../blueprints.js";
+import * as Constants from "../constants.js";
+
 /**
  * Send a request to the server.
  *
@@ -29,7 +32,7 @@ export function serverRequest(request) {
  * @param {string} blueprintName
  */
 function placeBuilding(i, j, blueprintName) {
-  const blueprint = BLUEPRINTS[blueprintName];
+  const blueprint = Blueprints[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
 
   if (State.get().storage.wood < blueprint.wood) {
@@ -51,7 +54,10 @@ function placeBuilding(i, j, blueprintName) {
         i: k,
         j: l,
         tile: {
-          type: blueprintName == "road" ? TILE_ROAD : TILE_BUILDING,
+          type:
+            blueprintName == "road"
+              ? Constants.TILE_ROAD
+              : Constants.TILE_BUILDING,
           shade: blueprintName == "road" ? "0x999999" : "0x000000"
         }
       });
@@ -225,25 +231,28 @@ function generateRandomNoiseMap(width, height) {
 }
 
 function generateRandomMap() {
-  const noiseMap = generateRandomNoiseMap(MAP_WIDTH, MAP_HEIGHT);
+  const noiseMap = generateRandomNoiseMap(
+    Constants.MAP_WIDTH,
+    Constants.MAP_HEIGHT
+  );
 
   const map = [];
-  for (let i = 0; i < MAP_WIDTH; i++) {
+  for (let i = 0; i < Constants.MAP_WIDTH; i++) {
     const line = [];
-    for (let j = 0; j < MAP_HEIGHT; j++) {
+    for (let j = 0; j < Constants.MAP_HEIGHT; j++) {
       if (i > 13 && j > 13 && noiseMap[i][j] > 200) {
         line.push({
-          type: TILE_WATER,
+          type: Constants.TILE_WATER,
           shade: "0x000550"
         });
       } else if (noiseMap[i][j] > 150) {
         line.push({
-          type: TILE_DIRT,
+          type: Constants.TILE_DIRT,
           shade: "0x561f00"
         });
       } else {
         line.push({
-          type: TILE_GRASS,
+          type: Constants.TILE_GRASS,
           shade: "0x005111"
         });
       }
@@ -252,11 +261,11 @@ function generateRandomMap() {
   }
 
   map[7][10].shade = "0x000000";
-  map[7][10].type = TILE_ROAD;
+  map[7][10].type = Constants.TILE_ROAD;
   map[9][13].shade = "0x000000";
-  map[9][13].type = TILE_ROAD;
+  map[9][13].type = Constants.TILE_ROAD;
   map[3][3].shade = "0x551A8B";
-  map[3][3].type = TILE_ROAD;
+  map[3][3].type = Constants.TILE_ROAD;
 
   State.update(Actions.setMap(map));
 
@@ -285,7 +294,7 @@ function generateRandomMap() {
 
 function setTree(id, i, j) {
   const tile = {
-    type: TILE_TREE,
+    type: Constants.TILE_TREE,
     shade: "0x269a41"
   };
   State.update(Actions.updateMap([{ i, j, tile }]));

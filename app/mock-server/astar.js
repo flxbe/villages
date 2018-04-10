@@ -1,3 +1,4 @@
+import * as Constants from "../constants.js";
 import State from "../state.js";
 import { isWalkableTile, isTileOnMap, getTileCenter } from "../util.js";
 
@@ -107,15 +108,15 @@ export default function astar(
   [si, sj],
   [ti, tj],
   weightFunction = function(i, j) {
-    if (State.get().map[i][j].type == TILE_ROAD) return 1;
+    if (State.get().map[i][j].type == Constants.TILE_ROAD) return 1;
     return 2;
   }
 ) {
   let map = [];
 
-  for (let i = 0; i < MAP_WIDTH; i++) {
+  for (let i = 0; i < Constants.MAP_WIDTH; i++) {
     let line = [];
-    for (let j = 0; j < MAP_HEIGHT; j++) {
+    for (let j = 0; j < Constants.MAP_HEIGHT; j++) {
       line.push({
         i: i,
         j: j,
