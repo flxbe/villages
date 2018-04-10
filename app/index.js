@@ -1,37 +1,41 @@
-import { initUI, renderUI } from "./ui.js";
+import State from "./state.js";
 import { getAssets } from "./assets.js";
-import "./input.js";
-import Map from "./map.js";
 import { startServer } from "./mock-server/server.js";
 
-/**
- * Initialize global variables that are used throughout the app.
- *
- * This should be better managed. Right now, the map MAP_GRAPHICS_LAYER layer is created
- * and added in the file `map.js`.
- */
-document.body.appendChild(APPLICATION.view);
+import Input from "./input.js";
+import UiContainer from "./ui.js";
+import Map from "./map.js";
+import Tooltips from "./tooltips.js";
 
-/**
- * Start loading necessary ASSETS
- */
+function load() {
+  State.reset();
 
-PIXI.loader.add(getAssets()).load(setup);
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+  APPLICATION = new PIXI.Application({ width, height });
+  APPLICATION.stage.interactive = true;
+  APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
+  APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
+  document.body.appendChild(APPLICATION.view);
+
+  State.update({ type: "SET_APPLICATION_SIZE", height, width });
+  PIXI.loader.add(getAssets()).load(setup);
+}
+
 /**
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
+  Input.init();
   Map.init();
+  UiContainer.init();
+  Tooltips.init();
+
   APPLICATION.stage.addChild(Map);
+  APPLICATION.stage.addChild(UiContainer);
+  APPLICATION.stage.addChild(Tooltips);
 
-  APPLICATION.stage.addChild(UI_CONTAINER);
-
-  APPLICATION.stage.addChild(TOOLTIP_LAYER);
-  TOOLTIP_LAYER.position.set(0, 0);
-
-  Map.init();
   startServer();
-  initUI();
 
   APPLICATION.ticker.add(gameloop);
 }
@@ -41,6 +45,7 @@ function setup() {
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  Map.render(delta);
-  renderUI();
+  State.update({ type: "MOVE", timestamp: Date.now(), delta });
 }
+
+load();

@@ -5,12 +5,26 @@ import {
   isAreaFreeForBuilding,
   sufficientResources
 } from "./util.js";
-import UiState from "./ui-state.js";
+import State from "./state.js";
 
-// nothing under the mouse
-APPLICATION.stage.on("mousemove", event => {
-  UiState.hoveredElement = null;
-});
+export default {
+  init
+};
+
+function init() {
+  APPLICATION.stage.on("mousemove", event => {
+    State.update({ type: "HOVER", element: null });
+  });
+}
+
+window.onresize = function resize() {
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+
+  State.update({ type: "SET_APPLICATION_SIZE", height, width });
+
+  APPLICATION.renderer.resize(width, height);
+};
 
 window.addEventListener(
   "keydown",
@@ -39,7 +53,7 @@ window.addEventListener(
 
     switch (event.keyCode) {
       case 17:
-        UiState.ctrlDown = true;
+        State.update({ type: "SET_CTRL_STATE", value: true });
         break;
       case 37:
         UiState.offsetX += 20;
@@ -68,29 +82,11 @@ window.addEventListener(
 
     switch (event.key) {
       case "g": {
-        UiState.grid = !UiState.grid;
+        State.update({ type: "TOGGLE_GRID" });
         break;
       }
       case "h": {
-        UiState.renderHitAreas = !UiState.renderHitAreas;
-        break;
-      }
-      case "1": {
-        if (UiState.buildmenu) {
-          UiState.selection = { type: "blueprint", id: "house" };
-        }
-        break;
-      }
-      case "2": {
-        if (UiState.buildmenu) {
-          UiState.selection = { type: "blueprint", id: "barn" };
-        }
-        break;
-      }
-      case "3": {
-        if (UiState.buildmenu) {
-          UiState.selection = { type: "blueprint", id: "road" };
-        }
+        State.update({ type: "TOGGLE_HIT_AREAS" });
         break;
       }
     }
@@ -100,31 +96,18 @@ window.addEventListener(
 
 document.addEventListener("keyup", event => {
   if (event.keyCode == 17) {
-    UiState.ctrlDown = false;
+    State.update({ type: "SET_CTRL_STATE", value: false });
   }
 });
 
 document.addEventListener("mousemove", event => {
-  UiState.mouseIsoX = event.clientX;
-  UiState.mouseIsoY = event.clientY;
+  State.update({
+    type: "UPDATE_MOSE_POSITION",
+    x: event.clientX,
+    y: event.clientY
+  });
 });
 
 document.addEventListener("contextmenu", event => {
   event.preventDefault();
-});
-
-document.addEventListener("mousedown", event => {
-  if (event.which == 1) {
-    UiState.leftMouseDown = true;
-  } else if (event.which == 3) {
-    UiState.rightMouseDown = true;
-  }
-});
-
-document.addEventListener("mouseup", event => {
-  if (event.which == 1) {
-    UiState.leftMouseDown = false;
-  } else if (event.which == 3) {
-    UiState.rightMouseDown = false;
-  }
 });
