@@ -6,6 +6,7 @@ import {
   sufficientResources
 } from "./util.js";
 import UiState from "./ui-state.js";
+import { playMusic, stopMusic, adjustMasterVolume, adjustMusicVolume } from "./sound.js";
 
 // nothing under the mouse
 APPLICATION.stage.on("mousemove", event => {
@@ -67,6 +68,22 @@ window.addEventListener(
     }
 
     switch (event.key) {
+      case "s":
+        if (UiState.currentMusicTitle) stopMusic();
+        else playMusic();
+        break;
+      case "+":
+        adjustMusicVolume(0.05);
+        break;
+      case "-":
+        adjustMusicVolume(-0.05);
+        break;
+      case ".":
+        adjustMasterVolume(0.05);
+        break;
+      case ",":
+        adjustMasterVolume(-0.05);
+        break;
       case "g": {
         UiState.grid = !UiState.grid;
         break;
