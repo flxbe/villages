@@ -132,6 +132,8 @@ function createButton(color, blueprintName) {
   });
 
   button.on("mousemove", event => {
+    if (event.currentTarget !== event.target) return;
+
     State.update({
       type: "HOVER",
       element: { type: "button", tooltip: blueprintName }

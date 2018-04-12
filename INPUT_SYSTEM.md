@@ -22,8 +22,11 @@ sprite.addEventListener("mousemove", event => {
 });
 ```
 
-The sprite would get the event first, but only, if the mouse wasmoved over the
+The sprite would get the event first, but only, if the mouse was moved over the
 sprite. After the sprite, the container would get the event.
+
+Only one element per hierachy level gets the event. If gets then propagated to
+the parent containers and can be consumed there.
 
 The event can be stopped from being further propagated. In the game, as soon as
 an event was consumed, the propagation will be stopped.

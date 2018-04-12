@@ -7,7 +7,14 @@ Container layer to organize windows.
 
 let windows = new PIXI.Container();
 
-function addWindow(window) {
+function addWindow(window, options) {
+  /*
+    options.x
+    options.y
+    options.height
+    options.width
+    options.borders
+    */
   //
   const container = new WindowContainer(window);
 
@@ -15,14 +22,10 @@ function addWindow(window) {
   windows.addChild(container);
 
   // add to front
-  container.on("mousedown");
-
-  // move window
-  container.topBorder.on("drag");
-
-  // close window
-  container.closeButton.on("click");
+  container.clickLayer.on("mousedown");
 }
+
+function resizeWindow(window, size) {}
 
 function closeWindow(window) {
   windows.removeChild(window);

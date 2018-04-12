@@ -3,8 +3,9 @@ import { getAssets } from "./assets.js";
 import { startServer } from "./mock-server/server.js";
 
 import Input from "./input.js";
-import UiContainer from "./ui.js";
 import Map from "./map.js";
+import UiContainer from "./ui.js";
+import WindowManager from "./window-manager.js";
 import Tooltips from "./tooltips.js";
 
 function load() {
@@ -15,7 +16,6 @@ function load() {
   APPLICATION = new PIXI.Application({ width, height });
   APPLICATION.stage.interactive = true;
   APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
-  APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
   document.body.appendChild(APPLICATION.view);
 
   State.update({ type: "SET_APPLICATION_SIZE", height, width });
@@ -33,6 +33,7 @@ function setup() {
 
   APPLICATION.stage.addChild(Map);
   APPLICATION.stage.addChild(UiContainer);
+  APPLICATION.stage.addChild(WindowManager);
   APPLICATION.stage.addChild(Tooltips);
 
   startServer();

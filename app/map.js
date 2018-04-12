@@ -25,6 +25,8 @@ import {
 import { getPosition } from "./movement.js";
 import { setAnimation, animate } from "./animations.js";
 
+import openDeerWindow from "./windows/deer-window.js";
+
 const renderer = PIXI.autoDetectRenderer();
 const deerSprites = {};
 const treeSprites = {};
@@ -99,12 +101,13 @@ function onRightClick(event) {
 
   if (!movedSignificantly) {
     State.update({ type: "RESET_MODE" });
-    event.stopPropagation();
     return;
   }
 }
 
 function onMouseMove(event) {
+  if (event.currentTarget !== event.target) return;
+
   const { mouseIsoX, mouseIsoY } = State.get();
 
   if (scrolling) {
@@ -113,7 +116,6 @@ function onMouseMove(event) {
       dX: event.data.global.x - mouseIsoX,
       dY: event.data.global.y - mouseIsoY
     });
-    event.stopPropagation();
     return;
   }
 
@@ -121,7 +123,6 @@ function onMouseMove(event) {
 
   if (isTileOnMap(i, j)) {
     State.update({ type: "HOVER", element: { type: "tile", i, j } });
-    event.stopPropagation();
   }
 }
 
@@ -137,7 +138,6 @@ function onMouseUp(event) {
 
   if (mode === "normal") {
     State.update({ type: "SELECT", element: { type: "tile", i, j } });
-    event.stopPropagation();
   } else if (mode === "build") {
     const { blueprintName, ctrlDown } = State.get();
     const blueprint = Blueprints[blueprintName];
@@ -155,8 +155,6 @@ function onMouseUp(event) {
     } else {
       console.log("cannot build");
     }
-
-    event.stopPropagation();
   }
 }
 
@@ -173,9 +171,9 @@ function createSprite({ hitArea, element, animation }) {
 
   sprite.on("mouseup", event => {
     State.update({ type: "SELECT", element });
-    event.stopPropagation();
   });
   sprite.on("mousemove", event => {
+    if (event.currentTarget !== event.target) return;
     State.update({ type: "HOVER", element });
     event.stopPropagation();
   });
@@ -191,6 +189,10 @@ function addDeer({ deer }) {
     hitArea: Constants.DEER_HIT_AREA,
     animation: "STAND",
     element: { type: "deer", id: deer.id }
+  });
+  sprite.on("click", () => {
+    console.log("testtest");
+    openDeerWindow(deer.id);
   });
 
   deerSprites[deer.id] = sprite;
