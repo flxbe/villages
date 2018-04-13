@@ -23,5 +23,5 @@ export const TILE_ROAD = "TILE_ROAD";
 export const TILE_EMPTY = "TILE_EMPTY";
 export const TILE_ACTIVE = "TILE_ACTIVE";
 
-export const WINDOW_TOP_BORDER_SIZE = 40;
+export const WINDOW_TOP_BORDER_SIZE = 30;
 export const WINDOW_BORDER_COLOR = "0xdad9da";

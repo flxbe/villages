@@ -154,8 +154,8 @@ function update(action = {}) {
       break;
     }
     case "MOVE_CAMERA": {
-      STATE.offsetX += action.dX;
-      STATE.offsetY += action.dY;
+      STATE.offsetX += action.dX || 0;
+      STATE.offsetY += action.dY || 0;
       break;
     }
     case "UPDATE_MAP_SIZE": {

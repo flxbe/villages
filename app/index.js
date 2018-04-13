@@ -5,8 +5,10 @@ import { startServer } from "./mock-server/server.js";
 import Input from "./input.js";
 import Map from "./map.js";
 import UiContainer from "./ui.js";
-import WindowManager from "./window-manager.js";
+import Compositor from "./ui-framework/compositor.js";
 import Tooltips from "./tooltips.js";
+
+import openTestWindow from "./windows/test-window.js";
 
 function load() {
   State.reset();
@@ -33,10 +35,12 @@ function setup() {
 
   APPLICATION.stage.addChild(Map);
   APPLICATION.stage.addChild(UiContainer);
-  APPLICATION.stage.addChild(WindowManager);
+  APPLICATION.stage.addChild(Compositor.get());
   APPLICATION.stage.addChild(Tooltips);
 
   startServer();
+
+  openTestWindow();
 
   APPLICATION.ticker.add(gameloop);
 }

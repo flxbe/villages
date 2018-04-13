@@ -13,6 +13,7 @@ export default {
 
 function init() {
   APPLICATION.stage.on("mousemove", event => {
+    if (event.currentTarget !== event.target) return;
     State.update({ type: "HOVER", element: null });
   });
 }
@@ -56,16 +57,16 @@ window.addEventListener(
         State.update({ type: "SET_CTRL_STATE", value: true });
         break;
       case 37:
-        UiState.offsetX += 20;
+        State.update({ type: "MOVE_CAMERA", dX: 20 });
         break;
       case 38:
-        UiState.offsetY += 20;
+        State.update({ type: "MOVE_CAMERA", dY: 20 });
         break;
       case 39:
-        UiState.offsetX -= 20;
+        State.update({ type: "MOVE_CAMERA", dX: -20 });
         break;
       case 40:
-        UiState.offsetY -= 20;
+        State.update({ type: "MOVE_CAMERA", dY: -20 });
         break;
       case 122:
         if (

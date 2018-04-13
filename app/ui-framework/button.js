@@ -10,6 +10,7 @@ const textStyle = {
 export default class Button extends PIXI.Graphics {
   constructor(text) {
     super();
+    this.buttonMode = true;
     this.interactive = true;
 
     this._backgroundColor = NORMAL_BACKGROUND;
@@ -39,13 +40,20 @@ export default class Button extends PIXI.Graphics {
     this._width = width;
     this._height = height;
     this.hitArea = new PIXI.Rectangle(0, 0, width, height);
+    this.update();
     this.render();
   }
 
   setText(text) {
     this._textContainer.text = text;
+    this.update();
+  }
+
+  update() {
     this._textContainer.x = (this._width - this._textContainer.width) / 2.0;
     this._textContainer.y = (this._height - this._textContainer.height) / 2.0;
+
+    this.emit("updated");
   }
 
   render() {
