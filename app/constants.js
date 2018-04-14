@@ -11,6 +11,8 @@ export const MAP_WIDTH = 100;
 export const TILE_HEIGHT = 20;
 export const TILE_WIDTH = 20;
 
+export const BUILDMENU_BUTTON_SIZE = 50;
+
 export const TILE_GRASS = "TILE_GRASS";
 export const TILE_DIRT = "TILE_DIRT";
 export const TILE_WATER = "TILE_WATER";

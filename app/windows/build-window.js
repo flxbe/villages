@@ -1,3 +1,4 @@
+import * as Constants from "../constants.js";
 import State from "../state.js";
 
 import Window from "../ui-framework/window.js";
@@ -8,45 +9,45 @@ import Paragraph from "../ui-framework/paragraph.js";
 
 export default function openBuildWindow() {
     const window = new Window();
-    const buttonWidth = 50;
-    const buttonHeight = 50;
 
-    const v1 = new VerticalLayout(5);
-    window.container.addChild(v1);
-    v1.x = 5;
+    const hl = new HorizontalLayout(5);
+    window.container.addChild(hl);
 
-    const v2 = new VerticalLayout(5);
-    window.container.addChild(v2);
-    v2.x = buttonWidth + 10;
+    const vl1 = new VerticalLayout(5);
+    hl.addChild(vl1);
+
+    const vl2 = new VerticalLayout(5);
+    hl.addChild(vl2);
 
     const houseButton = new Button("house");
-    houseButton.setSize(buttonWidth, buttonHeight);
+    houseButton.setSize(Constants.BUILDMENU_BUTTON_SIZE, Constants.BUILDMENU_BUTTON_SIZE);
     houseButton.on("click", event => {
         State.update({ type: "ENTER_BUILD_MODE", blueprintName: "house" });
         event.stopPropagation();
     });
-    v1.addChild(houseButton);
+    vl1.addChild(houseButton);
 
     const barnButton = new Button("barn");
-    barnButton.setSize(buttonWidth, buttonHeight);
+    barnButton.setSize(Constants.BUILDMENU_BUTTON_SIZE, Constants.BUILDMENU_BUTTON_SIZE);
     barnButton.on("click", event => {
         State.update({ type: "ENTER_BUILD_MODE", blueprintName: "barn" });
         event.stopPropagation();
     });
-    v1.addChild(barnButton);
+    vl1.addChild(barnButton);
 
     const roadButton = new Button("road");
-    roadButton.setSize(buttonWidth, buttonHeight);
+    roadButton.setSize(Constants.BUILDMENU_BUTTON_SIZE, Constants.BUILDMENU_BUTTON_SIZE);
     roadButton.on("click", event => {
         State.update({ type: "ENTER_BUILD_MODE", blueprintName: "road" });
         event.stopPropagation();
     });
-    v2.addChild(roadButton);
-    
-    window.setSize( 2 * buttonWidth + 15, Math.max(v1.children.length, v2.children.length) * (buttonHeight + 5) + 45);
+    vl2.addChild(roadButton);
 
-    v1._recalc();
-    v2._recalc();
+    window.setSize(hl.children.length * (Constants.BUILDMENU_BUTTON_SIZE + 5) + 5, Math.max(vl1.children.length, vl2.children.length) * (Constants.BUILDMENU_BUTTON_SIZE + 5) + 5 + Constants.WINDOW_TOP_BORDER_SIZE);
+
+    vl1._recalc();
+    vl2._recalc();
+    hl._recalc();
 
     const { applicationWidth } = State.get();
     window.show(applicationWidth - window._width, 0);
