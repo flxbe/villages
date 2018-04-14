@@ -51,7 +51,7 @@ const selectionLayer = new PIXI.Graphics();
 const objectLayer = new PIXI.Container();
 const hitAreaLayer = new PIXI.Graphics();
 
-Map.init = function() {
+Map.init = function () {
   Map.addChild(interactionLayer);
   Map.addChild(mapSprite);
   Map.addChild(gridSprite);
@@ -75,9 +75,11 @@ Map.init = function() {
   State.on("ADD_DEER", addDeer);
   State.on("ADD_TREE", addTree);
   State.on("MOVE", move);
+  State.on("ENTER_BUILD_MODE", () => { objectLayer.interactiveChildren = false; });
+  State.on("RESET_MODE", () => { objectLayer.interactiveChildren = true; });
 };
 
-// internal sscrolling state
+// internal scrolling state
 let clickStartX;
 let clickStartY;
 let scrolling = false;
@@ -123,6 +125,7 @@ function onMouseMove(event) {
 
   if (isTileOnMap(i, j)) {
     State.update({ type: "HOVER", element: { type: "tile", i, j } });
+    event.stopPropagation();
   }
 }
 

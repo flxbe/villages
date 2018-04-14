@@ -6,8 +6,6 @@ export const PALM_OFFSET_X = -60;
 export const PALM_OFFSET_Y = -175;
 export const PALM_HIT_AREA = new PIXI.Rectangle(45, 165, 30, 30);
 
-export const BUILDMENU_TILESIZE = 50;
-
 export const MAP_HEIGHT = 100;
 export const MAP_WIDTH = 100;
 export const TILE_HEIGHT = 20;

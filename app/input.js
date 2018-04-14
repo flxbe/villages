@@ -6,6 +6,7 @@ import {
   sufficientResources
 } from "./util.js";
 import State from "./state.js";
+import openBuildWindow from "./windows/build-window.js";
 
 export default {
   init
@@ -81,6 +82,9 @@ window.addEventListener(
     }
 
     switch (event.key) {
+      case "b":
+        openBuildWindow();
+        break;
       case "g": {
         State.update({ type: "TOGGLE_GRID" });
         break;

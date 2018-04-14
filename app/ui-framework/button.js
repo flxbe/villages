@@ -39,6 +39,8 @@ export default class Button extends PIXI.Graphics {
     this._width = width;
     this._height = height;
     this.hitArea = new PIXI.Rectangle(0, 0, width, height);
+    this._textContainer.x = (this._width - this._textContainer.width) / 2.0;
+    this._textContainer.y = (this._height - this._textContainer.height) / 2.0;
     this.render();
   }
 
