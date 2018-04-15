@@ -1,3 +1,5 @@
+import Widget from "./widget.js";
+
 const NORMAL_BACKGROUND = "0xffffff";
 const DOWN_BACKGROUND = "0x297adb";
 
@@ -7,13 +9,16 @@ const textStyle = {
   fill: "black"
 };
 
-export default class Button extends PIXI.Graphics {
+export default class Button extends Widget {
   constructor(text) {
-    super();
+    super("Button");
+
     this.buttonMode = true;
-    this.interactive = true;
 
     this._backgroundColor = NORMAL_BACKGROUND;
+
+    this._background = new PIXI.Graphics();
+    this.addChild(this._background);
 
     this._textContainer = new PIXI.Text("", textStyle);
     this.addChild(this._textContainer);
@@ -21,6 +26,7 @@ export default class Button extends PIXI.Graphics {
     this.setSize(100, 25);
     this.setText(text);
 
+    this.interactive = true;
     this.on("mousedown", () => this.onMouseDown());
     this.on("mouseup", () => this.onMouseUp());
     this.on("mouseout", () => this.onMouseUp());
@@ -53,14 +59,14 @@ export default class Button extends PIXI.Graphics {
     this._textContainer.x = (this._width - this._textContainer.width) / 2.0;
     this._textContainer.y = (this._height - this._textContainer.height) / 2.0;
 
-    this.emit("updated");
+    this.updated();
   }
 
   render() {
-    this.clear();
-    this.lineStyle(1, "0x000000");
-    this.beginFill(this._backgroundColor);
-    this.drawRect(0, 0, this._width, this._height);
-    this.endFill();
+    this._background.clear();
+    this._background.lineStyle(1, "0x000000");
+    this._background.beginFill(this._backgroundColor);
+    this._background.drawRect(0, 0, this._width, this._height);
+    this._background.endFill();
   }
 }

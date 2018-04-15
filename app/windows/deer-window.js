@@ -23,13 +23,12 @@ export default function openDeerWindow(id) {
     spacing: 10
   });
 
-  const p = new Paragraph();
-  p.text = getText(id);
+  const p = new Paragraph(getText(id));
   window.add(p);
 
   const onUpdateDeer = action => {
     if (action.deer.id !== id) return;
-    p.text = getText(id);
+    p.setText(getText(id));
   };
 
   State.on("UPDATE_DEER", onUpdateDeer);

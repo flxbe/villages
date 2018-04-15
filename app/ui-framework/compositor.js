@@ -15,7 +15,7 @@ export default {
 };
 
 function assertWindow(window) {
-  if (!window instanceof Window) {
+  if (!(window instanceof Window)) {
     throw new Error("`window` must be an instance of `Window`.");
   }
 }
@@ -44,9 +44,7 @@ function pushToFront(window) {
  * Reset the internal state.
  */
 function reset() {
-  while (Compositor.children) {
-    Compositor.removeChild(Compositor.getChildAtIndex(0));
-  }
+  Compositor.removeChildren();
 }
 
 /**
@@ -55,8 +53,6 @@ function reset() {
  * @param {string} name - The window name.
  */
 function getWindow(name) {
-  assertWindow(window);
-
   for (let window of Compositor.children) {
     if (window.name === name) return window;
   }

@@ -44,7 +44,7 @@ describe("Compositor", () => {
     it("should return the window", () => {
       const name = "window_name";
       const newWindow = addWindow(name);
-      expect(Compositor.getWindow(name)).to.equal(window);
+      expect(Compositor.getWindow(name)).to.equal(newWindow);
     });
   });
 

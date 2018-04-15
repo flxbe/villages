@@ -1,27 +1,20 @@
-export default class LinearLayout extends PIXI.Container {
+import Widget from "./widget.js";
+
+export default class LinearLayout extends Widget {
+  /**
+   * A automatic, linear layout widget.
+   *
+   * @param {Object} options - the widget options.
+   * @param {Integer = 0} options.margin - The margin size.
+   * @param {Integer = 0} options.spacing - The spacing size.
+   * @param {Boolean = false} horizontal - Linear direction.
+   */
   constructor(options = {}) {
-    super();
+    super("LinearLayout", { isContainer: true });
 
     this.margin = options.margin || 0;
     this.spacing = options.spacing || 0;
     this.horizontal = options.horizontal || false;
-  }
-
-  add(child) {
-    const onUpdate = () => this.update();
-
-    child.on("updated", onUpdate);
-    child.once("removed", () => {
-      child.removeListener("updated", onUpdate);
-    });
-
-    this.addChild(child);
-    this.update();
-  }
-
-  remove(child) {
-    this.removeChild(child);
-    this.update();
   }
 
   update() {
@@ -35,6 +28,6 @@ export default class LinearLayout extends PIXI.Container {
       else y += child.height + this.spacing;
     }
 
-    this.emit("updated");
+    this.updated();
   }
 }
