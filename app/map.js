@@ -75,9 +75,15 @@ Map.init = function() {
   State.on("ADD_DEER", addDeer);
   State.on("ADD_TREE", addTree);
   State.on("MOVE", move);
+  State.on("ENTER_BUILD_MODE", () => {
+    objectLayer.interactiveChildren = false;
+  });
+  State.on("RESET_MODE", () => {
+    objectLayer.interactiveChildren = true;
+  });
 };
 
-// internal sscrolling state
+// internal scrolling state
 let clickStartX;
 let clickStartY;
 let scrolling = false;
