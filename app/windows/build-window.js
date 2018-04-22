@@ -1,22 +1,37 @@
 import * as Constants from "../constants.js";
 import State from "../state.js";
+import Compositor from "../ui-framework/compositor.js";
 
 import Window from "../ui-framework/window.js";
-import VerticalLayout from "../ui-framework/vertical-layout.js";
-import HorizontalLayout from "../ui-framework/horizontal-layout.js";
+import LinearLayout from "../ui-framework/linear-layout.js";
 import Button from "../ui-framework/button.js";
 import Paragraph from "../ui-framework/paragraph.js";
 
 export default function openBuildWindow() {
-    const window = new Window();
+    const name = `Build Menu`;
+    let window = Compositor.getWindow(name);
 
-    const hl = new HorizontalLayout(5);
+    if (window) {
+        Compositor.pushToFront(window);
+        return;
+    }
+
+    window = new Window({
+        name,
+        title: `Build Menu`,
+        width: 115,
+        height: 175,
+        margin: 5,
+        spacing: 5
+    });
+
+    const hl = new LinearLayout({ margin: 5, spacing: 5, horizontal: true });
     window.container.addChild(hl);
 
-    const vl1 = new VerticalLayout(5);
+    const vl1 = new LinearLayout({ spacing: 5 });
     hl.addChild(vl1);
 
-    const vl2 = new VerticalLayout(5);
+    const vl2 = new LinearLayout({ spacing: 5 });
     hl.addChild(vl2);
 
     const houseButton = new Button("house");
@@ -43,11 +58,9 @@ export default function openBuildWindow() {
     });
     vl2.addChild(roadButton);
 
-    window.setSize(hl.children.length * (Constants.BUILDMENU_BUTTON_SIZE + 5) + 5, Math.max(vl1.children.length, vl2.children.length) * (Constants.BUILDMENU_BUTTON_SIZE + 5) + 5 + Constants.WINDOW_TOP_BORDER_SIZE);
-
-    vl1._recalc();
-    vl2._recalc();
-    hl._recalc();
+    vl2.update();
+    vl1.update();
+    hl.update();
 
     const { applicationWidth } = State.get();
     window.show(applicationWidth - window._width, 0);
