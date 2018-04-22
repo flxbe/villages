@@ -1,5 +1,6 @@
 import * as Constants from "../constants.js";
 import State from "../state.js";
+import Compositor from "../ui-framework/compositor.js";
 
 import Window from "../ui-framework/window.js";
 import LinearLayout from "../ui-framework/linear-layout.js";
