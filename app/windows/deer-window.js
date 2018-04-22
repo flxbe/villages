@@ -1,35 +1,42 @@
 import State from "../state.js";
+import Compositor from "../ui-framework/compositor.js";
 
 import Window from "../ui-framework/window.js";
-import VerticalLayout from "../ui-framework/vertical-layout.js";
-import HorizontalLayout from "../ui-framework/horizontal-layout.js";
 import Button from "../ui-framework/button.js";
 import Paragraph from "../ui-framework/paragraph.js";
 
 export default function openDeerWindow(id) {
-  const window = new Window();
-  window.setSize(300, 300);
+  const name = `deer_${id}`;
+  let window = Compositor.getWindow(name);
 
-  const vl = new VerticalLayout(10);
-  window.container.addChild(vl);
-  vl.x = 10;
-
-  const p = new Paragraph();
-  vl.add(p);
-
-  function setText(text) {
-    p.text = getText(id);
-    vl._recalc();
+  if (window) {
+    Compositor.pushToFront(window);
+    return;
   }
 
-  State.on("UPDATE_DEER", action => {
-    if (action.deer.id !== id) return;
-    setText();
+  window = new Window({
+    name,
+    title: `Deer '${id}'`,
+    width: 300,
+    height: 200,
+    margin: 10,
+    spacing: 10
   });
 
-  setText();
+  const p = new Paragraph(getText(id));
+  window.add(p);
 
-  window.show();
+  const onUpdateDeer = action => {
+    if (action.deer.id !== id) return;
+    p.setText(getText(id));
+  };
+
+  State.on("UPDATE_DEER", onUpdateDeer);
+  window.on("removed", () => {
+    State.off("UPDATE_DEER", onUpdateDeer);
+  });
+
+  window.show(100, 100);
 }
 
 function getText(id) {

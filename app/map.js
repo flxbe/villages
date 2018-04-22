@@ -37,9 +37,6 @@ export default Map;
 /**
  * Create layers.
  */
-const interactionLayer = new PIXI.Container();
-interactionLayer.interactive = true;
-
 const mapTexture = PIXI.RenderTexture.create();
 const mapSprite = new PIXI.Sprite(mapTexture);
 
@@ -51,8 +48,7 @@ const selectionLayer = new PIXI.Graphics();
 const objectLayer = new PIXI.Container();
 const hitAreaLayer = new PIXI.Graphics();
 
-Map.init = function () {
-  Map.addChild(interactionLayer);
+Map.init = function() {
   Map.addChild(mapSprite);
   Map.addChild(gridSprite);
   Map.addChild(decorationLayer);
@@ -60,23 +56,31 @@ Map.init = function () {
   Map.addChild(objectLayer);
   Map.addChild(hitAreaLayer);
 
-  resizeInteractionLayer();
+  resizeMapHitArea();
 
-  interactionLayer.on("rightdown", onRightDown);
-  interactionLayer.on("rightupoutside", onRightUp);
-  interactionLayer.on("rightup", onRightUp);
-  interactionLayer.on("rightclick", onRightClick);
-  interactionLayer.on("mousemove", onMouseMove);
-  interactionLayer.on("mouseup", onMouseUp);
+  Map.interactive = true;
+  Map.on("rightdown", onRightDown);
+  Map.on("rightupoutside", onRightUp);
+  Map.on("rightup", onRightUp);
+  Map.on("rightclick", onRightClick);
+  Map.on("mousemove", onMouseMove);
 
-  State.on("SET_APPLICATION_SIZE", resizeInteractionLayer);
+  mapSprite.interactive = true;
+  mapSprite.on("mousemove", onMouseMapMove);
+  mapSprite.on("mouseup", onMouseMapUp);
+
+  State.on("SET_APPLICATION_SIZE", resizeMapHitArea);
   State.on("SET_MAP", renderTexture);
   State.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
   State.on("ADD_DEER", addDeer);
   State.on("ADD_TREE", addTree);
   State.on("MOVE", move);
-  State.on("ENTER_BUILD_MODE", () => { objectLayer.interactiveChildren = false; });
-  State.on("RESET_MODE", () => { objectLayer.interactiveChildren = true; });
+  State.on("ENTER_BUILD_MODE", () => {
+    objectLayer.interactiveChildren = false;
+  });
+  State.on("RESET_MODE", () => {
+    objectLayer.interactiveChildren = true;
+  });
 };
 
 // internal scrolling state
@@ -108,28 +112,32 @@ function onRightClick(event) {
 }
 
 function onMouseMove(event) {
-  if (event.currentTarget !== event.target) return;
-
-  const { mouseIsoX, mouseIsoY } = State.get();
-
-  if (scrolling) {
-    State.update({
-      type: "MOVE_CAMERA",
-      dX: event.data.global.x - mouseIsoX,
-      dY: event.data.global.y - mouseIsoY
-    });
-    return;
+  if (event.currentTarget === event.target) {
+    State.update({ type: "HOVER", element: null });
   }
 
+  if (!scrolling) return;
+  const { mouseIsoX, mouseIsoY } = State.get();
+
+  State.update({
+    type: "MOVE_CAMERA",
+    dX: event.data.global.x - mouseIsoX,
+    dY: event.data.global.y - mouseIsoY
+  });
+}
+
+function onMouseMapMove(event) {
+  if (event.currentTarget !== event.target) return;
   const [i, j] = getActiveTile();
 
   if (isTileOnMap(i, j)) {
     State.update({ type: "HOVER", element: { type: "tile", i, j } });
-    event.stopPropagation();
+  } else {
+    State.update({ type: "HOVER", element: null });
   }
 }
 
-function onMouseUp(event) {
+function onMouseMapUp(event) {
   const [i, j] = getActiveTile();
 
   if (!isTileOnMap(i, j)) {
@@ -161,10 +169,10 @@ function onMouseUp(event) {
   }
 }
 
-function resizeInteractionLayer() {
+function resizeMapHitArea() {
   const { applicationHeight, applicationWidth } = State.get();
   const hitArea = new PIXI.Rectangle(0, 0, applicationWidth, applicationHeight);
-  interactionLayer.hitArea = hitArea;
+  Map.hitArea = hitArea;
 }
 
 function createSprite({ hitArea, element, animation }) {
@@ -191,12 +199,9 @@ function addDeer({ deer }) {
   const sprite = createSprite({
     hitArea: Constants.DEER_HIT_AREA,
     animation: "STAND",
-    element: { type: "deer", id: deer.id }
+    element: { type: "deer", id: deer.id, tooltip: deer.id }
   });
-  sprite.on("click", () => {
-    console.log("testtest");
-    openDeerWindow(deer.id);
-  });
+  sprite.on("click", () => openDeerWindow(deer.id));
 
   deerSprites[deer.id] = sprite;
 }
@@ -205,7 +210,7 @@ function addTree({ tree }) {
   const sprite = createSprite({
     hitArea: Constants.PALM_HIT_AREA,
     animation: "PINE_TREE",
-    element: { type: "tree", id: tree.id }
+    element: { type: "tree", id: tree.id, tooltip: tree.id }
   });
 
   treeSprites[tree.id] = sprite;
