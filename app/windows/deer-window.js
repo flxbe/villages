@@ -1,9 +1,9 @@
 import State from "../state.js";
-import Compositor from "../ui-framework/compositor.js";
+import Compositor from "../html-gui/compositor.js";
 
-import Window from "../ui-framework/window.js";
-import Button from "../ui-framework/button.js";
-import Paragraph from "../ui-framework/paragraph.js";
+import Window from "../html-gui/window.js";
+import Button from "../html-gui/button.js";
+import Paragraph from "../html-gui/paragraph.js";
 
 export default function openDeerWindow(id) {
   const name = `deer_${id}`;
@@ -17,22 +17,23 @@ export default function openDeerWindow(id) {
   window = new Window({
     name,
     title: `Deer '${id}'`,
-    width: 300,
-    height: 200,
-    margin: 10,
-    spacing: 10
+    margin: 10
   });
 
   const p = new Paragraph(getText(id));
   window.add(p);
 
+  const closeButton = new Button("Close");
+  closeButton.node.addEventListener("click", () => window.close());
+  window.add(closeButton);
+
   const onUpdateDeer = action => {
     if (action.deer.id !== id) return;
-    p.setText(getText(id));
+    p.text = getText(id);
   };
 
   State.on("UPDATE_DEER", onUpdateDeer);
-  window.on("removed", () => {
+  window.once("unmounted", () => {
     State.off("UPDATE_DEER", onUpdateDeer);
   });
 

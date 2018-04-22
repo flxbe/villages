@@ -7,11 +7,12 @@
   <style>
     body {
       overflow: hidden;
+      padding: 0;
+      margin: 0;
     }
 
-    * {
-      padding: 0;
-      margin: 0
+    .window {
+      box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.75);
     }
   </style>
 </head>
@@ -19,6 +20,7 @@
 <script src="pixi/pixi-sound.js"></script>
 
 <body>
+  <div id="window-layer"></div>
 </body>
 <script src="globals.js"></script>
 <script type="module" src="index.js"></script>

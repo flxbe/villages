@@ -1,29 +1,20 @@
-import Window from "../ui-framework/window.js";
-import Button from "../ui-framework/button.js";
-import Paragraph from "../ui-framework/paragraph.js";
+import Window from "../html-gui/window.js";
+import Button from "../html-gui/button.js";
+import Paragraph from "../html-gui/paragraph.js";
 
 export default function openTestWindow(id) {
   const window = new Window({
     title: "Test Window",
-    width: 300,
-    height: 400,
+    width: 200,
     margin: 10,
     spacing: 10
   });
 
-  const textBuffer = [];
-
-  const p = new Paragraph("", {
-    wordWrap: true,
-    wordWrapWidth: 250
-  });
-  window.add(p);
-
-  const button = new Button("Add a line of text");
-  button.on("click", () => {
-    textBuffer.push("A new line of text. Very long.");
-    p.setText(textBuffer.join("\n"));
-  });
+  const p1 = new Paragraph("Some text");
+  window.add(p1);
+  const p2 = new Paragraph("Some more text");
+  window.add(p2);
+  const button = new Button("Submit");
   window.add(button);
 
   window.show(100, 100);

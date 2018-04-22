@@ -5,7 +5,7 @@ import { startServer } from "./mock-server/server.js";
 import Input from "./input.js";
 import Map from "./map.js";
 import UiContainer from "./ui.js";
-import Compositor from "./ui-framework/compositor.js";
+import Compositor from "./html-gui/compositor.js";
 import Tooltips from "./tooltips.js";
 
 import openTestWindow from "./windows/test-window.js";
@@ -36,7 +36,11 @@ function load() {
   APPLICATION.stage.interactive = true;
   APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
   APPLICATION.renderer.backgroundColor = "0x1099bb";
-  document.body.appendChild(APPLICATION.view);
+
+  const windowLayer = document.getElementById("window-layer");
+  Compositor.mount(windowLayer);
+
+  document.body.insertBefore(APPLICATION.view, windowLayer);
 
   State.update({ type: "SET_APPLICATION_SIZE", height, width });
   PIXI.loader.add(getAssets()).load(setup);
@@ -53,7 +57,6 @@ function setup() {
 
   APPLICATION.stage.addChild(Map);
   APPLICATION.stage.addChild(UiContainer);
-  APPLICATION.stage.addChild(Compositor.get());
   APPLICATION.stage.addChild(Tooltips);
 
   startServer();
