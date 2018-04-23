@@ -5,6 +5,8 @@ import State from "../state.js";
 import Widget from "./widget.js";
 import { intToPx, pxToInt } from "./util.js";
 
+// TODO: memory is leaked, callbacks should be removed
+
 /**
  * Window frame container.
  *
@@ -29,6 +31,9 @@ export default class Window extends Widget {
 
     if (options.width) this.width = options.width;
     if (options.height) this.height = options.height;
+
+    this.x = 0;
+    this.y = 0;
 
     this._onDrag = event => this.onDrag(event);
     this._onMouseDown = event => this.onMouseDown(event);
