@@ -112,11 +112,8 @@ function onRightClick(event) {
 }
 
 function onMouseMove(event) {
-  if (event.currentTarget === event.target) {
-    State.update({ type: "HOVER", element: null });
-  }
-
   if (!scrolling) return;
+
   const { mouseIsoX, mouseIsoY } = State.get();
 
   State.update({
@@ -127,7 +124,6 @@ function onMouseMove(event) {
 }
 
 function onMouseMapMove(event) {
-  if (event.currentTarget !== event.target) return;
   const [i, j] = getActiveTile();
 
   if (isTileOnMap(i, j)) {
@@ -184,9 +180,7 @@ function createSprite({ hitArea, element, animation }) {
     State.update({ type: "SELECT", element });
   });
   sprite.on("mousemove", event => {
-    if (event.currentTarget !== event.target) return;
     State.update({ type: "HOVER", element });
-    event.stopPropagation();
   });
 
   setAnimation(sprite, animation);

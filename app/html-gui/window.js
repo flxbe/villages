@@ -19,18 +19,21 @@ export default class Window extends Widget {
     });
 
     this.name = options.name;
-
-    this.node.classList.add("window");
-    this.node.style.position = "absolute";
-    this.node.style.backgroundColor = options.backgroundColor || "#ffffff";
-    this.node.style.padding = options.margin ? intToPx(options.margin) : "10px";
-    this.node.style.borderColor = "#dad9da";
-    this.node.style.borderStyle = "solid";
-    this.node.style.borderWidth = "1px";
-    this.node.style.borderTopWidth = "30px";
+    this.fixed = options.fixed || false;
 
     if (options.width) this.width = options.width;
     if (options.height) this.height = options.height;
+
+    // this.node.classList.add("window");
+    this.node.style.position = "absolute";
+    this.node.style.backgroundColor = options.backgroundColor || "#ffffff";
+    this.node.style.padding = options.margin ? intToPx(options.margin) : "10px";
+
+    this.shadow = options.shadow || false;
+
+    this.borders = options.borders || false;
+    this.node.style.borderColor = "#dad9da";
+    this.node.style.borderStyle = "solid";
 
     this.x = 0;
     this.y = 0;
@@ -61,6 +64,23 @@ export default class Window extends Widget {
     return this._y;
   }
 
+  set borders(borders) {
+    this._borders = borders;
+    this.node.style.borderWidth = borders ? "1px" : 0;
+    this.node.style.borderTopWidth = borders ? "30px" : 0;
+  }
+
+  get borders() {
+    return this._borders;
+  }
+
+  set shadow(shadow) {
+    this._shadow = shadow;
+    this.node.style.boxShadow = shadow
+      ? "1px 1px 3px 0px rgba(0, 0, 0, 0.75)"
+      : undefined;
+  }
+
   /**
    * Drag the window when the mouse is moved.
    *
@@ -79,7 +99,7 @@ export default class Window extends Widget {
    * @private
    */
   onMouseDown(event) {
-    if (event.button === 0) {
+    if (event.button === 0 && !this.fixed) {
       this._dragX = event.clientX;
       this._dragY = event.clientY;
       document.addEventListener("mousemove", this._onDrag);

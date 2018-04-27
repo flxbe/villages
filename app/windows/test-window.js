@@ -7,7 +7,8 @@ export default function openTestWindow(id) {
     title: "Test Window",
     width: 200,
     margin: 10,
-    spacing: 10
+    borders: true,
+    shadow: true
   });
 
   const p1 = new Paragraph("Some text");

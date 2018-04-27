@@ -2,7 +2,7 @@ import State from "./state.js";
 import { getAssets } from "./assets.js";
 import { startServer } from "./mock-server/server.js";
 
-import Input from "./input.js";
+import "./input.js";
 import Map from "./map.js";
 import UiContainer from "./ui.js";
 import Compositor from "./html-gui/compositor.js";
@@ -20,6 +20,8 @@ import openTestWindow from "./windows/test-window.js";
 PIXI.settings.RESOLUTION = window.devicePixelRatio;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
+// TODO: re-add the exact hover input method.
+
 /**
  * The inital loading step of the application.
  */
@@ -34,8 +36,12 @@ function load() {
     autoResize: true
   });
   APPLICATION.stage.interactive = true;
-  APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
   APPLICATION.renderer.backgroundColor = "0x1099bb";
+
+  State.on("SET_APPLICATION_SIZE", ({ height, width }) => {
+    APPLICATION.renderer.resize(width, height);
+    APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
+  });
 
   const windowLayer = document.getElementById("window-layer");
   Compositor.mount(windowLayer);
@@ -50,7 +56,6 @@ function load() {
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
-  Input.init();
   Map.init();
   UiContainer.init();
   Tooltips.init();

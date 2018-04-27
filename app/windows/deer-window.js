@@ -17,7 +17,9 @@ export default function openDeerWindow(id) {
   window = new Window({
     name,
     title: `Deer '${id}'`,
-    margin: 10
+    margin: 10,
+    borders: true,
+    shadow: true
   });
 
   const p = new Paragraph(getText(id));

@@ -6,26 +6,13 @@ import {
   sufficientResources
 } from "./util.js";
 import State from "./state.js";
-import openBuildWindow from "./windows/build-window.js";
-
-export default {
-  init
-};
-
-function init() {
-  APPLICATION.stage.on("mousemove", event => {
-    if (event.currentTarget !== event.target) return;
-    State.update({ type: "HOVER", element: null });
-  });
-}
+import openBuildMenu from "./windows/build-menu.js";
 
 window.onresize = function resize() {
   const height = window.innerHeight;
   const width = window.innerWidth;
 
   State.update({ type: "SET_APPLICATION_SIZE", height, width });
-
-  APPLICATION.renderer.resize(width, height);
 };
 
 window.addEventListener(
@@ -84,7 +71,8 @@ window.addEventListener(
 
     switch (event.key) {
       case "b":
-        openBuildWindow();
+        console.log("test");
+        openBuildMenu();
         break;
       case "g": {
         State.update({ type: "TOGGLE_GRID" });
