@@ -64,6 +64,15 @@ function off(eventName, callback) {
   callbackMap[eventName] = callbackMap[eventName].filter(c => c !== callback);
 }
 
+function emit(eventName, data) {
+  const callbacks = callbackMap[eventName];
+  if (callbacks) {
+    for (let callback of callbacks) {
+      callback(data);
+    }
+  }
+}
+
 function get() {
   return STATE;
 }
@@ -166,10 +175,5 @@ function update(action = {}) {
     }
   }
 
-  const callbacks = callbackMap[action.type];
-  if (callbacks) {
-    for (let callback of callbacks) {
-      callback(action);
-    }
-  }
+  emit(action.type, action);
 }

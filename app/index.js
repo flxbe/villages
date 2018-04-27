@@ -1,6 +1,6 @@
 import State from "./state.js";
 import { getAssets } from "./assets.js";
-import { startServer } from "./mock-server/server.js";
+import server from "./server.js";
 
 import "./input.js";
 import Map from "./map.js";
@@ -25,8 +25,11 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 /**
  * The inital loading step of the application.
  */
-function load() {
+async function load() {
   State.reset();
+
+  server.on("update", update => State.update(update));
+  await server.connect();
 
   const height = window.innerHeight;
   const width = window.innerWidth;
@@ -64,7 +67,8 @@ function setup() {
   APPLICATION.stage.addChild(UiContainer);
   APPLICATION.stage.addChild(Tooltips);
 
-  startServer();
+  // startServer();
+  server.request({ type: "LOAD_MAP" });
 
   openTestWindow();
 

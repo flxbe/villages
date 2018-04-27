@@ -33,6 +33,5 @@ export default function openBuildMenu() {
   window.add(roadButton);
 
   const { applicationWidth } = State.get();
-  console.log(window.width);
   window.show(applicationWidth - window.width, 0);
 }

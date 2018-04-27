@@ -3,9 +3,24 @@ import * as Actions from "./actions.js";
 import State from "../state.js";
 import { cart2tile } from "../util.js";
 import { getPosition } from "../movement.js";
+import { generateRandomMap } from "./map-generator.js";
 
 import * as Blueprints from "../blueprints.js";
 import * as Constants from "../constants.js";
+
+let updates = [];
+let updateCallback = undefined;
+
+function pushUpdate(update) {
+  updates.push(update);
+}
+
+function flushUpdates() {
+  for (let update of updates) {
+    updateCallback(update);
+  }
+  updates = [];
+}
 
 /**
  * Send a request to the server.
@@ -16,11 +31,18 @@ import * as Constants from "../constants.js";
  */
 export function serverRequest(request) {
   switch (request.type) {
+    case "LOAD_MAP": {
+      loadMap();
+      break;
+    }
     case "PLACE_BUILDING": {
       const { i, j, blueprintName } = request;
       placeBuilding(i, j, blueprintName);
+      break;
     }
   }
+
+  flushUpdates();
 }
 
 /**
@@ -40,7 +62,7 @@ function placeBuilding(i, j, blueprintName) {
   }
 
   // reduce resources
-  State.update(
+  pushUpdate(
     Actions.updateStorage({
       wood: State.get().storage.wood - blueprint.wood
     })
@@ -65,7 +87,7 @@ function placeBuilding(i, j, blueprintName) {
   }
 
   // dispatch map updates
-  State.update(Actions.updateMap(mapUpdates));
+  pushUpdate(Actions.updateMap(mapUpdates));
 }
 
 /**
@@ -73,203 +95,88 @@ function placeBuilding(i, j, blueprintName) {
  *
  * This registers a task, that is executed periodically and issues STATE
  * updates. This will eventually be replaced by a real server implementation.
+ *
+ * @param {function} consumeUpdate - Send Updates to the client) {
  */
-export function startServer() {
+export function startServer(consumeUpdate) {
+  updateCallback = consumeUpdate;
+}
+
+export function serverStep() {
   const treeTile = [7, 10];
   const foodTile = [9, 13];
   const storageTile = [3, 3];
 
-  generateRandomMap();
+  const timestamp = Date.now();
 
-  APPLICATION.ticker.add(server);
+  for (let deer of Object.values(State.get().deers)) {
+    const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
+    const deerTile = cart2tile(cartX, cartY);
 
-  let counter = 0;
-  function server(delta) {
-    counter += delta;
-    if (counter < 20) return;
+    const isWalking = deer.path[deer.path.length - 1].timestamp > timestamp;
 
-    counter -= 20;
-
-    const timestamp = Date.now();
-
-    for (let deer of Object.values(State.get().deers)) {
-      const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
-      const deerTile = cart2tile(cartX, cartY);
-
-      const isWalking = deer.path[deer.path.length - 1].timestamp > timestamp;
-
-      if (deer.job === "wood") {
-        // job: wood
-        if (deer.inventory < 20) {
-          if (deerTile[0] === treeTile[0] && deerTile[1] === treeTile[1]) {
-            const inventory = Math.min(deer.inventory + 1, 20);
-            State.update(
-              Actions.updateDeer({ id: deer.id, inventory, item: "wood" })
-            );
-          } else if (!isWalking) {
-            const path = astar(deerTile, treeTile);
-            State.update(Actions.updateDeer({ id: deer.id, path }));
-          }
-        } else {
-          State.update(Actions.updateDeer({ id: deer.id, job: "storage" }));
-        }
-      } else if (deer.job === "food") {
-        // job: food
-        if (deer.inventory < 20) {
-          if (deerTile[0] === foodTile[0] && deerTile[1] === foodTile[1]) {
-            const inventory = Math.min(deer.inventory + 1, 20);
-            State.update(
-              Actions.updateDeer({ id: deer.id, inventory, item: "food" })
-            );
-          } else if (!isWalking) {
-            const path = astar(deerTile, foodTile);
-            State.update(Actions.updateDeer({ id: deer.id, path }));
-          }
-        } else {
-          State.update(Actions.updateDeer({ id: deer.id, job: "storage" }));
-        }
-      } else if (deer.job === "storage") {
-        // job: storage
-        if (deer.inventory > 0) {
-          if (
-            deerTile[0] === storageTile[0] &&
-            deerTile[1] === storageTile[1]
-          ) {
-            State.update(
-              Actions.updateStorage({
-                [deer.item]: State.get().storage[deer.item] + deer.inventory
-              })
-            );
-            State.update(Actions.updateDeer({ id: deer.id, inventory: 0 }));
-          } else if (!isWalking) {
-            const path = astar(deerTile, storageTile);
-            State.update(Actions.updateDeer({ id: deer.id, path }));
-          }
-        } else {
-          State.update(
-            Actions.updateDeer({ id: deer.id, job: deer.profession })
+    if (deer.job === "wood") {
+      // job: wood
+      if (deer.inventory < 20) {
+        if (deerTile[0] === treeTile[0] && deerTile[1] === treeTile[1]) {
+          const inventory = Math.min(deer.inventory + 1, 20);
+          pushUpdate(
+            Actions.updateDeer({ id: deer.id, inventory, item: "wood" })
           );
+        } else if (!isWalking) {
+          const path = astar(deerTile, treeTile);
+          pushUpdate(Actions.updateDeer({ id: deer.id, path }));
         }
       } else {
-        // no job
-        State.update(Actions.updateDeer({ id: deer.id, job: deer.profession }));
+        pushUpdate(Actions.updateDeer({ id: deer.id, job: "storage" }));
       }
-    }
-  }
-}
-
-function noise(width, height, frequency) {
-  const sinPhase = Math.floor(Math.random() * 2 * Math.PI);
-  const cosPhase = Math.floor(Math.random() * 2 * Math.PI);
-  const map = [];
-  for (let i = 0; i < width; i++) {
-    const line = [];
-    for (let j = 0; j < height; j++) {
-      line.push(
-        Math.sin(2 * Math.PI * frequency[0] * i / width + sinPhase) *
-          Math.cos(2 * Math.PI * frequency[1] * j / height + cosPhase) +
-          1
-      );
-    }
-    map.push(line);
-  }
-  return map;
-}
-
-function weightedSum(width, height, amplitudes, noises) {
-  const map = [];
-  let max = 0;
-  for (let i = 0; i < width; i++) {
-    const line = [];
-    for (let j = 0; j < height; j++) {
-      let val = 0;
-      for (let n = 0; n < noises.length; n++) {
-        val += noises[n][i][j] * amplitudes[n];
-      }
-      if (max < val) {
-        max = val;
-      }
-      line.push(val);
-    }
-    map.push(line);
-  }
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < height; j++) {
-      map[i][j] = Math.floor(map[i][j] * 255 / max);
-    }
-  }
-  return map;
-}
-
-function generateNoiseMap(width, height, frequencies, amplitudeFunc, seed) {
-  // TODO: implement random function with settable seed
-  //Math.random.seed(seed);
-  const amplitudes = [];
-  const noises = [];
-  for (let i = 0; i < frequencies.length; i++) {
-    amplitudes.push(amplitudeFunc(frequencies[i]));
-    noises.push(noise(width, height, frequencies[i]));
-  }
-  return weightedSum(width, height, amplitudes, noises);
-}
-
-function generateRandomNoiseMap(width, height) {
-  const seed = Math.floor(Math.random() * 16384 + 1);
-  const frequencies = [];
-  for (let f = 1; f <= 32; f *= 2) {
-    frequencies.push([f, f]);
-  }
-  return generateNoiseMap(
-    width,
-    height,
-    frequencies,
-    function([f, g]) {
-      return (1 / f + 1 / g) / 2;
-    },
-    seed
-  );
-}
-
-function generateRandomMap() {
-  const noiseMap = generateRandomNoiseMap(
-    Constants.MAP_WIDTH,
-    Constants.MAP_HEIGHT
-  );
-
-  const map = [];
-  for (let i = 0; i < Constants.MAP_WIDTH; i++) {
-    const line = [];
-    for (let j = 0; j < Constants.MAP_HEIGHT; j++) {
-      if (i > 13 && j > 13 && noiseMap[i][j] > 200) {
-        line.push({
-          type: Constants.TILE_WATER,
-          shade: "0x000550"
-        });
-      } else if (noiseMap[i][j] > 150) {
-        line.push({
-          type: Constants.TILE_DIRT,
-          shade: "0x561f00"
-        });
+    } else if (deer.job === "food") {
+      // job: food
+      if (deer.inventory < 20) {
+        if (deerTile[0] === foodTile[0] && deerTile[1] === foodTile[1]) {
+          const inventory = Math.min(deer.inventory + 1, 20);
+          pushUpdate(
+            Actions.updateDeer({ id: deer.id, inventory, item: "food" })
+          );
+        } else if (!isWalking) {
+          const path = astar(deerTile, foodTile);
+          pushUpdate(Actions.updateDeer({ id: deer.id, path }));
+        }
       } else {
-        line.push({
-          type: Constants.TILE_GRASS,
-          shade: "0x005111"
-        });
+        pushUpdate(Actions.updateDeer({ id: deer.id, job: "storage" }));
       }
+    } else if (deer.job === "storage") {
+      // job: storage
+      if (deer.inventory > 0) {
+        if (deerTile[0] === storageTile[0] && deerTile[1] === storageTile[1]) {
+          pushUpdate(
+            Actions.updateStorage({
+              [deer.item]: State.get().storage[deer.item] + deer.inventory
+            })
+          );
+          pushUpdate(Actions.updateDeer({ id: deer.id, inventory: 0 }));
+        } else if (!isWalking) {
+          const path = astar(deerTile, storageTile);
+          pushUpdate(Actions.updateDeer({ id: deer.id, path }));
+        }
+      } else {
+        pushUpdate(Actions.updateDeer({ id: deer.id, job: deer.profession }));
+      }
+    } else {
+      // no job
+      pushUpdate(Actions.updateDeer({ id: deer.id, job: deer.profession }));
     }
-    map.push(line);
   }
 
-  map[7][10].shade = "0x000000";
-  map[7][10].type = Constants.TILE_ROAD;
-  map[9][13].shade = "0x000000";
-  map[9][13].type = Constants.TILE_ROAD;
-  map[3][3].shade = "0x551A8B";
-  map[3][3].type = Constants.TILE_ROAD;
+  flushUpdates();
+}
 
-  State.update(Actions.setMap(map));
+function loadMap() {
+  const map = generateRandomMap();
 
-  State.update(
+  pushUpdate(Actions.setMap(map));
+
+  pushUpdate(
     Actions.addDeer({
       id: "deer1",
       path: [{ x: 0, y: 0, timestamp: Date.now() }],
@@ -277,7 +184,7 @@ function generateRandomMap() {
       profession: "wood"
     })
   );
-  State.update(
+  pushUpdate(
     Actions.addDeer({
       id: "deer2",
       path: [{ x: 0, y: 0, timestamp: Date.now() }],
@@ -297,6 +204,6 @@ function setTree(id, i, j) {
     type: Constants.TILE_TREE,
     shade: "0x269a41"
   };
-  State.update(Actions.updateMap([{ i, j, tile }]));
-  State.update(Actions.addTree({ id, i, j }));
+  pushUpdate(Actions.updateMap([{ i, j, tile }]));
+  pushUpdate(Actions.addTree({ id, i, j }));
 }

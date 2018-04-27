@@ -71,7 +71,6 @@ window.addEventListener(
 
     switch (event.key) {
       case "b":
-        console.log("test");
         openBuildMenu();
         break;
       case "g": {
