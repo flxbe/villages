@@ -1,8 +1,4 @@
-import {
-  startServer,
-  serverStep,
-  serverRequest
-} from "./mock-server/server.js";
+import { startServer, tick, serverRequest } from "./mock-server/server.js";
 
 let callbackMap = {};
 
@@ -37,12 +33,13 @@ function emit(eventName, data) {
 }
 
 function consumeUpdate(update) {
+  console.log(update);
   emit("update", update);
 }
 
 async function connect() {
   startServer(update => consumeUpdate(update));
-  setInterval(() => serverStep(), 500);
+  setInterval(() => tick(), 500);
 }
 
 async function request(req) {
