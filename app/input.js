@@ -6,25 +6,13 @@ import {
   sufficientResources
 } from "./util.js";
 import State from "./state.js";
-import openBuildWindow from "./windows/build-window.js";
-
-export default {
-  init
-};
-
-function init() {
-  APPLICATION.stage.on("mousemove", event => {
-    State.update({ type: "HOVER", element: null });
-  });
-}
+import openBuildMenu from "./windows/build-menu.js";
 
 window.onresize = function resize() {
   const height = window.innerHeight;
   const width = window.innerWidth;
 
   State.update({ type: "SET_APPLICATION_SIZE", height, width });
-
-  APPLICATION.renderer.resize(width, height);
 };
 
 window.addEventListener(
@@ -57,16 +45,16 @@ window.addEventListener(
         State.update({ type: "SET_CTRL_STATE", value: true });
         break;
       case 37:
-        UiState.offsetX += 20;
+        State.update({ type: "MOVE_CAMERA", dX: 20 });
         break;
       case 38:
-        UiState.offsetY += 20;
+        State.update({ type: "MOVE_CAMERA", dY: 20 });
         break;
       case 39:
-        UiState.offsetX -= 20;
+        State.update({ type: "MOVE_CAMERA", dX: -20 });
         break;
       case 40:
-        UiState.offsetY -= 20;
+        State.update({ type: "MOVE_CAMERA", dY: -20 });
         break;
       case 122:
         if (
@@ -83,7 +71,8 @@ window.addEventListener(
 
     switch (event.key) {
       case "b":
-        openBuildWindow();
+        console.log("test");
+        openBuildMenu();
         break;
       case "g": {
         State.update({ type: "TOGGLE_GRID" });

@@ -1,35 +1,45 @@
 import State from "../state.js";
+import Compositor from "../html-gui/compositor.js";
 
-import Window from "../ui-framework/window.js";
-import VerticalLayout from "../ui-framework/vertical-layout.js";
-import HorizontalLayout from "../ui-framework/horizontal-layout.js";
-import Button from "../ui-framework/button.js";
-import Paragraph from "../ui-framework/paragraph.js";
+import Window from "../html-gui/window.js";
+import Button from "../html-gui/button.js";
+import Paragraph from "../html-gui/paragraph.js";
 
 export default function openDeerWindow(id) {
-  const window = new Window();
-  window.setSize(300, 300);
+  const name = `deer_${id}`;
+  let window = Compositor.getWindow(name);
 
-  const vl = new VerticalLayout(10);
-  window.container.addChild(vl);
-  vl.x = 10;
-
-  const p = new Paragraph();
-  vl.add(p);
-
-  function setText(text) {
-    p.text = getText(id);
-    vl._recalc();
+  if (window) {
+    Compositor.pushToFront(window);
+    return;
   }
 
-  State.on("UPDATE_DEER", action => {
-    if (action.deer.id !== id) return;
-    setText();
+  window = new Window({
+    name,
+    title: `Deer '${id}'`,
+    margin: 10,
+    borders: true,
+    shadow: true
   });
 
-  setText();
+  const p = new Paragraph(getText(id));
+  window.add(p);
 
-  window.show();
+  const closeButton = new Button("Close");
+  closeButton.node.addEventListener("click", () => window.close());
+  window.add(closeButton);
+
+  const onUpdateDeer = action => {
+    if (action.deer.id !== id) return;
+    p.text = getText(id);
+  };
+
+  State.on("UPDATE_DEER", onUpdateDeer);
+  window.once("unmounted", () => {
+    State.off("UPDATE_DEER", onUpdateDeer);
+  });
+
+  window.show(100, 100);
 }
 
 function getText(id) {
