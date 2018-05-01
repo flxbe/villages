@@ -1,7 +1,7 @@
 # Server Architecture
 
 The server is responsible for controlling all objects on the map. The player
-can only has indirect control.
+only has indirect control.
 
 The server has two main events to make progress in the world simulation.
 
