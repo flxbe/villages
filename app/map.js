@@ -1,7 +1,7 @@
 import * as Constants from "./constants.js";
 import * as Blueprints from "./blueprints.js";
 import State from "./state.js";
-import { serverRequest } from "./mock-server/server.js";
+import server from "./server.js";
 import {
   tile2abs,
   tile2rel,
@@ -133,7 +133,7 @@ function onMouseMapMove(event) {
   }
 }
 
-function onMouseMapUp(event) {
+async function onMouseMapUp(event) {
   const [i, j] = getActiveTile();
 
   if (!isTileOnMap(i, j)) {
@@ -151,7 +151,7 @@ function onMouseMapUp(event) {
 
     if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
       if (sufficientResources(blueprint)) {
-        serverRequest({ type: "PLACE_BUILDING", i, j, blueprintName });
+        await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });
 
         if (!ctrlDown) {
           State.update({ type: "RESET_MODE" });

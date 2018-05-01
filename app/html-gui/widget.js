@@ -45,6 +45,18 @@ export default class Widget extends PIXI.utils.EventEmitter {
     return pxToInt(this.node.style.height);
   }
 
+  set visible(visible) {
+    if (visible) {
+      this.node.style.display = "block";
+    } else {
+      this.node.style.display = "none";
+    }
+  }
+
+  get visible() {
+    return this.node.style.display !== "none";
+  }
+
   assertWidget(child) {
     if (!(child instanceof Widget)) {
       throw new Error(`${this.name}: 'child' must be an instance of 'Widget'.`);

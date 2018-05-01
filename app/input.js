@@ -6,7 +6,7 @@ import {
   sufficientResources
 } from "./util.js";
 import State from "./state.js";
-import openBuildMenu from "./windows/build-menu.js";
+import { toggleBuildMenu } from "./windows/build-menu.js";
 
 window.onresize = function resize() {
   const height = window.innerHeight;
@@ -71,8 +71,7 @@ window.addEventListener(
 
     switch (event.key) {
       case "b":
-        console.log("test");
-        openBuildMenu();
+        toggleBuildMenu();
         break;
       case "g": {
         State.update({ type: "TOGGLE_GRID" });

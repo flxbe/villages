@@ -48,7 +48,7 @@ function getText(id) {
   return [
     `id: ${deer.id}`,
     `job: ${deer.job}`,
-    `profession: ${deer.profession}`,
+    `target: ${deer.target}`,
     `inventory: ${deer.item} (${deer.inventory})`
   ].join("\n");
 }
