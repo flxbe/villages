@@ -93,20 +93,54 @@ where an `Element` is defined is:
 
 ## Controls
 
+Interpretation of the input depends on the active `window` (e.g. `map`, `buildmenu`), the location of a mouse click (e.g. `object`, `window`), the mode (e.g. `build`, `normal`), and the selected object (e.g. `villager`, `building`).
+
 ### Mouse controls
 
-* `left click` (location: `button`, mode: _any_): Execute button script.
-* `left click` (location: `object`, mode: `normal`): Select object.
-* `left click` (location: `object`, mode: `build`): Ignore object. Try to lay foundation underneath.
-* `left click` (location: `map`, mode: `normal`): Select map tile.
-* `left click` (location: `map`, mode: `build`): Try to lay foundation.
-* `right drag` (startlocation: `map`, endlocation: _any_, mode: _any_): Move the offset of the map.
-* `right drag` (startlocation: _any_, endlocation: _any_, mode: _any_): Ignore.
-* `right click` (location: _any_, mode: _any_): Deselect and enter `normal mode`.
+* `left click`
+  * (window: `map`, location: `object`, mode: `normal`): Select object.
+  * (window: `map`, location: `object`, mode: `build`): Ignore object. Try to lay foundation underneath. If successful enter mode `normal`.
+  * (window: `map`, location: `map`, mode: `normal`): Select map tile.
+  * (window: `map`, location: `map`, mode: `build`): Try to lay foundation. If successful enter mode `normal`.
+  * (window: _any_, location: `window`, mode: _any_): Change active window.
+  * (window: _any_, location: `button`, mode: _any_): Execute button script. Close irrelevant windows.
+* `left drag`
+  * (window: _any_, startlocation: `window`, endlocation: _any_, mode: _any_): Drag and drop clicked window. Change active window.
+* `right click`
+  * (window: _any_, location: _any_, mode: _any_): Deselect. Enter mode `normal`.
+* `right drag`
+  * (window: `map`, startlocation: `map`, endlocation: _any_, mode: _any_): Move camera.
 
 ### Keyboard controls
 
-* `g`: Toggle map grid.
-* `h`: Toggle hitboxes.
-* `F11`: Toggle fullscreen.
-* `b`: Toggle buildmenu.
+* `Esc`
+  * (window: `map`): Open `servermenu`.
+  * (window: _any_): Close all windows.
+* `F11`
+  * (window: _any_): Toggle fullscreen.
+* `Up`
+  * (window: `map`): Move camera up.
+* `Down`
+  * (window: `map`): Move camera down.
+* `Left`
+  * (window: `map`): Move camera left.
+* `Right`
+  * (window: `map`): Move camera right.
+* `Tab`
+  * (window: `map`, selection: `building`): Cycle through own buildings.
+  * (window: `map`, selection: _any_): Cycle through own villagers.
+* `Ctrl`
+  * (window: `map`, mode: `build`): Hold while building to prevent entering mode `normal`.
+* `Spacebar`
+  * (window: `map`, selection: `object`): Center camera on selected `object`.
+* `g`
+  * (window: `map`): Toggle map grid.
+* `h`
+  * (window: `map`): Toggle hitboxes.
+* `b`
+  * (window: `map`): Toggle `buildmenu`.
+* `m`
+  * (window: `map`): Toggle `worldmap`.
+* ?
+  * (window: `map`, selection: `villager`): Toggle `jobmenu` for selected `villager`.
+  * (window: `map`, selection: _any_): Toggle `jobmenu` overview.
