@@ -9,19 +9,7 @@ import compositor from "../html-gui/compositor.js";
 
 let buildMenuWindow;
 
-function updatePosition() {
-  const { applicationWidth } = State.get();
-  buildMenuWindow.show(applicationWidth - buildMenuWindow.width, 0);
-}
-
-export function toggleBuildMenu() {
-  if (buildMenuWindow) closeBuildMenu();
-  else openBuildMenu();
-}
-
-export function openBuildMenu() {
-  if (buildMenuWindow) return;
-
+function create() {
   buildMenuWindow = new Window({
     title: "Build Menu",
     width: 150,
@@ -53,11 +41,12 @@ export function openBuildMenu() {
   Compositor.add(buildMenuWindow);
 }
 
-export function closeBuildMenu() {
-  if (!buildMenuWindow) return;
+function updatePosition() {
+  const { applicationWidth } = State.get();
+  buildMenuWindow.show(applicationWidth - buildMenuWindow.width, 0);
+}
 
-  State.off("SET_APPLICATION_SIZE", updatePosition);
-
-  Compositor.remove(buildMenuWindow);
-  buildMenuWindow = null;
+export function toggleBuildMenu() {
+  if (!buildMenuWindow) create();
+  else buildMenuWindow.visible = !buildMenuWindow.visible;
 }

@@ -8,8 +8,6 @@ import UiContainer from "./ui.js";
 import Compositor from "./html-gui/compositor.js";
 import Tooltips from "./tooltips.js";
 
-import openTestWindow from "./windows/test-window.js";
-
 /**
  * Set PIXI default settings.
  *
@@ -68,10 +66,7 @@ function setup() {
   APPLICATION.stage.addChild(UiContainer);
   APPLICATION.stage.addChild(Tooltips);
 
-  // startServer();
   server.request({ type: "LOAD_MAP" });
-
-  openTestWindow();
 
   APPLICATION.ticker.add(gameloop);
 }
