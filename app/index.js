@@ -38,6 +38,7 @@ async function load() {
     height,
     autoResize: true
   });
+  APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
   APPLICATION.stage.interactive = true;
   APPLICATION.renderer.backgroundColor = "0x1099bb";
 

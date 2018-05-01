@@ -4,7 +4,7 @@ import * as wood from "./jobs/wood.js";
 import * as food from "./jobs/food.js";
 
 const jobMap = {
-  name,
+  wood,
   food
 };
 
