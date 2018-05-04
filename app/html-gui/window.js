@@ -53,24 +53,6 @@ export default class Window extends Widget {
     document.removeEventListener("mousemove", this._onDrag);
   }
 
-  set x(x) {
-    this._x = x;
-    this.node.style.left = intToPx(x);
-  }
-
-  get x() {
-    return this._x;
-  }
-
-  set y(y) {
-    this._y = y;
-    this.node.style.top = intToPx(y);
-  }
-
-  get y() {
-    return this._y;
-  }
-
   set borders(borders) {
     this._borders = borders;
     this.node.style.borderWidth = borders ? "1px" : 0;

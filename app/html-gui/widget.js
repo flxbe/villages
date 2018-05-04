@@ -29,8 +29,10 @@ export default class Widget extends PIXI.utils.EventEmitter {
    *
    * @param {string} name - The widget name.
    * @param {Object} options - The Widget options.
-   * @param {bool} options.isContainer - If true, the Widget can have children.
-   * @throws If name is undefined.
+   * @param {bool} [options.isContainer] - If true, the Widget can have children.
+   * @param {DOM.Node} [options.node]
+   * @param {string = "div"} [options.element]
+   * @throws If `name` is undefined.
    */
   constructor(name, options = {}) {
     super();
@@ -91,6 +93,24 @@ export default class Widget extends PIXI.utils.EventEmitter {
     if (this.onDidUnmount) {
       this.onDidUnmount();
     }
+  }
+
+  set x(x) {
+    this._x = x;
+    this.node.style.left = intToPx(x);
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set y(y) {
+    this._y = y;
+    this.node.style.top = intToPx(y);
+  }
+
+  get y() {
+    return this._y;
   }
 
   set width(width) {
