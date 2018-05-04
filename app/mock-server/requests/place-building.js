@@ -1,6 +1,5 @@
 import * as Actions from "../actions.js";
 
-import State from "../../state.js";
 import * as Blueprints from "../../blueprints.js";
 import * as Constants from "../../constants.js";
 
@@ -16,14 +15,14 @@ export default function placeBuilding(context, i, j, blueprintName) {
   const blueprint = Blueprints[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
 
-  if (State.get().storage.wood < blueprint.wood) {
+  if (context.getState().storage.wood < blueprint.wood) {
     throw Error("not enough wood");
   }
 
   // reduce resources
   context.pushUpdate(
     Actions.updateStorage({
-      wood: State.get().storage.wood - blueprint.wood
+      wood: context.getState().storage.wood - blueprint.wood
     })
   );
 

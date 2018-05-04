@@ -1,6 +1,4 @@
-import State from "../../state.js";
 import * as Actions from "../actions.js";
-
 import astar from "../astar.js";
 
 import * as util from "./util.js";
@@ -27,7 +25,7 @@ export function finish(context, deer) {
     case "storage": {
       context.pushUpdate(
         Actions.updateStorage({
-          [deer.item]: State.get().storage[deer.item] + deer.inventory
+          [deer.item]: context.getState().storage[deer.item] + deer.inventory
         })
       );
       context.pushUpdate(
