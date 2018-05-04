@@ -27,7 +27,7 @@ import { setAnimation, animate } from "./animations.js";
 
 import openDeerWindow from "./windows/deer-window.js";
 
-const renderer = PIXI.autoDetectRenderer();
+let _renderer;
 const deerSprites = {};
 const treeSprites = {};
 
@@ -48,7 +48,9 @@ const selectionLayer = new PIXI.Graphics();
 const objectLayer = new PIXI.Container();
 const hitAreaLayer = new PIXI.Graphics();
 
-Map.init = function() {
+Map.init = function(renderer) {
+  _renderer = renderer;
+
   Map.addChild(mapSprite);
   Map.addChild(gridSprite);
   Map.addChild(decorationLayer);
@@ -394,8 +396,8 @@ function renderTexture() {
     }
   }
 
-  APPLICATION.renderer.render(map, mapTexture);
-  APPLICATION.renderer.render(mapGrid, gridTexture);
+  _renderer.render(map, mapTexture);
+  _renderer.render(mapGrid, gridTexture);
 }
 
 /**
@@ -414,9 +416,9 @@ function updateTexture(updates) {
     renderTile(map, tile.shade, offsetX + absX, absY);
   }
 
-  APPLICATION.renderer.clearBeforeRender = false;
-  APPLICATION.renderer.render(map, mapTexture);
-  APPLICATION.renderer.clearBeforeRender = true;
+  _renderer.clearBeforeRender = false;
+  _renderer.render(map, mapTexture);
+  _renderer.clearBeforeRender = true;
 }
 
 /**
