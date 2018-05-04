@@ -46,6 +46,10 @@ describe("HTMLCompositor", () => {
         it("should add a new window", () => {
           expect(Compositor.getIndex(window)).to.equal(0);
         });
+
+        it("should mount the window", () => {
+          expect(window.mounted).to.equal(true);
+        });
       });
 
       describe("muliple windows", () => {
@@ -92,11 +96,8 @@ describe("HTMLCompositor", () => {
         expect(Compositor.getIndex(window)).to.equal(-1);
       });
 
-      it("should emit the 'removed' event", () => {
-        const mock = sinon.spy();
-        window.on("removed", mock);
-        Compositor.remove(window);
-        expect(mock.called);
+      it("should unmount the window", () => {
+        expect(window.mounted).to.equal(false);
       });
 
       it("should throw when removing an unregistered window", () => {

@@ -4,6 +4,29 @@ export default class Widget extends PIXI.utils.EventEmitter {
   /**
    * The UI widget base class.
    *
+   * # Widget Lifecycle
+   *
+   * ## Constructor
+   *
+   * The constructor should only be used to create and add other widgets.
+   * All interactions with the state (subscriptions, ...) should be delayed
+   * until the widget is mounted.
+   *
+   * ##  `onDidMount`
+   * This is called, after the widget was added to the DOM.
+   * If a widget is added to a parent, whichc is not yet on the DOM, the method
+   * will not be called. After adding the root widget to the DOM, the event is
+   * propagated to all children.
+   *
+   * This hook should be used to subscribe to DOM input events and state
+   * changes. The initial widget state like should also be loaded here.
+   *
+   * ## `onDidUnmount`
+   * This is called, after a mounted widget is removed from its parent or if the
+   * root widget is removed from the DOM.
+   *
+   * This hook should be used to unsubscribe from all events.
+   *
    * @param {string} name - The widget name.
    * @param {Object} options - The Widget options.
    * @param {bool} options.isContainer - If true, the Widget can have children.
@@ -25,8 +48,49 @@ export default class Widget extends PIXI.utils.EventEmitter {
     }
 
     this.node._owner = this;
+  }
 
-    this.once("unmounted", () => this.onUnmount);
+  /**
+   * Internally handle the `mounted` event.
+   *
+   * This event will be propagated to all children.
+   */
+  _onMount() {
+    if (this.mounted) {
+      throw new Error(`${this.name}: Widget is already mounted.`);
+    }
+
+    this.mounted = true;
+
+    if (this.isContainer) {
+      for (let childNode of this.node.children) {
+        if (!childNode._owner) continue;
+        childNode._owner._onMount();
+      }
+    }
+
+    if (this.onDidMount) {
+      this.onDidMount();
+    }
+  }
+
+  _onUnmount() {
+    if (!this.mounted) {
+      throw new Error(`${this.name}: Widget is not mounted.`);
+    }
+
+    this.mounted = false;
+
+    if (this.isContainer) {
+      for (let childNode of this.node.children) {
+        if (!childNode._owner) continue;
+        childNode._owner._onUnmount();
+      }
+    }
+
+    if (this.onDidUnmount) {
+      this.onDidUnmount();
+    }
   }
 
   set width(width) {
@@ -83,7 +147,9 @@ export default class Widget extends PIXI.utils.EventEmitter {
     this.assertContainer();
 
     this.node.appendChild(child.node);
-    child.emit("mounted");
+    if (this.mounted) {
+      child._onMount();
+    }
   }
 
   /**
@@ -98,12 +164,8 @@ export default class Widget extends PIXI.utils.EventEmitter {
     this.assertContainer();
 
     this.node.removeChild(child.node);
-    child.emit("unmounted");
-  }
-
-  onUnmount() {
-    while (this.node.children) {
-      this.remove(this.node.firstChild._owner);
+    if (this.mounted) {
+      child._onUnmount();
     }
   }
 }

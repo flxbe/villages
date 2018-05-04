@@ -51,6 +51,10 @@ function reset() {
 }
 
 function on(eventName, callback) {
+  if (!callback) {
+    throw new Error("Callback is undefined.");
+  }
+
   if (!callbackMap[eventName]) {
     callbackMap[eventName] = [];
   }
@@ -59,6 +63,10 @@ function on(eventName, callback) {
 }
 
 function off(eventName, callback) {
+  if (!callback) {
+    throw new Error("Callback is undefined.");
+  }
+
   if (!callbackMap[eventName]) return;
 
   callbackMap[eventName] = callbackMap[eventName].filter(c => c !== callback);
