@@ -3,10 +3,6 @@ import astar from "../astar.js";
 
 import * as util from "./util.js";
 
-const treeTile = [7, 10];
-const foodTile = [9, 13];
-const storageTile = [3, 3];
-
 export function finish(context, deer) {
   if (!util.wasWorking(deer)) return;
 
@@ -52,7 +48,7 @@ export function start(context, deer) {
   switch (deer.target) {
     case "food": {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, storageTile);
+        const path = astar(deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -74,7 +70,7 @@ export function start(context, deer) {
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(deerTile, foodTile);
+        const path = astar(deerTile, util.getFoodTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -96,7 +92,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, storageTile);
+        const path = astar(deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -107,7 +103,7 @@ export function start(context, deer) {
           })
         );
       } else {
-        const path = astar(deerTile, foodTile);
+        const path = astar(deerTile, util.getFoodTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
