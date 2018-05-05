@@ -2,8 +2,11 @@ import * as Actions from "../actions.js";
 import astar from "../astar.js";
 
 import * as util from "./util.js";
+import { assert } from "./util.js";
 
 export function finish(context, deer) {
+  assert(deer.job === "wood");
+
   if (!util.wasWorking(deer)) return;
 
   switch (deer.target) {
@@ -43,7 +46,7 @@ export function finish(context, deer) {
 export function start(context, deer) {
   const deerTile = util.getTile(context, deer);
 
-  if (util.isWalking(context, deer)) return;
+  if (deer.job === "wood" && util.isWalking(context, deer)) return;
 
   switch (deer.target) {
     case "wood": {

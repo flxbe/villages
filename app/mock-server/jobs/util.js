@@ -1,10 +1,14 @@
 import { cart2tile } from "../../util.js";
 import { getPosition } from "../../movement.js";
 
-function assertContext(context) {
-  if (!context) {
-    throw new Error("Context is undefined");
+export function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message || "Assertion Error");
   }
+}
+
+function assertContext(context) {
+  assert(context, "Context is undefined");
 }
 
 export function getTreeTile(context) {
