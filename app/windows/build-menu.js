@@ -30,6 +30,7 @@ class BuildMenu extends Window {
   }
 
   onDidMount() {
+    super.onDidMount();
     State.on("SET_APPLICATION_SIZE", this._onUpdatePosition);
     this.houseButton.node.addEventListener("click", this._onBuildHouse);
     this.barnButton.node.addEventListener("click", this._onBuildBarn);
@@ -37,6 +38,7 @@ class BuildMenu extends Window {
   }
 
   onDidUnmount() {
+    super.onDidUnmount();
     State.off("SET_APPLICATION_SIZE", this._onUpdatePosition);
     this.houseButton.node.removeEventListener("click", this._onBuildHouse);
     this.barnButton.node.removeEventListener("click", this._onBuildBarn);
