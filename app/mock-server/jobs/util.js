@@ -55,7 +55,7 @@ export function isInventoryEmpty(object) {
 
 export function isInventoryFull(object) {
   assert(object);
-  return !(object.inventory < INVENTORY_CAPACITY);
+  return getFreeInventorySpace(object) === 0;
 }
 
 export function getFreeInventorySpace(object) {

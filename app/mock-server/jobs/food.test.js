@@ -1,13 +1,35 @@
 import State from "../../state.js";
 import * as Actions from "../actions.js";
+import * as Constants from "../../constants.js";
 
 import * as FoodJob from "./food.js";
 
 const { expect } = chai;
 
 describe("FoodJob", () => {
+  const map = [
+    [
+      { type: Constants.TILE_GRASS },
+      { type: Constants.TILE_GRASS },
+      { type: Constants.TILE_GRASS }
+    ],
+
+    [
+      { type: Constants.TILE_GRASS },
+      { type: Constants.TILE_WATER },
+      { type: Constants.TILE_WATER }
+    ],
+    [
+      { type: Constants.TILE_GRASS },
+      { type: Constants.TILE_GRASS },
+      { type: Constants.TILE_GRASS }
+    ]
+  ];
+
   beforeEach(() => {
     State.reset();
+    State.update(Actions.setMap(map));
+    // State.update(Actions.addFoodSource())
   });
 
   function getContext() {
@@ -37,16 +59,24 @@ describe("FoodJob", () => {
 
     it("should set target to food", () => {
       const context = getContext();
-      const deer = addDeer(context);
+      let deer = addDeer(context);
+
       FoodJob.start(context, deer);
-      expect(State.get().deers[deer.id].target).to.equal("food");
+
+      deer = State.get().deers[deer.id];
+      expect(deer.target).to.equal("food");
     });
 
     it("should set the path", () => {
       const context = getContext();
-      const deer = addDeer(context);
+      let deer = addDeer(context);
+      const oldPath = deer.path;
+
       FoodJob.start(context, deer);
-      expect(State.get().deers[deer.id].path).to.exist();
+
+      deer = State.get().deers[deer.id];
+      expect(deer.path).to.exist;
+      expect(deer.path).to.not.equal(oldPath);
     });
   });
 });
