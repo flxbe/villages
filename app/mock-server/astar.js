@@ -201,5 +201,5 @@ export default function astar(map, [si, sj], [ti, tj]) {
     }
   }
 
-  return [];
+  return;
 }
