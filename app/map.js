@@ -391,7 +391,7 @@ function renderTexture() {
       }
 
       const [absX, absY] = tile2abs(i, j);
-      renderTile(map, tile.shade, offsetX + absX, absY);
+      renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
       renderTileGrid(mapGrid, offsetX + absX, absY);
     }
   }
@@ -413,12 +413,31 @@ function updateTexture(updates) {
   for (let update of updates) {
     const { i, j, tile } = update;
     const [absX, absY] = tile2abs(i, j);
-    renderTile(map, tile.shade, offsetX + absX, absY);
+    renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
   }
 
   _renderer.clearBeforeRender = false;
   _renderer.render(map, mapTexture);
   _renderer.clearBeforeRender = true;
+}
+
+function getTileColor(type) {
+  switch (type) {
+    case Constants.TILE_WATER:
+      return "0x000550";
+    case Constants.TILE_DIRT:
+      return "0x561f00";
+    case Constants.TILE_GRASS:
+      return "0x005111";
+    case Constants.TILE_TREE:
+      return "0x269a41";
+    case Constants.TILE_ROAD:
+      return "0x999999";
+    case Constants.TILE_BUILDING:
+      return "0x000000";
+    default:
+      throw new Error(`unknown tile type: ${type}`);
+  }
 }
 
 /**
