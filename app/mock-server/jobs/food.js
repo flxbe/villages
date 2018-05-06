@@ -22,14 +22,8 @@ export function finish(context, deer) {
 
   switch (deer.target) {
     case "food": {
-      const inventory = Math.min(deer.inventory + 1, 20);
-      context.pushUpdate(
-        Actions.updateDeer({
-          id: deer.id,
-          item: "food",
-          inventory
-        })
-      );
+      assert(!deer.item || deer.item === "food");
+      context.pushUpdate(util.incInventoryItem(deer, "food", 1));
       break;
     }
     case "storage": {
@@ -41,8 +35,6 @@ export function finish(context, deer) {
       context.pushUpdate(
         Actions.updateDeer({
           id: deer.id,
-          job: "food",
-          target: "storage",
           inventory: 0
         })
       );
@@ -71,6 +63,7 @@ export function finish(context, deer) {
  */
 export function start(context, deer) {
   const deerTile = util.getTile(context, deer);
+  const state = context.getState();
 
   if (deer.job === "food" && util.isWalking(context, deer)) return;
 
@@ -78,7 +71,7 @@ export function start(context, deer) {
     case "food": {
       assert(deer.job === "food");
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, util.getStorageTile(context));
+        const path = astar(state.map, deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -100,7 +93,7 @@ export function start(context, deer) {
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(deerTile, util.getFoodTile(context));
+        const path = astar(state.map, deerTile, util.getFoodTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -122,7 +115,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, util.getStorageTile(context));
+        const path = astar(state.map, deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -133,7 +126,7 @@ export function start(context, deer) {
           })
         );
       } else {
-        const path = astar(deerTile, util.getFoodTile(context));
+        const path = astar(state.map, deerTile, util.getFoodTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,

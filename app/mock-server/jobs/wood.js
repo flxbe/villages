@@ -45,13 +45,14 @@ export function finish(context, deer) {
 
 export function start(context, deer) {
   const deerTile = util.getTile(context, deer);
+  const state = context.getState();
 
   if (deer.job === "wood" && util.isWalking(context, deer)) return;
 
   switch (deer.target) {
     case "wood": {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, util.getStorageTile(context));
+        const path = astar(state.map, deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -73,7 +74,7 @@ export function start(context, deer) {
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(deerTile, util.getTreeTile(context));
+        const path = astar(state.map, deerTile, util.getTreeTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -95,7 +96,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, util.getStorageTile(context));
+        const path = astar(state.map, deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -106,7 +107,7 @@ export function start(context, deer) {
           })
         );
       } else {
-        const path = astar(deerTile, util.getTreeTile(context));
+        const path = astar(state.map, deerTile, util.getTreeTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,

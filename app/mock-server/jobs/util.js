@@ -1,3 +1,5 @@
+import * as Actions from "../actions.js";
+
 import { cart2tile } from "../../util.js";
 import { getPosition } from "../../movement.js";
 
@@ -76,7 +78,7 @@ export function getFreeInventorySpace(object) {
 
 export function incInventoryItem(object, item, amount) {
   assertObject(object);
-  amount = Math.max(amount, getFreeInventorySpace(object));
+  amount = Math.min(amount, getFreeInventorySpace(object));
   return Actions.updateDeer({
     id: object.id,
     item,
