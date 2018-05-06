@@ -41,8 +41,7 @@ export default function loadMap(context) {
 
 function setTree(context, id, i, j) {
   const tile = {
-    type: Constants.TILE_TREE,
-    shade: "0x269a41"
+    type: Constants.TILE_TREE
   };
   context.pushUpdate(Actions.updateMap([{ i, j, tile }]));
   context.pushUpdate(Actions.addTree({ id, i, j }));
