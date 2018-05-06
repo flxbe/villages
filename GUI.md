@@ -2,7 +2,7 @@
 
 ## Widget System
 
-The GUI is build using reusable widgets. The base widget and all specialized
+The GUI is built using reusable widgets. The base widget and all specialized
 components are defined in `./app/src/html-gui/`. Componets can be nested to
 create more complex forms. This will usually include using an instance of
 `Window`.
@@ -36,7 +36,7 @@ it can be customized using the following options:
 
 Each widget has a root DOM node, that will represent it in the DOM tree after
 being mounted. If not explicitly provided in the constructor, a new node will
-be created. A widget can then modify this new or add children.
+be created. A widget can then modify this or add children.
 
 The widget can use the usual subscription pattern to update itself after
 relevant state changes.
@@ -52,7 +52,7 @@ until the widget is mounted.
 #### `onDidMount`
 
 This is called after the widget was added to the DOM.
-If a widget is added to a parent, whichc is not yet on the DOM, the method
+If a widget is added to a parent, which is not yet on the DOM, the method
 will not be called. After adding the root widget to the DOM, the event is
 propagated to all children.
 
