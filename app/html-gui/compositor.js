@@ -129,7 +129,7 @@ function add(window) {
   assertWindow(window);
 
   windowLayer.appendChild(window.node);
-  window.emit("mounted");
+  window._onMount();
 
   window.node.addEventListener("mousedown", () => {
     pushToFront(window);
@@ -150,5 +150,5 @@ function remove(window) {
   assertIsChild(window);
 
   windowLayer.removeChild(window.node);
-  window.emit("unmounted");
+  window._onUnmount();
 }

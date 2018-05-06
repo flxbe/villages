@@ -18,7 +18,7 @@ import Tooltips from "./tooltips.js";
 PIXI.settings.RESOLUTION = window.devicePixelRatio;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-// TODO: re-add the exact hover input method.
+let application;
 
 /**
  * The inital loading step of the application.
@@ -31,24 +31,24 @@ async function load() {
 
   const height = window.innerHeight;
   const width = window.innerWidth;
-  APPLICATION = new PIXI.Application({
+  application = new PIXI.Application({
     width,
     height,
     autoResize: true
   });
-  APPLICATION.renderer.plugins.interaction.moveWhenInside = true;
-  APPLICATION.stage.interactive = true;
-  APPLICATION.renderer.backgroundColor = "0x1099bb";
+  application.renderer.plugins.interaction.moveWhenInside = true;
+  application.stage.interactive = true;
+  application.renderer.backgroundColor = "0x1099bb";
 
   State.on("SET_APPLICATION_SIZE", ({ height, width }) => {
-    APPLICATION.renderer.resize(width, height);
-    APPLICATION.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
+    application.renderer.resize(width, height);
+    application.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
   });
 
   const windowLayer = document.getElementById("window-layer");
   Compositor.mount(windowLayer);
 
-  document.body.insertBefore(APPLICATION.view, windowLayer);
+  document.body.insertBefore(application.view, windowLayer);
 
   State.update({ type: "SET_APPLICATION_SIZE", height, width });
   PIXI.loader.add(getAssets()).load(setup);
@@ -58,17 +58,17 @@ async function load() {
  * At this point, all ASSETS are loaded. Add stuff to the app.
  */
 function setup() {
-  Map.init();
+  Map.init(application.renderer);
   UiContainer.init();
   Tooltips.init();
 
-  APPLICATION.stage.addChild(Map);
-  APPLICATION.stage.addChild(UiContainer);
-  APPLICATION.stage.addChild(Tooltips);
+  application.stage.addChild(Map);
+  application.stage.addChild(UiContainer);
+  application.stage.addChild(Tooltips);
 
   server.request({ type: "LOAD_MAP" });
 
-  APPLICATION.ticker.add(gameloop);
+  application.ticker.add(gameloop);
 }
 
 /**

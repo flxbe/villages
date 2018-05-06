@@ -1,52 +1,77 @@
 import * as Constants from "../constants.js";
 import State from "../state.js";
-import Compositor from "../html-gui/compositor.js";
 
 import Window from "../html-gui/window.js";
 import Button from "../html-gui/button.js";
 import Paragraph from "../html-gui/paragraph.js";
-import compositor from "../html-gui/compositor.js";
 
-let buildMenuWindow;
+class BuildMenu extends Window {
+  constructor() {
+    super({
+      title: "Build Menu",
+      width: 150,
+      margin: 10,
+      fixed: true
+    });
 
-function create() {
-  buildMenuWindow = new Window({
-    title: "Build Menu",
-    width: 150,
-    margin: 10,
-    fixed: true
-  });
+    this._onUpdatePosition = () => this.onUpdatePosition();
+    this._onBuildHouse = () => this.onBuild("house");
+    this._onBuildBarn = () => this.onBuild("barn");
+    this._onBuildRoad = () => this.onBuild("road");
 
-  const houseButton = new Button("house");
-  houseButton.node.addEventListener("click", event => {
-    State.update({ type: "ENTER_BUILD_MODE", blueprintName: "house" });
-  });
-  buildMenuWindow.add(houseButton);
+    this.houseButton = new Button("house");
+    this.add(this.houseButton);
 
-  const barnButton = new Button("barn");
-  barnButton.node.addEventListener("click", event => {
-    State.update({ type: "ENTER_BUILD_MODE", blueprintName: "barn" });
-  });
-  buildMenuWindow.add(barnButton);
+    this.barnButton = new Button("barn");
+    this.add(this.barnButton);
 
-  const roadButton = new Button("road");
-  roadButton.node.addEventListener("click", event => {
-    State.update({ type: "ENTER_BUILD_MODE", blueprintName: "road" });
-  });
-  buildMenuWindow.add(roadButton);
+    this.roadButton = new Button("road");
+    this.add(this.roadButton);
+  }
 
-  State.on("SET_APPLICATION_SIZE", updatePosition);
-  updatePosition();
+  onDidMount() {
+    super.onDidMount();
+    State.on("SET_APPLICATION_SIZE", this._onUpdatePosition);
+    this.houseButton.node.addEventListener("click", this._onBuildHouse);
+    this.barnButton.node.addEventListener("click", this._onBuildBarn);
+    this.roadButton.node.addEventListener("click", this._onBuildRoad);
+  }
 
-  Compositor.add(buildMenuWindow);
+  onDidUnmount() {
+    super.onDidUnmount();
+    State.off("SET_APPLICATION_SIZE", this._onUpdatePosition);
+    this.houseButton.node.removeEventListener("click", this._onBuildHouse);
+    this.barnButton.node.removeEventListener("click", this._onBuildBarn);
+    this.roadButton.node.removeEventListener("click", this._onBuildRoad);
+  }
+
+  onBuild(blueprintName) {
+    State.update({ type: "ENTER_BUILD_MODE", blueprintName });
+  }
+
+  onUpdatePosition() {
+    this.x = this.getXPosition();
+  }
+
+  getXPosition() {
+    const { applicationWidth } = State.get();
+    return applicationWidth - this.width;
+  }
+
+  show() {
+    super.show(this.getXPosition(), 0);
+  }
 }
 
-function updatePosition() {
-  const { applicationWidth } = State.get();
-  buildMenuWindow.show(applicationWidth - buildMenuWindow.width, 0);
-}
+let visible = false;
+const buildMenuWindow = new BuildMenu();
 
 export function toggleBuildMenu() {
-  if (!buildMenuWindow) create();
-  else buildMenuWindow.visible = !buildMenuWindow.visible;
+  if (visible) {
+    visible = false;
+    buildMenuWindow.close();
+  } else {
+    visible = true;
+    buildMenuWindow.show();
+  }
 }

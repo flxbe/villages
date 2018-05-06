@@ -1,15 +1,12 @@
-import State from "../../state.js";
 import * as Actions from "../actions.js";
-
 import astar from "../astar.js";
 
 import * as util from "./util.js";
-
-const treeTile = [7, 10];
-const foodTile = [9, 13];
-const storageTile = [3, 3];
+import { assert } from "./util.js";
 
 export function finish(context, deer) {
+  assert(deer.job === "wood");
+
   if (!util.wasWorking(deer)) return;
 
   switch (deer.target) {
@@ -27,7 +24,7 @@ export function finish(context, deer) {
     case "storage": {
       context.pushUpdate(
         Actions.updateStorage({
-          [deer.item]: State.get().storage[deer.item] + deer.inventory
+          [deer.item]: context.getState().storage[deer.item] + deer.inventory
         })
       );
       context.pushUpdate(
@@ -49,12 +46,12 @@ export function finish(context, deer) {
 export function start(context, deer) {
   const deerTile = util.getTile(context, deer);
 
-  if (util.isWalking(context, deer)) return;
+  if (deer.job === "wood" && util.isWalking(context, deer)) return;
 
   switch (deer.target) {
     case "wood": {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, storageTile);
+        const path = astar(deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -76,7 +73,7 @@ export function start(context, deer) {
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(deerTile, treeTile);
+        const path = astar(deerTile, util.getTreeTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -98,7 +95,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(deerTile, storageTile);
+        const path = astar(deerTile, util.getStorageTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,
@@ -109,7 +106,7 @@ export function start(context, deer) {
           })
         );
       } else {
-        const path = astar(deerTile, treeTile);
+        const path = astar(deerTile, util.getTreeTile(context));
         context.pushUpdate(
           Actions.updateDeer({
             id: deer.id,

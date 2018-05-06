@@ -1,3 +1,5 @@
+import State from "../state.js";
+
 import executeRequest from "./requests.js";
 import scheduleJobs from "./scheduler.js";
 
@@ -17,6 +19,7 @@ function flushUpdates() {
 function getContext() {
   return {
     timestamp: Date.now(),
+    getState: State.get,
     pushUpdate
   };
 }

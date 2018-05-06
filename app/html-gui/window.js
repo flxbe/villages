@@ -24,7 +24,6 @@ export default class Window extends Widget {
     if (options.width) this.width = options.width;
     if (options.height) this.height = options.height;
 
-    // this.node.classList.add("window");
     this.node.style.position = "absolute";
     this.node.style.backgroundColor = options.backgroundColor || "#ffffff";
     this.node.style.padding = options.margin ? intToPx(options.margin) : "10px";
@@ -41,27 +40,17 @@ export default class Window extends Widget {
     this._onDrag = event => this.onDrag(event);
     this._onMouseDown = event => this.onMouseDown(event);
     this._onMouseUp = event => this.onMouseUp(event);
+  }
 
+  onDidMount() {
     this.node.addEventListener("mousedown", this._onMouseDown);
     this.node.addEventListener("mouseup", this._onMouseUp);
   }
 
-  set x(x) {
-    this._x = x;
-    this.node.style.left = intToPx(x);
-  }
-
-  get x() {
-    return this._x;
-  }
-
-  set y(y) {
-    this._y = y;
-    this.node.style.top = intToPx(y);
-  }
-
-  get y() {
-    return this._y;
+  onDidUnmount() {
+    this.node.removeEventListener("mousedown", this._onMouseDown);
+    this.node.removeEventListener("mouseup", this._onMouseUp);
+    document.removeEventListener("mousemove", this._onDrag);
   }
 
   set borders(borders) {
