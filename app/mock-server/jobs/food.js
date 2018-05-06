@@ -2,7 +2,7 @@ import * as Actions from "../actions.js";
 import astar from "../astar.js";
 
 import * as util from "./util.js";
-import { assert } from "./util.js";
+import assert from "../../assert.js";
 
 /**
  * During the last server tick, the deer had the job `food`. This function

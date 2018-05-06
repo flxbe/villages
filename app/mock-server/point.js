@@ -1,4 +1,9 @@
-import { assert } from "./jobs/util.js";
+import assert, {
+  isNumber,
+  assertNumber,
+  isArray,
+  assertInteger
+} from "../assert.js";
 
 const directions = [
   [0, -1],
@@ -23,14 +28,6 @@ export default class Point {
       if (p.type === POINT_NONE || type === POINT_NONE) return;
     }
     assert(p.type === type, `point type mismatch: ${p.type} vs ${type}`);
-  }
-
-  static isNumber(n) {
-    return typeof n === "number";
-  }
-
-  static assertNumber(n) {
-    assert(Point.isNumber(n), "argument is not a number.");
   }
 
   static isPoint(p) {
@@ -95,13 +92,13 @@ export default class Point {
   }
 
   add(p) {
-    if (Point.isNumber(p)) {
+    if (isNumber(p)) {
       this.x += p;
       this.y += p;
-    } else if (Array.isArray(p)) {
+    } else if (isArray(p)) {
       assert(p.length === 2);
-      Point.assertNumber(p[0]);
-      Point.assertNumber(p[1]);
+      assertNumber(p[0]);
+      assertNumber(p[1]);
       this.x += p[0];
       this.y += p[1];
     } else {
@@ -113,13 +110,13 @@ export default class Point {
   }
 
   sub(p) {
-    if (Point.isNumber(p)) {
+    if (isNumber(p)) {
       this.x -= p;
       this.y -= p;
-    } else if (Array.isArray(p)) {
+    } else if (isArray(p)) {
       assert(p.length === 2);
-      Point.assertNumber(p[0]);
-      Point.assertNumber(p[1]);
+      assertNumber(p[0]);
+      assertNumber(p[1]);
       this.x -= p[0];
       this.y -= p[1];
     } else {
@@ -150,8 +147,8 @@ export default class Point {
   }
 
   isOnMap(height, width) {
-    Point.assertNumber(height);
-    Point.assertNumber(width);
+    assertNumber(height);
+    assertNumber(width);
     return this.j >= 0 && this.j < width && this.i >= 0 && this.i < height;
   }
 

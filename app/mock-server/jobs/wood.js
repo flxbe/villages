@@ -2,7 +2,7 @@ import * as Actions from "../actions.js";
 import astar from "../astar.js";
 
 import * as util from "./util.js";
-import { assert } from "./util.js";
+import assert from "../../assert.js";
 
 export function finish(context, deer) {
   assert(deer.job === "wood");
