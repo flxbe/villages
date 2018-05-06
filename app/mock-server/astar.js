@@ -111,42 +111,39 @@ BinaryHeap.prototype = {
  * Compute a path from the start to the target tile.
  *
  * @param {Tile[][]} map
- * @param {Tile} start
- * @param {Tile} target
- * @param {(int, int) => int} weightFunction
+ * @param {Point} start
+ * @param {Point} target
  */
-export default function astar(omap, [si, sj], [ti, tj]) {
-  let map = [];
+export default function astar(map, [si, sj], [ti, tj]) {
+  let compMap = [];
 
   const weightFunction = function(i, j) {
-    if (omap[i][j].type == Constants.TILE_ROAD) return 1;
+    if (map[i][j].type == Constants.TILE_ROAD) return 1;
     return 2;
   };
 
-  const height = omap.length;
-  const width = omap[0].length;
+  const height = map.length;
+  const width = map[0].length;
   for (let i = 0; i < height; i++) {
     let line = [];
     for (let j = 0; j < width; j++) {
       line.push({
         i: i,
         j: j,
-        walkable: isWalkableTile(omap[i][j].type),
+        walkable: isWalkableTile(map[i][j].type),
         visited: false,
         closed: false,
         pred: null,
         f: undefined,
-        g: undefined,
-        cost: weightFunction(i, j)
+        g: undefined
       });
     }
-    map.push(line);
+    compMap.push(line);
   }
 
   let heap = new BinaryHeap(node => node.f);
 
-  console.log(map);
-  let start = map[si][sj];
+  let start = compMap[si][sj];
   start.g = 0;
   start.f = manhattan(si, sj, ti, tj);
 
@@ -158,7 +155,6 @@ export default function astar(omap, [si, sj], [ti, tj]) {
     if (current.i == ti && current.j == tj) {
       let path = [];
       while (current) {
-        console.log(current);
         path.push(getTileCenter(current.i, current.j));
         current = current.pred;
       }
@@ -179,13 +175,17 @@ export default function astar(omap, [si, sj], [ti, tj]) {
       const nj = current.j + dir[1];
 
       if (!isTileOnMap(height, width, [ni, nj])) continue;
-      let neighbour = map[ni][nj];
+      const neighbour = compMap[ni][nj];
+      const neighbourTile = map[ni][nj];
 
-      if (neighbour.closed || !neighbour.walkable) continue;
+      if (neighbour.closed) continue;
+      if (!isWalkableTile(neighbourTile.type)) continue;
+
+      const nCost = weightFunction(ni, nj);
       const g =
         ni != current.i && nj != current.j
-          ? current.g + neighbour.cost * 1.5
-          : current.g + neighbour.cost;
+          ? current.g + nCost * 1.5
+          : current.g + nCost;
 
       if (neighbour.visited && g >= neighbour.g) continue;
       neighbour.pred = current;

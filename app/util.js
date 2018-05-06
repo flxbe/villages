@@ -1,6 +1,12 @@
 import * as Constants from "./constants.js";
 import State from "./state.js";
 
+export function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message || "Assertion Error");
+  }
+}
+
 /**
  * Convert absolute to relative coordinates.
  * @param {number} absX
