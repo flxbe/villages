@@ -1,0 +1,29 @@
+{
+  "name": "villages",
+  "version": "0.0.0",
+  "description": "A small, educational game project for the browser.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha index.test.js --compilers js:babel-core/register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flxbe/villages.git"
+  },
+  "author": "Felix Bernhardt, Jonas Krüsemann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/flxbe/villages/issues"
+  },
+  "homepage": "https://github.com/flxbe/villages#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.6.1",
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1",
+    "sinon": "^5.0.7"
+  },
+  "babel": {
+    "presets": ["env"]
+  }
+}
