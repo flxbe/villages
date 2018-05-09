@@ -1,3 +1,10 @@
+## Tests
+
+```bash
+npm install
+npm test
+```
+
 ## Structure
 
 * `/app/html-gui/`/`/app/windows/`: Reusable GUI widgets, widows and window
