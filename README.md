@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/flxbe/villages.svg?branch=master)](https://travis-ci.org/flxbe/villages)
+
 ## Tests
 
 ```bash
