@@ -7,7 +7,7 @@ export function isNumber(n) {
 }
 
 export function assertNumber(n) {
-  assert(isNumber(n), "Argument is not a number.");
+  assert(isNumber(n), `${n} is not a number.`);
 }
 
 export function isInteger(n) {
@@ -15,7 +15,7 @@ export function isInteger(n) {
 }
 
 export function assertInteger(n) {
-  assert(isInteger(n), "Argument is not an integer.");
+  assert(isInteger(n), `${n} is not an integer.`);
 }
 
 export function isArray(a) {
@@ -25,10 +25,9 @@ export function isArray(a) {
 export function assertArray(a, l) {
   assert(isArray(a), `${a} is not an array`);
   if (l) {
-    assertInteger(l);
     assert(
       a.length === l,
-      `Array should have the length ${l}, got ${a.length} instead.`
+      `Array should have length ${l}, got ${a.length} instead.`
     );
   }
 }
