@@ -97,6 +97,7 @@ describe("HTMLCompositor", () => {
       });
 
       it("should unmount the window", () => {
+        Compositor.remove(window);
         expect(window.mounted).to.equal(false);
       });
 

@@ -1,48 +1,47 @@
+import * as Actions from "../actions.js";
+
+import assert from "../../assert.js";
 import { cart2tile } from "../../util.js";
 import { getPosition } from "../../movement.js";
 
-export function assert(condition, message) {
-  if (!condition) {
-    throw new Error(message || "Assertion Error");
-  }
-}
-
-function assertContext(context) {
-  assert(context, "Context is undefined");
-}
+const INVENTORY_CAPACITY = 20;
 
 export function getTreeTile(context) {
-  assertContext(context);
+  assert(context);
   return [7, 10];
 }
 
 export function getFoodTile(context) {
-  assertContext(context);
+  assert(context);
   return [9, 13];
 }
 
 export function getStorageTile(context) {
-  assertContext(context);
+  assert(context);
   return [3, 3];
 }
 
 export function getTile(context, object) {
-  assertContext(context);
+  assert(context);
+  assert(object);
   const { x: cartX, y: cartY } = getPosition(object.path, context.timestamp);
   return cart2tile(cartX, cartY);
 }
 
 export function wasWorking(object) {
+  assert(object);
   return object.state === "working";
 }
 
 export function isWalking(context, object) {
-  assertContext(context);
+  assert(context);
+  assert(object);
   return object.path[object.path.length - 1].timestamp > context.timestamp;
 }
 
 export function isOnTile(context, object, target) {
-  assertContext(context);
+  assert(context);
+  assert(object);
   const { x: cartX, y: cartY } = getPosition(object.path, context.timestamp);
   const tile = cart2tile(cartX, cartY);
 
@@ -50,9 +49,26 @@ export function isOnTile(context, object, target) {
 }
 
 export function isInventoryEmpty(object) {
+  assert(object);
   return !object.inventory;
 }
 
 export function isInventoryFull(object) {
-  return !(object.inventory < 20);
+  assert(object);
+  return getFreeInventorySpace(object) === 0;
+}
+
+export function getFreeInventorySpace(object) {
+  assert(object);
+  return INVENTORY_CAPACITY - object.inventory;
+}
+
+export function incInventoryItem(object, item, amount) {
+  assert(object);
+  amount = Math.min(amount, getFreeInventorySpace(object));
+  return Actions.updateDeer({
+    id: object.id,
+    item,
+    inventory: object.inventory + amount
+  });
 }

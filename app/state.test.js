@@ -1,5 +1,8 @@
 import State from "./state.js";
 
+const inBrowser = typeof window !== "undefined";
+const chai = inBrowser ? window.chai : require("chai");
+const sinon = inBrowser ? window.sinon : require("sinon");
 const { expect } = chai;
 
 describe("State", () => {

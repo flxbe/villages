@@ -1,6 +1,5 @@
 import * as Constants from "../constants.js";
-import State from "../state.js";
-import { isWalkableTile, isTileOnMap, getTileCenter } from "../util.js";
+import { isWalkableTile, getTileCenter } from "../util.js";
 
 const directions = [
   [0, -1],
@@ -12,6 +11,10 @@ const directions = [
   [-1, 0],
   [-1, -1]
 ];
+
+function isTileOnMap(height, width, [i, j]) {
+  return j >= 0 && j < width && i >= 0 && i < height;
+}
 
 function manhattan(x1, y1, x2, y2) {
   return Math.abs(x2 - x1) + Math.abs(y2 - y1);
@@ -104,37 +107,43 @@ BinaryHeap.prototype = {
   }
 };
 
-export default function astar(
-  [si, sj],
-  [ti, tj],
-  weightFunction = function(i, j) {
-    if (State.get().map[i][j].type == Constants.TILE_ROAD) return 1;
-    return 2;
-  }
-) {
-  let map = [];
+/**
+ * Compute a path from the start to the target tile.
+ *
+ * @param {Tile[][]} map
+ * @param {Point} start
+ * @param {Point} target
+ */
+export default function astar(map, [si, sj], [ti, tj]) {
+  let compMap = [];
 
-  for (let i = 0; i < Constants.MAP_WIDTH; i++) {
+  const weightFunction = function(i, j) {
+    if (map[i][j].type == Constants.TILE_ROAD) return 1;
+    return 2;
+  };
+
+  const height = map.length;
+  const width = map[0].length;
+  for (let i = 0; i < height; i++) {
     let line = [];
-    for (let j = 0; j < Constants.MAP_HEIGHT; j++) {
+    for (let j = 0; j < width; j++) {
       line.push({
         i: i,
         j: j,
-        walkable: isWalkableTile(State.get().map[i][j].type),
+        walkable: isWalkableTile(map[i][j].type),
         visited: false,
         closed: false,
         pred: null,
         f: undefined,
-        g: undefined,
-        cost: weightFunction(i, j)
+        g: undefined
       });
     }
-    map.push(line);
+    compMap.push(line);
   }
 
   let heap = new BinaryHeap(node => node.f);
 
-  let start = map[si][sj];
+  let start = compMap[si][sj];
   start.g = 0;
   start.f = manhattan(si, sj, ti, tj);
 
@@ -145,7 +154,7 @@ export default function astar(
 
     if (current.i == ti && current.j == tj) {
       let path = [];
-      while (current.pred) {
+      while (current) {
         path.push(getTileCenter(current.i, current.j));
         current = current.pred;
       }
@@ -165,14 +174,18 @@ export default function astar(
       const ni = current.i + dir[0];
       const nj = current.j + dir[1];
 
-      if (!isTileOnMap(ni, nj)) continue;
-      let neighbour = map[ni][nj];
+      if (!isTileOnMap(height, width, [ni, nj])) continue;
+      const neighbour = compMap[ni][nj];
+      const neighbourTile = map[ni][nj];
 
-      if (neighbour.closed || !neighbour.walkable) continue;
+      if (neighbour.closed) continue;
+      if (!isWalkableTile(neighbourTile.type)) continue;
+
+      const nCost = weightFunction(ni, nj);
       const g =
         ni != current.i && nj != current.j
-          ? current.g + neighbour.cost * 1.5
-          : current.g + neighbour.cost;
+          ? current.g + nCost * 1.5
+          : current.g + nCost;
 
       if (neighbour.visited && g >= neighbour.g) continue;
       neighbour.pred = current;
@@ -188,5 +201,5 @@ export default function astar(
     }
   }
 
-  return [];
+  return;
 }

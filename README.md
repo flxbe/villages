@@ -1,3 +1,12 @@
+[![Build Status](https://travis-ci.org/flxbe/villages.svg?branch=master)](https://travis-ci.org/flxbe/villages)
+
+## Tests
+
+```bash
+npm install
+npm test
+```
+
 ## Structure
 
 * `/app/html-gui/`/`/app/windows/`: Reusable GUI widgets, widows and window

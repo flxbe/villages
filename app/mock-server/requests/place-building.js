@@ -27,19 +27,15 @@ export default function placeBuilding(context, i, j, blueprintName) {
   );
 
   // update map
+  const tileType =
+    blueprintName === "road" ? Constants.TILE_ROAD : Constants.TILE_BUILDING;
   const mapUpdates = [];
   for (let k = i - blueprint.height + 1; k <= i; k++) {
     for (let l = j - blueprint.width + 1; l <= j; l++) {
       mapUpdates.push({
         i: k,
         j: l,
-        tile: {
-          type:
-            blueprintName == "road"
-              ? Constants.TILE_ROAD
-              : Constants.TILE_BUILDING,
-          shade: blueprintName == "road" ? "0x999999" : "0x000000"
-        }
+        tile: { type: tileType }
       });
     }
   }
