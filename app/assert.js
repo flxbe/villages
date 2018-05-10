@@ -1,7 +1,5 @@
 export default function assert(condition, message) {
-  if (!condition) {
-    throw new Error(`ASSERTION_ERROR: ${message}`);
-  }
+  console.assert(condition, message);
 }
 
 export function isNumber(n) {
