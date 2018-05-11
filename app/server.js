@@ -1,4 +1,4 @@
-import { startServer, tick, serverRequest } from "./mock-server/server.js";
+import { startServer, tick, serverRequest } from "../server/server.js";
 
 let callbackMap = {};
 
