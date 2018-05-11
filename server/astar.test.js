@@ -2,7 +2,7 @@ import astar from "./astar.js";
 import * as Constants from "../common/constants.js";
 import { getTileCenter, cart2tile, isWalkableTile } from "../app/util.js";
 
-const { expect } = chai;
+const { expect } = require("chai");
 
 describe("astar", () => {
   const start = [0, 0];

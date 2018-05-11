@@ -1,6 +1,6 @@
 import Point from "./point.js";
 
-const { expect } = chai;
+const { expect } = require("chai");
 
 describe("Point", () => {
   describe("fromTile", () => {

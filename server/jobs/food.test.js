@@ -4,9 +4,7 @@ import * as Constants from "../../common/constants.js";
 
 import * as FoodJob from "./food.js";
 
-console.log("test");
-
-const { expect } = chai;
+const { expect } = require("chai");
 
 describe("FoodJob", () => {
   const map = [
@@ -56,7 +54,7 @@ describe("FoodJob", () => {
       const context = getContext();
       const deer = addDeer(context);
       FoodJob.start(context, deer);
-      expect(State.get().deers[deer.id].job).to.equal("food");
+      expect(context.getState().deers[deer.id].job).to.equal("food");
     });
 
     it("should set target to food", () => {
@@ -65,7 +63,7 @@ describe("FoodJob", () => {
 
       FoodJob.start(context, deer);
 
-      deer = State.get().deers[deer.id];
+      deer = context.getState().deers[deer.id];
       expect(deer.target).to.equal("food");
     });
 
@@ -76,7 +74,7 @@ describe("FoodJob", () => {
 
       FoodJob.start(context, deer);
 
-      deer = State.get().deers[deer.id];
+      deer = context.getState().deers[deer.id];
       expect(deer.path).to.exist;
       expect(deer.path).to.not.equal(oldPath);
     });

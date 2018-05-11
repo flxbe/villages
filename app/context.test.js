@@ -1,9 +1,7 @@
 import context from "./context.js";
 
-const inBrowser = typeof window !== "undefined";
-const chai = inBrowser ? window.chai : require("chai");
-const sinon = inBrowser ? window.sinon : require("sinon");
-const { expect } = chai;
+const { expect } = require("chai");
+const sinon = require("sinon");
 
 describe("context", () => {
   function getMapAction() {
