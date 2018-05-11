@@ -1,8 +1,10 @@
-import Context from "../../context.js";
+import Context from "../../app/context.js";
 import * as Actions from "../actions.js";
-import * as Constants from "../../constants.js";
+import * as Constants from "../../common/constants.js";
 
 import * as FoodJob from "./food.js";
+
+console.log("test");
 
 const { expect } = chai;
 

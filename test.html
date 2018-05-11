@@ -1,0 +1,30 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link href="app/lib/mocha.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="mocha"></div>
+
+  <script src="app/lib/pixi.js"></script>
+  <script src="app/lib/chai.js"></script>
+  <script src="app/lib/sinon.min.js"></script>
+  <script src="app/lib/mocha.js"></script>
+  <script>mocha.setup('bdd')</script>
+
+  <script type="module" src="server/astar.test.js"></script>
+  <script type="module" src="server/jobs/food.test.js"></script>
+
+  <script type="module" src="app/html-gui/compositor.test.js"></script>
+  <script type="module" src="app/html-gui/widget.test.js"></script>
+
+  <script type="module">
+    mocha.checkLeaks();
+    mocha.run();
+  </script>
+</body>
+
+</html>
