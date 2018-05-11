@@ -99,6 +99,11 @@ export function update(state, action) {
       state.selectedElement = action.element;
       break;
     }
+    case "INIT_CAMERA": {
+      state.offsetX = 0;
+      state.offsetY = 0;
+      break;
+    }
     case "MOVE_CAMERA": {
       state.offsetX += action.dX || 0;
       state.offsetY += action.dY || 0;
