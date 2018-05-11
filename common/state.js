@@ -21,6 +21,10 @@ export function update(state, action) {
 
   assert(action.type, `Action has no type: ${action}`);
   switch (action.type) {
+    case "TICK": {
+      state.tickTimestamp = action.timestamp;
+      break;
+    }
     case "SET_APPLICATION_SIZE": {
       state.applicationHeight = action.height;
       state.applicationWidth = action.width;

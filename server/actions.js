@@ -1,4 +1,14 @@
 /**
+ * Update the tick timestamp.
+ */
+export function tick() {
+  return {
+    type: "TICK",
+    timestamp: new Date()
+  };
+}
+
+/**
  * Set the map.
  * @param {Map} map
  */
