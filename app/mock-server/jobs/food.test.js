@@ -1,4 +1,4 @@
-import State from "../../state.js";
+import Context from "../../context.js";
 import * as Actions from "../actions.js";
 import * as Constants from "../../constants.js";
 
@@ -27,16 +27,16 @@ describe("FoodJob", () => {
   ];
 
   beforeEach(() => {
-    State.reset();
-    State.update(Actions.setMap(map));
+    Context.reset();
+    Context.update(Actions.setMap(map));
     // State.update(Actions.addFoodSource())
   });
 
   function getContext() {
     return {
       timestamp: Date.now(),
-      getState: State.get,
-      pushUpdate: State.update
+      getState: Context.get,
+      pushUpdate: Context.update
     };
   }
 

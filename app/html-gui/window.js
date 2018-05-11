@@ -1,6 +1,5 @@
 import Compositor from "./compositor.js";
 import * as Constants from "../constants.js";
-import State from "../state.js";
 
 import Widget from "./widget.js";
 import { intToPx, pxToInt } from "./util.js";

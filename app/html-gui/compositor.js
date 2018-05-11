@@ -1,5 +1,4 @@
 import * as Constants from "../constants.js";
-import State from "../state.js";
 import Window from "./window.js";
 
 let windowLayer = null;
