@@ -20,7 +20,7 @@ export default function placeBuilding(context, i, j, blueprintName) {
   }
 
   // reduce resources
-  context.pushUpdate(
+  context.dispatch(
     Actions.updateStorage({
       wood: context.getState().storage.wood - blueprint.wood
     })
@@ -41,5 +41,5 @@ export default function placeBuilding(context, i, j, blueprintName) {
   }
 
   // dispatch map updates
-  context.pushUpdate(Actions.updateMap(mapUpdates));
+  context.dispatch(Actions.updateMap(mapUpdates));
 }

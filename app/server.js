@@ -33,7 +33,6 @@ function emit(eventName, data) {
 }
 
 function consumeUpdate(update) {
-  console.log(update);
   emit("update", update);
 }
 

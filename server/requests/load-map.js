@@ -13,9 +13,9 @@ import { generateRandomMap } from "../map-generator.js";
 export default function loadMap(context) {
   const map = generateRandomMap();
 
-  context.pushUpdate(Actions.setMap(map));
+  context.dispatch(Actions.setMap(map));
 
-  context.pushUpdate(
+  context.dispatch(
     Actions.addDeer({
       id: "deer1",
       path: [{ x: 0, y: 0, timestamp: Date.now() }],
@@ -23,7 +23,7 @@ export default function loadMap(context) {
       job: "wood"
     })
   );
-  context.pushUpdate(
+  context.dispatch(
     Actions.addDeer({
       id: "deer2",
       path: [{ x: 0, y: 0, timestamp: Date.now() }],
@@ -42,6 +42,6 @@ function setTree(context, id, i, j) {
   const tile = {
     type: Constants.TILE_TREE
   };
-  context.pushUpdate(Actions.updateMap([{ i, j, tile }]));
-  context.pushUpdate(Actions.addTree({ id, i, j }));
+  context.dispatch(Actions.updateMap([{ i, j, tile }]));
+  context.dispatch(Actions.addTree({ id, i, j }));
 }

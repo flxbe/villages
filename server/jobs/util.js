@@ -24,7 +24,10 @@ export function getStorageTile(context) {
 export function getTile(context, object) {
   assert(context);
   assert(object);
-  const { x: cartX, y: cartY } = getPosition(object.path, context.timestamp);
+  const { x: cartX, y: cartY } = getPosition(
+    object.path,
+    context.getState().tickTimestamp
+  );
   return cart2tile(cartX, cartY);
 }
 
@@ -36,13 +39,19 @@ export function wasWorking(object) {
 export function isWalking(context, object) {
   assert(context);
   assert(object);
-  return object.path[object.path.length - 1].timestamp > context.timestamp;
+  return (
+    object.path[object.path.length - 1].timestamp >
+    context.getState().tickTimestamp
+  );
 }
 
 export function isOnTile(context, object, target) {
   assert(context);
   assert(object);
-  const { x: cartX, y: cartY } = getPosition(object.path, context.timestamp);
+  const { x: cartX, y: cartY } = getPosition(
+    object.path,
+    context.getState().tickTimestamp
+  );
   const tile = cart2tile(cartX, cartY);
 
   return tile[0] === target[0] && tile[1] === target[1];

@@ -36,7 +36,7 @@ describe("FoodJob", () => {
     return {
       timestamp: Date.now(),
       getState: Context.get,
-      pushUpdate: Context.update
+      dispatch: Context.update
     };
   }
 
@@ -45,7 +45,7 @@ describe("FoodJob", () => {
       id,
       path: [{ x: 0, y: 0, timestamp: context.timestamp }]
     };
-    context.pushUpdate(Actions.addDeer(deer));
+    context.dispatch(Actions.addDeer(deer));
     return deer;
   }
 

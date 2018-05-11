@@ -12,7 +12,7 @@ export function finish(context, deer) {
   switch (deer.target) {
     case "wood": {
       const inventory = Math.min(deer.inventory + 1, 20);
-      context.pushUpdate(
+      context.dispatch(
         Actions.updateDeer({
           id: deer.id,
           item: "wood",
@@ -22,12 +22,12 @@ export function finish(context, deer) {
       break;
     }
     case "storage": {
-      context.pushUpdate(
+      context.dispatch(
         Actions.updateStorage({
           [deer.item]: context.getState().storage[deer.item] + deer.inventory
         })
       );
-      context.pushUpdate(
+      context.dispatch(
         Actions.updateDeer({
           id: deer.id,
           job: "wood",
@@ -53,7 +53,7 @@ export function start(context, deer) {
     case "wood": {
       if (util.isInventoryFull(deer)) {
         const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             job: "wood",
@@ -63,7 +63,7 @@ export function start(context, deer) {
           })
         );
       } else if (!util.wasWorking(deer)) {
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             state: "working"
@@ -75,7 +75,7 @@ export function start(context, deer) {
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
         const path = astar(state.map, deerTile, util.getTreeTile(context));
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             job: "wood",
@@ -85,7 +85,7 @@ export function start(context, deer) {
           })
         );
       } else if (!util.wasWorking(deer)) {
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             state: "working"
@@ -97,7 +97,7 @@ export function start(context, deer) {
     default: {
       if (util.isInventoryFull(deer)) {
         const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             job: "wood",
@@ -108,7 +108,7 @@ export function start(context, deer) {
         );
       } else {
         const path = astar(state.map, deerTile, util.getTreeTile(context));
-        context.pushUpdate(
+        context.dispatch(
           Actions.updateDeer({
             id: deer.id,
             job: "wood",
