@@ -1,26 +1,23 @@
-import Context from "../app/context.js";
+import Context from "./context.js";
 
 import executeRequest from "./requests.js";
 import scheduleJobs from "./scheduler.js";
 
-let updates = [];
+const context = new Context();
 let updateCallback = undefined;
 
-function pushUpdate(update) {
-  updates.push(update);
+function flushUpdates() {
+  for (let action of context.getActions()) {
+    updateCallback(action);
+  }
+  context.clearActions();
 }
 
-function flushUpdates() {
-  for (let update of updates) {
-    updateCallback(update);
-  }
-  updates = [];
-}
 function getContext() {
   return {
     timestamp: Date.now(),
-    getState: Context.get,
-    pushUpdate
+    getState: () => context.getState(),
+    pushUpdate: action => context.dispatch(action)
   };
 }
 
@@ -40,9 +37,8 @@ export function startServer(consumeUpdate) {
  * Compute the next server tick
  */
 export function tick() {
-  const context = getContext();
-  scheduleJobs(context);
-
+  const ctx = getContext();
+  scheduleJobs(ctx);
   flushUpdates();
 }
 
@@ -54,8 +50,8 @@ export function tick() {
  * @param {objext} request
  */
 export function serverRequest(request) {
-  const context = getContext();
-  executeRequest(context, request);
+  const ctx = getContext();
+  executeRequest(ctx, request);
 
   flushUpdates();
 }

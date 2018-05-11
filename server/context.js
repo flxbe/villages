@@ -12,9 +12,9 @@ export default class Context {
     return this.state;
   }
 
-  update(action) {
+  dispatch(action) {
     if (isArray(action)) {
-      for (let a of action) this.update(a);
+      for (let a of action) this.dispatch(a);
       return;
     }
 
