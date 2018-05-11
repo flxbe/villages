@@ -43,7 +43,9 @@ export function animate(sprite, delta, timePerFrame = 7.5) {
   sprite.animationTime += delta;
   const frames = sprite.animation.length;
   const index = Math.floor((sprite.animationTime / timePerFrame) % frames);
-  const frame = sprite.animation[index];
+
+  let frame = sprite.animation[index];
+  frame = `app/${frame}`;
 
   sprite.texture = PIXI.loader.resources[frame].texture;
 }
