@@ -1,5 +1,5 @@
 import * as Constants from "./constants.js";
-import State from "./state.js";
+import context from "./context.js";
 
 /**
  * Convert absolute to relative coordinates.
@@ -7,7 +7,7 @@ import State from "./state.js";
  * @param {number} absY
  */
 export function abs2rel(absX, absY) {
-  const { offsetX, offsetY } = State.get();
+  const { offsetX, offsetY } = context.get();
   return [absX + offsetX, absY + offsetY];
 }
 
@@ -17,7 +17,7 @@ export function abs2rel(absX, absY) {
  * @param {number} relY
  */
 export function rel2abs(relX, relY) {
-  const { offsetX, offsetY } = State.get();
+  const { offsetX, offsetY } = context.get();
   return [relX - offsetX, relY - offsetY];
 }
 
@@ -173,7 +173,7 @@ export function pointInHitbox(x, y, w, h, px, py) {
 }
 
 export function sufficientResources(blueprint) {
-  return State.get().storage.wood >= blueprint.wood;
+  return context.get().storage.wood >= blueprint.wood;
 }
 
 /**
@@ -268,7 +268,7 @@ export function getTileCenter(i, j) {
 export function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !isBuildableTile(State.get().map[k][l].type))
+      if (!isTileOnMap(k, l) || !isBuildableTile(context.get().map[k][l].type))
         return false;
     }
   }
@@ -336,7 +336,7 @@ export function isRoadableTile(type) {
 }
 
 export function getActiveTile() {
-  const { mouseIsoX, mouseIsoY } = State.get();
+  const { mouseIsoX, mouseIsoY } = context.get();
   const [absX, absY] = rel2abs(mouseIsoX, mouseIsoY);
   return abs2tile(absX, absY);
 }

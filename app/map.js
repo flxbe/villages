@@ -1,6 +1,6 @@
 import * as Constants from "./constants.js";
 import * as Blueprints from "./blueprints.js";
-import State from "./state.js";
+import context from "./context.js";
 import server from "./server.js";
 import {
   tile2abs,
@@ -71,21 +71,21 @@ Map.init = function(renderer) {
   mapSprite.on("mousemove", onMouseMapMove);
   mapSprite.on("mouseup", onMouseMapUp);
 
-  State.on("SET_APPLICATION_SIZE", resizeMapHitArea);
-  State.on("SET_MAP", renderTexture);
-  State.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
-  State.on("ADD_DEER", addDeer);
-  State.on("ADD_TREE", addTree);
-  State.on("MOVE", move);
-  State.on("ENTER_BUILD_MODE", () => {
+  context.on("SET_APPLICATION_SIZE", resizeMapHitArea);
+  context.on("SET_MAP", renderTexture);
+  context.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
+  context.on("ADD_DEER", addDeer);
+  context.on("ADD_TREE", addTree);
+  context.on("MOVE", move);
+  context.on("ENTER_BUILD_MODE", () => {
     objectLayer.interactiveChildren = false;
   });
-  State.on("RESET_MODE", () => {
+  context.on("RESET_MODE", () => {
     objectLayer.interactiveChildren = true;
   });
 };
 
-// internal scrolling state
+// internal scrolling context
 let clickStartX;
 let clickStartY;
 let scrolling = false;
@@ -108,7 +108,7 @@ function onRightClick(event) {
     Math.abs(clickStartX - clickEndX) + Math.abs(clickStartY - clickEndY) >= 10;
 
   if (!movedSignificantly) {
-    State.update({ type: "RESET_MODE" });
+    context.update({ type: "RESET_MODE" });
     return;
   }
 }
@@ -116,9 +116,9 @@ function onRightClick(event) {
 function onMouseMove(event) {
   if (!scrolling) return;
 
-  const { mouseIsoX, mouseIsoY } = State.get();
+  const { mouseIsoX, mouseIsoY } = context.get();
 
-  State.update({
+  context.update({
     type: "MOVE_CAMERA",
     dX: event.data.global.x - mouseIsoX,
     dY: event.data.global.y - mouseIsoY
@@ -129,9 +129,9 @@ function onMouseMapMove(event) {
   const [i, j] = getActiveTile();
 
   if (isTileOnMap(i, j)) {
-    State.update({ type: "HOVER", element: { type: "tile", i, j } });
+    context.update({ type: "HOVER", element: { type: "tile", i, j } });
   } else {
-    State.update({ type: "HOVER", element: null });
+    context.update({ type: "HOVER", element: null });
   }
 }
 
@@ -139,16 +139,16 @@ async function onMouseMapUp(event) {
   const [i, j] = getActiveTile();
 
   if (!isTileOnMap(i, j)) {
-    State.update({ type: "SELECT", element: null });
+    context.update({ type: "SELECT", element: null });
     return;
   }
 
-  const { mode } = State.get();
+  const { mode } = context.get();
 
   if (mode === "normal") {
-    State.update({ type: "SELECT", element: { type: "tile", i, j } });
+    context.update({ type: "SELECT", element: { type: "tile", i, j } });
   } else if (mode === "build") {
-    const { blueprintName, ctrlDown } = State.get();
+    const { blueprintName, ctrlDown } = context.get();
     const blueprint = Blueprints[blueprintName];
 
     if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
@@ -156,7 +156,7 @@ async function onMouseMapUp(event) {
         await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });
 
         if (!ctrlDown) {
-          State.update({ type: "RESET_MODE" });
+          context.update({ type: "RESET_MODE" });
         }
       } else {
         console.log("not enough resources");
@@ -168,7 +168,7 @@ async function onMouseMapUp(event) {
 }
 
 function resizeMapHitArea() {
-  const { applicationHeight, applicationWidth } = State.get();
+  const { applicationHeight, applicationWidth } = context.get();
   const hitArea = new PIXI.Rectangle(0, 0, applicationWidth, applicationHeight);
   Map.hitArea = hitArea;
 }
@@ -179,10 +179,10 @@ function createSprite({ hitArea, element, animation }) {
   sprite.interactive = true;
 
   sprite.on("mouseup", event => {
-    State.update({ type: "SELECT", element });
+    context.update({ type: "SELECT", element });
   });
   sprite.on("mousemove", event => {
-    State.update({ type: "HOVER", element });
+    context.update({ type: "HOVER", element });
   });
 
   setAnimation(sprite, animation);
@@ -215,10 +215,10 @@ function addTree({ tree }) {
 /**
  * Update the map UI elements and animate all objects.
  *
- * @param {Action} action - The state update
+ * @param {Action} action - The context update
  */
 function move({ delta }) {
-  const state = State.get();
+  const state = context.get();
   const { timestamp, mode, mapOffsetX, offsetX, offsetY } = state;
 
   mapSprite.position.x = offsetX - mapOffsetX;
@@ -368,23 +368,23 @@ function move({ delta }) {
  */
 function renderTexture() {
   // calculate texture size
-  const xDim = State.get().map.length;
-  const yDim = State.get().map[0].length;
+  const xDim = context.get().map.length;
+  const yDim = context.get().map[0].length;
   const height = (xDim + yDim) * Constants.TILE_HEIGHT / 2.0;
   const width = (xDim + yDim) * Constants.TILE_WIDTH;
   const offsetX = width / 2.0;
 
-  // update state
-  State.update({ type: "UPDATE_MAP_SIZE", height, width });
+  // update context
+  context.update({ type: "UPDATE_MAP_SIZE", height, width });
   mapTexture.resize(width, height);
   gridTexture.resize(width, height);
 
   const map = new PIXI.Graphics();
   const mapGrid = new PIXI.Graphics();
 
-  for (let i = 0; i < State.get().map.length; i++) {
-    for (let j = 0; j < State.get().map[i].length; j++) {
-      const tile = State.get().map[i][j];
+  for (let i = 0; i < context.get().map.length; i++) {
+    for (let j = 0; j < context.get().map[i].length; j++) {
+      const tile = context.get().map[i][j];
 
       if (tile.type === Constants.TILE_EMPTY) {
         continue;
@@ -408,7 +408,7 @@ function renderTexture() {
 function updateTexture(updates) {
   const map = new PIXI.Graphics();
   map.fillAlpha = 0;
-  const offsetX = State.get().mapOffsetX;
+  const offsetX = context.get().mapOffsetX;
 
   for (let update of updates) {
     const { i, j, tile } = update;

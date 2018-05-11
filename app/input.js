@@ -5,14 +5,14 @@ import {
   isAreaFreeForBuilding,
   sufficientResources
 } from "./util.js";
-import State from "./state.js";
+import context from "./context.js";
 import { toggleBuildMenu } from "./windows/build-menu.js";
 
 window.onresize = function resize() {
   const height = window.innerHeight;
   const width = window.innerWidth;
 
-  State.update({ type: "SET_APPLICATION_SIZE", height, width });
+  context.update({ type: "SET_APPLICATION_SIZE", height, width });
 };
 
 window.addEventListener(
@@ -42,19 +42,19 @@ window.addEventListener(
 
     switch (event.keyCode) {
       case 17:
-        State.update({ type: "SET_CTRL_STATE", value: true });
+        context.update({ type: "SET_CTRL_context", value: true });
         break;
       case 37:
-        State.update({ type: "MOVE_CAMERA", dX: 20 });
+        context.update({ type: "MOVE_CAMERA", dX: 20 });
         break;
       case 38:
-        State.update({ type: "MOVE_CAMERA", dY: 20 });
+        context.update({ type: "MOVE_CAMERA", dY: 20 });
         break;
       case 39:
-        State.update({ type: "MOVE_CAMERA", dX: -20 });
+        context.update({ type: "MOVE_CAMERA", dX: -20 });
         break;
       case 40:
-        State.update({ type: "MOVE_CAMERA", dY: -20 });
+        context.update({ type: "MOVE_CAMERA", dY: -20 });
         break;
       case 122:
         if (
@@ -74,11 +74,11 @@ window.addEventListener(
         toggleBuildMenu();
         break;
       case "g": {
-        State.update({ type: "TOGGLE_GRID" });
+        context.update({ type: "TOGGLE_GRID" });
         break;
       }
       case "h": {
-        State.update({ type: "TOGGLE_HIT_AREAS" });
+        context.update({ type: "TOGGLE_HIT_AREAS" });
         break;
       }
     }
@@ -88,12 +88,12 @@ window.addEventListener(
 
 document.addEventListener("keyup", event => {
   if (event.keyCode == 17) {
-    State.update({ type: "SET_CTRL_STATE", value: false });
+    context.update({ type: "SET_CTRL_context", value: false });
   }
 });
 
 document.addEventListener("mousemove", event => {
-  State.update({
+  context.update({
     type: "UPDATE_MOSE_POSITION",
     x: event.clientX,
     y: event.clientY

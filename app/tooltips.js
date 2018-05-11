@@ -3,7 +3,7 @@
  *
  * Simple layer that shows tooltips over the hovered element.
  */
-import State from "./state.js";
+import context from "./context.js";
 
 const TooltipLayer = new PIXI.Container();
 export default TooltipLayer;
@@ -17,19 +17,19 @@ const tooltipText = new PIXI.Text("", {
 TooltipLayer.init = function() {
   TooltipLayer.addChild(tooltipText);
 
-  State.on("UPDATE_MOSE_POSITION", updatePosition);
-  State.on("HOVER", updateText);
+  context.on("UPDATE_MOSE_POSITION", updatePosition);
+  context.on("HOVER", updateText);
 };
 
 function updatePosition() {
-  const { mouseIsoX, mouseIsoY } = State.get();
+  const { mouseIsoX, mouseIsoY } = context.get();
 
   tooltipText.position.x = mouseIsoX;
   tooltipText.position.y = mouseIsoY + 20;
 }
 
 function updateText() {
-  const { hoveredElement } = State.get();
+  const { hoveredElement } = context.get();
 
   if (hoveredElement && hoveredElement.tooltip) {
     TooltipLayer.visible = true;

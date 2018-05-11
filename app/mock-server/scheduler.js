@@ -1,5 +1,3 @@
-import State from "../state.js";
-
 import * as wood from "./jobs/wood.js";
 import * as food from "./jobs/food.js";
 
@@ -19,7 +17,7 @@ function getJobScheduler(name) {
 }
 
 export default function scheduleJobs(context) {
-  for (let deer of Object.values(State.get().deers)) {
+  for (let deer of Object.values(context.getState().deers)) {
     const scheduler = getJobScheduler(deer.job);
     scheduler.finish(context, deer);
     scheduler.start(context, deer);
