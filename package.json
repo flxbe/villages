@@ -4,7 +4,7 @@
   "description": "A small, educational game project for the browser.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha index.test.js --compilers js:babel-core/register"
+    "test": "mocha index.test.js --require babel-core/register"
   },
   "repository": {
     "type": "git",
