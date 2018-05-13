@@ -121,7 +121,7 @@ export default class Point {
     return this._binaryOperation(addOperation, a, b);
   }
 
-  sub(p) {
+  sub(a, b) {
     return this._binaryOperation(subOperation, a, b);
   }
 

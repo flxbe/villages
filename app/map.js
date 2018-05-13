@@ -3,9 +3,6 @@ import * as Blueprints from "./blueprints.js";
 import context from "./context.js";
 import server from "./server.js";
 import {
-  tile2abs,
-  tile2rel,
-  cart2rel,
   isTileOnMap,
   isBuildableTile,
   isAreaFreeForBuilding,
@@ -24,6 +21,8 @@ import {
 } from "./util.js";
 import { getPosition } from "./movement.js";
 import { setAnimation, animate } from "./animations.js";
+
+import Point from "../common/point.js";
 
 import openDeerWindow from "./windows/deer-window.js";
 
@@ -253,8 +252,8 @@ function move({ delta }) {
         if (!isTileOnMap(i, j)) continue;
         const tile = state.map[i][j];
         const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
-        const [relX, relY] = tile2rel(i, j);
-        renderTile(decorationLayer, color, relX, relY);
+        const { x, y } = Point.fromTile(i, j).toRel(context);
+        renderTile(decorationLayer, color, x, y);
       }
     }
   }
@@ -278,24 +277,29 @@ function move({ delta }) {
     let relX = 0;
     let relY = 0;
     switch (selectedElement.type) {
-      case "tile":
-        [relX, relY] = tile2rel(selectedElement.i, selectedElement.j);
+      case "tile": {
+        const { i, j } = selectedElement;
+        const { x, y } = Point.fromTile(i, j).toRel(context);
         selectionLayer.alpha = 0.25;
-        renderTile(selectionLayer, "0xffffff", relX, relY);
+        renderTile(selectionLayer, "0xffffff", x, y);
         break;
+      }
       case "deer": {
         const deer = state.deers[selectedElement.id];
-        const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
-        [relX, relY] = cart2rel(cartX - 10, cartY - 10);
+        const { x, y } = getPosition(deer.path, timestamp);
+        const p = Point.fromCart(x, y)
+          .sub(10)
+          .toRel(context);
         selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", relX, relY);
+        renderCircle(selectionLayer, "0xffffff", p.x, p.y);
         break;
       }
       case "tree": {
         const tree = state.trees[selectedElement.id];
-        [relX, relY] = tile2rel(tree.i, tree.j);
+        const { i, j } = tree;
+        const { x, y } = Point.fromTile(i, j).toRel(context);
         selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", relX, relY);
+        renderCircle(selectionLayer, "0xffffff", x, y);
         break;
       }
       default:
@@ -332,10 +336,10 @@ function move({ delta }) {
       setAnimation(sprite, animation);
       animate(sprite, delta);
 
-      const [relX, relY] = cart2rel(position.x, position.y);
-      sprite.zIndex = relY;
-      sprite.x = relX + Constants.DEER_OFFSET_X;
-      sprite.y = relY + Constants.DEER_OFFSET_Y;
+      const p = Point.fromCart(position.x, position.y).toRel(context);
+      sprite.zIndex = p.y;
+      sprite.x = p.x + Constants.DEER_OFFSET_X;
+      sprite.y = p.y + Constants.DEER_OFFSET_Y;
 
       if (renderHitAreas) renderHitBox(sprite);
     }
@@ -345,10 +349,11 @@ function move({ delta }) {
 
       animate(sprite, delta);
 
-      const [relX, relY] = tile2rel(tree.i, tree.j);
-      sprite.zIndex = relY;
-      sprite.x = relX + Constants.PALM_OFFSET_X;
-      sprite.y = relY + Constants.PALM_OFFSET_Y;
+      const { i, j } = tree;
+      const { x, y } = Point.fromTile(i, j).toRel(context);
+      sprite.zIndex = y;
+      sprite.x = x + Constants.PALM_OFFSET_X;
+      sprite.y = y + Constants.PALM_OFFSET_Y;
 
       if (renderHitAreas) renderHitBox(sprite);
     }
@@ -390,7 +395,9 @@ function renderTexture() {
         continue;
       }
 
-      const [absX, absY] = tile2abs(i, j);
+      const [absX, absY] = Point.fromTile(i, j)
+        .toAbs()
+        .toArray();
       renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
       renderTileGrid(mapGrid, offsetX + absX, absY);
     }
@@ -412,7 +419,9 @@ function updateTexture(updates) {
 
   for (let update of updates) {
     const { i, j, tile } = update;
-    const [absX, absY] = tile2abs(i, j);
+    const [absX, absY] = Point.fromTile(i, j)
+      .toAbs()
+      .toArray();
     renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
   }
 
