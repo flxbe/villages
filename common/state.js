@@ -1,4 +1,5 @@
 import assert, { isArray } from "./assert.js";
+import * as Constants from "./constants.js";
 
 export function create() {
   return {
@@ -44,6 +45,8 @@ export function update(state, action) {
     }
     case "SET_MAP": {
       state.map = action.map;
+      state.mapHeight = Constants.MAP_HEIGHT;
+      state.mapWidth = Constants.MAP_WIDTH;
       break;
     }
     case "UPDATE_MAP": {
