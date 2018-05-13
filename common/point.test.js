@@ -207,6 +207,19 @@ describe("Point", () => {
     });
   });
 
+  describe("getCenter", () => {
+    describe("from Tile", () => {
+      it("should return the tile center", () => {
+        const p = Point.fromTile(0, 0);
+        const c = p.getCenter();
+        expect(c.toArray()).to.deep.equal([
+          Constants.TILE_WIDTH / 2,
+          Constants.TILE_HEIGHT / 2
+        ]);
+      });
+    });
+  });
+
   describe("isOnMap", () => {
     it("should correctly check points on the map", () => {
       const p = Point.fromTile(0, 0);

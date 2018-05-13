@@ -198,6 +198,13 @@ export default class Point {
     return this;
   }
 
+  getCenter() {
+    assertType(this, POINT_TILE, true);
+    return this.clone()
+      .toCart()
+      .add(Constants.TILE_WIDTH / 2, Constants.TILE_HEIGHT / 2);
+  }
+
   getNeighbours(context) {
     assertType(this, POINT_TILE, true);
 
