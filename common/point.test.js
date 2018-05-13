@@ -1,8 +1,28 @@
 import Point from "./point.js";
+import * as Constants from "./constants.js";
 
 const { expect } = require("chai");
 
+function getContext() {
+  const state = {
+    offsetX: 20,
+    offsetY: 20,
+    mapHeight: 100,
+    mapWidth: 100
+  };
+
+  return {
+    get: () => state
+  };
+}
+
 describe("Point", () => {
+  describe("constructor", () => {
+    it("should create a new point with type None", () => {
+      const p = new Point();
+      expect(p.isNone()).to.be.true;
+    });
+  });
   describe("fromTile", () => {
     it("should create a tile point", () => {
       const p = Point.fromTile(0, 0);
@@ -65,29 +85,145 @@ describe("Point", () => {
   });
 
   describe("add", () => {
-    describe("a number", () => {
-      it("should add the value", () => {
-        const p = new Point();
-        p.add(1);
-        expect(p.x).to.equal(1);
-        expect(p.y).to.equal(1);
+    it("should add a number", () => {
+      const p = new Point();
+      p.add(1);
+      expect(p.toArray()).to.deep.equal([1, 1]);
+    });
+
+    it("should add two numbers", () => {
+      const p = new Point();
+      p.add(1, 2);
+      expect(p.toArray()).to.deep.equal([1, 2]);
+    });
+
+    it("should add an array", () => {
+      const p = new Point();
+      p.add([1, 2]);
+      expect(p.toArray()).to.deep.equal([1, 2]);
+    });
+
+    it("should add ta point", () => {
+      const p = new Point();
+      p.add(new Point(1, 2));
+      expect(p.toArray()).to.deep.equal([1, 2]);
+    });
+  });
+
+  describe("div", () => {
+    it("should divide the point by a number", () => {
+      const p = new Point(10, 10);
+      p.div(10);
+      expect(p.toArray()).to.deep.equal([1, 1]);
+    });
+  });
+
+  describe("mul", () => {
+    it("should multiply the point by a number", () => {
+      const p = new Point(1, 1);
+      p.mul(10);
+      expect(p.toArray()).to.deep.equal([10, 10]);
+    });
+  });
+
+  describe("toTile", () => {
+    describe("from Cart", () => {
+      it("should convert without error", () => {
+        const p = Point.fromCart(1, 1);
+        p.toTile();
+        expect(p.isTile()).to.be.true;
+      });
+
+      it("should round on whole tiles", () => {
+        const p = Point.fromCart(1, 1);
+        p.toTile();
+        expect(p.toArray()).to.deep.equal([0, 0]);
       });
     });
-    describe("an array", () => {
-      it("should add the array entries", () => {
-        const p = new Point();
-        p.add([1, 2]);
-        expect(p.x).to.equal(1);
-        expect(p.y).to.equal(2);
+  });
+
+  describe("toCart", () => {
+    describe("from Tile", () => {
+      it("should convert without error", () => {
+        const p = Point.fromTile(1, 1);
+        p.toCart();
+        expect(p.isCart()).to.be.true;
+      });
+
+      it("should transform correctly", () => {
+        const p = Point.fromTile(1, 1);
+        p.toCart();
+        expect(p.toArray()).to.deep.equal([
+          Constants.TILE_WIDTH,
+          Constants.TILE_HEIGHT
+        ]);
       });
     });
-    describe("a point", () => {
-      it("should add the coordinates", () => {
-        const p = new Point();
-        p.add(new Point(1, 2));
-        expect(p.x).to.equal(1);
-        expect(p.y).to.equal(2);
+
+    describe("from Abs", () => {
+      it("should convert without error", () => {
+        const p = Point.fromAbs(1, 1);
+        p.toCart();
+        expect(p.isCart()).to.be.true;
       });
+
+      it("should convert back without error", () => {
+        const p = Point.fromAbs(1, 1);
+        expect(
+          p
+            .toCart()
+            .toAbs()
+            .toArray()
+        ).to.deep.equal([1, 1]);
+      });
+    });
+  });
+
+  describe("toAbs", () => {
+    describe("from Tile", () => {
+      it("should convert without error", () => {
+        const p = Point.fromTile(1, 1);
+        p.toAbs();
+        expect(p.isAbs()).to.be.true;
+      });
+    });
+  });
+
+  describe("toRel", () => {
+    describe("from Tile", () => {
+      it("should convert without error", () => {
+        const context = getContext();
+        const p = Point.fromTile(1, 1);
+        p.toRel(context);
+        expect(p.isRel()).to.be.true;
+      });
+    });
+  });
+
+  describe("toArray", () => {
+    it("should return the coordiantes as an array", () => {
+      const p = new Point(1, 2);
+      expect(p.toArray()).to.deep.equal([1, 2]);
+    });
+  });
+
+  describe("isOnMap", () => {
+    it("should correctly check points on the map", () => {
+      const p = Point.fromTile(0, 0);
+      const neighbours = p.getNeighbours(getContext());
+      expect(p.isOnMap(getContext())).to.be.true;
+    });
+
+    it("should correctly check points with negative coordinates", () => {
+      const p = Point.fromTile(-1, -1);
+      const neighbours = p.getNeighbours(getContext());
+      expect(p.isOnMap(getContext())).to.be.false;
+    });
+
+    it("should correctly check points outside the map", () => {
+      const p = Point.fromTile(101, 101);
+      const neighbours = p.getNeighbours(getContext());
+      expect(p.isOnMap(getContext())).to.be.false;
     });
   });
 
@@ -95,14 +231,14 @@ describe("Point", () => {
     describe("on the corner", () => {
       it("should return 3 neighbours", () => {
         const p = Point.fromTile();
-        const neighbours = p.getNeighbours(3, 3);
+        const neighbours = p.getNeighbours(getContext());
         expect(neighbours.length).to.equal(3);
       });
     });
     describe("on the edge", () => {
       it("should return 5 neighbours", () => {
         const p = Point.fromTile(1, 0);
-        const neighbours = p.getNeighbours(3, 3);
+        const neighbours = p.getNeighbours(getContext());
         expect(neighbours.length).to.equal(5);
       });
     });
@@ -110,7 +246,7 @@ describe("Point", () => {
     describe("in the middle of the map", () => {
       it("should return 8 neighbours", () => {
         const p = Point.fromTile(1, 1);
-        const neighbours = p.getNeighbours(3, 3);
+        const neighbours = p.getNeighbours(getContext());
         expect(neighbours.length).to.equal(8);
       });
     });
