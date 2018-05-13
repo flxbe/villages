@@ -1,7 +1,7 @@
 import * as Actions from "../actions.js";
 
 import assert from "../../common/assert.js";
-import { cart2tile } from "../../app/util.js";
+import Point from "../../common/point.js";
 import { getPosition } from "../../app/movement.js";
 
 const INVENTORY_CAPACITY = 20;
@@ -28,7 +28,9 @@ export function getTile(context, object) {
     object.path,
     context.getState().tickTimestamp
   );
-  return cart2tile(cartX, cartY);
+  return Point.fromCart(cartX, cartY)
+    .toTile()
+    .toArray();
 }
 
 export function wasWorking(object) {
@@ -48,11 +50,11 @@ export function isWalking(context, object) {
 export function isOnTile(context, object, target) {
   assert(context);
   assert(object);
-  const { x: cartX, y: cartY } = getPosition(
-    object.path,
-    context.getState().tickTimestamp
-  );
-  const tile = cart2tile(cartX, cartY);
+  const { x, y } = getPosition(object.path, context.getState().tickTimestamp);
+
+  const tile = Point.fromCart(x, y)
+    .toTile()
+    .toArray();
 
   return tile[0] === target[0] && tile[1] === target[1];
 }

@@ -1,5 +1,6 @@
 import * as Constants from "../common/constants.js";
-import { isWalkableTile, getTileCenter } from "../app/util.js";
+import Point from "../common/point.js";
+import { isWalkableTile } from "../app/util.js";
 
 const directions = [
   [0, -1],
@@ -155,7 +156,8 @@ export default function astar(map, [si, sj], [ti, tj]) {
     if (current.i == ti && current.j == tj) {
       let path = [];
       while (current) {
-        path.push(getTileCenter(current.i, current.j));
+        const center = Point.fromTile(current.i, current.j).getCenter();
+        path.push(center.toArray());
         current = current.pred;
       }
 
