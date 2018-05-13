@@ -1,10 +1,3 @@
-import {
-  abs2tile,
-  rel2abs,
-  isTileOnMap,
-  isAreaFreeForBuilding,
-  sufficientResources
-} from "./util.js";
 import context from "./context.js";
 import { toggleBuildMenu } from "./windows/build-menu.js";
 
