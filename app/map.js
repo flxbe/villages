@@ -3,7 +3,6 @@ import * as Blueprints from "./blueprints.js";
 import context from "./context.js";
 import server from "./server.js";
 import {
-  isTileOnMap,
   isBuildableTile,
   isAreaFreeForBuilding,
   sufficientResources,
@@ -16,8 +15,7 @@ import {
   isSouth,
   isSouthWest,
   isWest,
-  isNorthWest,
-  getActiveTile
+  isNorthWest
 } from "./util.js";
 import { getPosition } from "./movement.js";
 import { setAnimation, animate } from "./animations.js";
@@ -125,9 +123,10 @@ function onMouseMove(event) {
 }
 
 function onMouseMapMove(event) {
-  const [i, j] = getActiveTile();
+  const tile = getHoveredTile();
 
-  if (isTileOnMap(i, j)) {
+  if (tile.isOnMap(context)) {
+    const { i, j } = tile;
     context.update({ type: "HOVER", element: { type: "tile", i, j } });
   } else {
     context.update({ type: "HOVER", element: null });
@@ -135,13 +134,14 @@ function onMouseMapMove(event) {
 }
 
 async function onMouseMapUp(event) {
-  const [i, j] = getActiveTile();
+  const tile = getHoveredTile();
 
-  if (!isTileOnMap(i, j)) {
+  if (!tile.isOnMap(context)) {
     context.update({ type: "SELECT", element: null });
     return;
   }
 
+  const { i, j } = tile;
   const { mode } = context.get();
 
   if (mode === "normal") {
@@ -249,7 +249,8 @@ function move({ delta }) {
 
     for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
       for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
-        if (!isTileOnMap(i, j)) continue;
+        const p = Point.fromTile(i, j);
+        if (!p.isOnMap(context)) continue;
         const tile = state.map[i][j];
         const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
         const { x, y } = Point.fromTile(i, j).toRel(context);
@@ -512,4 +513,9 @@ function renderHitBox(sprite) {
   hitAreaLayer.lineTo(x + w, y + h);
   hitAreaLayer.lineTo(x, y + h);
   hitAreaLayer.lineTo(x, y);
+}
+
+function getHoveredTile() {
+  const { mouseIsoX, mouseIsoY } = context.get();
+  return Point.fromRel(mouseIsoX, mouseIsoY).toTile(context);
 }

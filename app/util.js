@@ -334,9 +334,3 @@ export function isRoadableTile(type) {
       throw Error(`unknown tile type: ${type}`);
   }
 }
-
-export function getActiveTile() {
-  const { mouseIsoX, mouseIsoY } = context.get();
-  const [absX, absY] = rel2abs(mouseIsoX, mouseIsoY);
-  return abs2tile(absX, absY);
-}
