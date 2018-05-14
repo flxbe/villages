@@ -70,6 +70,25 @@ export function getMovement(path, currentTime) {
 }
 
 /**
+ * Check, whether an object is currently on the specified tile.
+ *
+ * @param {Context} context - The world context
+ * @param {Object} object - The world object
+ * @param {Point} target - The tile coordinates
+ */
+export function isOnTile(context, object, target) {
+  assert(context);
+  assert(object);
+  assert(target);
+  assert(target.isTile());
+  const { tickTimestamp } = context.getState();
+  const { position } = getMovement(object.path, tickTimestamp);
+
+  position.toTile();
+  return position.i === target.i && position.j === target.j;
+}
+
+/**
  * Return direction from one 2-dimensional point to another as normalized vector.
  * @param {number} x1
  * @param {number} y1

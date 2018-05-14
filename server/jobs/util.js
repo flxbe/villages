@@ -45,16 +45,6 @@ export function isWalking(context, object) {
   );
 }
 
-export function isOnTile(context, object, target) {
-  assert(context);
-  assert(object);
-  const { tickTimestamp } = context.getState();
-  const { position } = getMovement(object.path, tickTimestamp);
-
-  const { i, j } = position.toTile();
-  return i === target[0] && j === target[1];
-}
-
 export function isInventoryEmpty(object) {
   assert(object);
   return !object.inventory;
