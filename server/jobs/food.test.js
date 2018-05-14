@@ -1,4 +1,4 @@
-import Context from "../../app/context.js";
+import Context from "../context.js";
 import * as Actions from "../actions.js";
 import * as Constants from "../../common/constants.js";
 
@@ -7,6 +7,8 @@ import * as FoodJob from "./food.js";
 const { expect } = require("chai");
 
 describe("FoodJob", () => {
+  let context;
+
   const map = [
     [
       { type: Constants.TILE_GRASS },
@@ -27,23 +29,16 @@ describe("FoodJob", () => {
   ];
 
   beforeEach(() => {
-    Context.reset();
-    Context.update(Actions.setMap(map));
+    context = new Context();
+    context.dispatch(Actions.setMap(map));
+    context.dispatch(Actions.tick());
     // State.update(Actions.addFoodSource())
   });
-
-  function getContext() {
-    return {
-      timestamp: Date.now(),
-      getState: Context.get,
-      dispatch: Context.update
-    };
-  }
 
   function addDeer(context, id = "deer1") {
     const deer = {
       id,
-      path: [{ x: 0, y: 0, timestamp: context.timestamp }]
+      path: [{ x: 0, y: 0, timestamp: context.getState().tickTimestamp }]
     };
     context.dispatch(Actions.addDeer(deer));
     return deer;
@@ -51,14 +46,12 @@ describe("FoodJob", () => {
 
   describe("start", () => {
     it("should set the job to 'food'", () => {
-      const context = getContext();
       const deer = addDeer(context);
       FoodJob.start(context, deer);
       expect(context.getState().deers[deer.id].job).to.equal("food");
     });
 
     it("should set target to food", () => {
-      const context = getContext();
       let deer = addDeer(context);
 
       FoodJob.start(context, deer);
@@ -68,7 +61,6 @@ describe("FoodJob", () => {
     });
 
     it("should set the path", () => {
-      const context = getContext();
       let deer = addDeer(context);
       const oldPath = deer.path;
 
