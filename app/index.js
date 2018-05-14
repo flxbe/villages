@@ -17,6 +17,7 @@ import Tooltips from "./tooltips.js";
  */
 PIXI.settings.RESOLUTION = window.devicePixelRatio;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+PIXI.loader.baseUrl = "app/";
 
 let application;
 

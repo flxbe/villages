@@ -7,5 +7,5 @@ export function addAssets(a) {
 }
 
 export function getAssets() {
-  return Array.from(ASSETS).map(asset => `app/${asset}`);
+  return Array.from(ASSETS);
 }
