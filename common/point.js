@@ -139,6 +139,27 @@ export default class Point {
     return this;
   }
 
+  equals(a, b) {
+    let x, y;
+    if (isPoint(a)) {
+      assertType(a, this.type);
+      x = a.x;
+      y = a.y;
+    } else if (isArray(a)) {
+      assert(a.length === 2);
+      assertNumber(a[0]);
+      assertNumber(a[1]);
+      x = a[0];
+      y = a[1];
+    } else {
+      assertNumber(a);
+      assertNumber(b);
+      x = a;
+      y = b;
+    }
+    return this.x === x && this.y === y;
+  }
+
   toRel(context) {
     if (this.isRel()) return this;
 

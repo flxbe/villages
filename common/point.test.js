@@ -207,6 +207,58 @@ describe("Point", () => {
     });
   });
 
+  describe("equals", () => {
+    describe("another point", () => {
+      it("should return true", () => {
+        const p1 = new Point(1, 2);
+        const p2 = new Point(1, 2);
+        expect(p1.equals(p2)).to.be.true;
+      });
+
+      it("should return false", () => {
+        const p1 = new Point(1, 2);
+        const p2 = new Point(1, 3);
+        expect(p1.equals(p2)).to.be.false;
+      });
+
+      it("should work for points with the same type", () => {
+        const p1 = Point.fromTile(1, 2);
+        const p2 = Point.fromTile(1, 2);
+        expect(p1.equals(p2)).to.be.true;
+      });
+
+      it("should throw for points with different type", () => {
+        const p1 = Point.fromTile(1, 2);
+        const p2 = Point.fromCart(1, 2);
+        expect(() => p1.equals(p2)).to.throw();
+      });
+    });
+
+    describe("an array", () => {
+      it("should return true", () => {
+        const p = new Point(1, 2);
+        expect(p.equals([1, 2])).to.be.true;
+      });
+
+      it("should return false", () => {
+        const p = new Point(1, 2);
+        expect(p.equals([1, 3])).to.be.false;
+      });
+    });
+
+    describe("two numbers", () => {
+      it("should return true", () => {
+        const p = new Point(1, 2);
+        expect(p.equals(1, 2)).to.be.true;
+      });
+
+      it("should return false", () => {
+        const p = new Point(1, 2);
+        expect(p.equals(1, 3)).to.be.false;
+      });
+    });
+  });
+
   describe("getCenter", () => {
     describe("from Tile", () => {
       it("should return the tile center", () => {
