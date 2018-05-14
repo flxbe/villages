@@ -2,7 +2,7 @@ import * as Actions from "../actions.js";
 
 import assert from "../../common/assert.js";
 import Point from "../../common/point.js";
-import { getPosition } from "../../app/movement.js";
+import { getMovement } from "../../common/util.js";
 
 const INVENTORY_CAPACITY = 20;
 
@@ -24,13 +24,11 @@ export function getStorageTile(context) {
 export function getTile(context, object) {
   assert(context);
   assert(object);
-  const { x: cartX, y: cartY } = getPosition(
-    object.path,
-    context.getState().tickTimestamp
-  );
-  return Point.fromCart(cartX, cartY)
-    .toTile()
-    .toArray();
+  const { tickTimestamp } = context.getState();
+  const { position } = getMovement(object.path, tickTimestamp);
+
+  // TODO: return point
+  return position.toTile().toArray();
 }
 
 export function wasWorking(object) {
@@ -50,13 +48,11 @@ export function isWalking(context, object) {
 export function isOnTile(context, object, target) {
   assert(context);
   assert(object);
-  const { x, y } = getPosition(object.path, context.getState().tickTimestamp);
+  const { tickTimestamp } = context.getState();
+  const { position } = getMovement(object.path, tickTimestamp);
 
-  const tile = Point.fromCart(x, y)
-    .toTile()
-    .toArray();
-
-  return tile[0] === target[0] && tile[1] === target[1];
+  const { i, j } = position.toTile();
+  return i === target[0] && j === target[1];
 }
 
 export function isInventoryEmpty(object) {

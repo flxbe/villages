@@ -1,4 +1,4 @@
-import * as Constants from ".constants.js";
+import * as Constants from "./constants.js";
 import assert from "./assert.js";
 import Point from "./point.js";
 
