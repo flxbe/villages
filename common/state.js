@@ -53,6 +53,14 @@ export function update(state, action) {
       for (let update of action.mapUpdates) {
         state.map[update.i][update.j] = update.tile;
       }
+      break;
+    }
+    case "INIT_STORAGE": {
+      state.storage = {
+        wood: 0,
+        food: 0
+      };
+      break;
     }
     case "UPDATE_STORAGE": {
       Object.assign(state.storage, action.storage);

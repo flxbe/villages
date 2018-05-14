@@ -8,6 +8,12 @@ export function tick() {
   };
 }
 
+export function initStorage() {
+  return {
+    type: "INIT_STORAGE"
+  };
+}
+
 /**
  * Set the map.
  * @param {Map} map

@@ -13,6 +13,7 @@ import { generateRandomMap } from "../map-generator.js";
 export default function loadMap(context) {
   const map = generateRandomMap();
 
+  context.dispatch(Actions.initStorage());
   context.dispatch(Actions.setMap(map));
 
   context.dispatch(

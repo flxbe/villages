@@ -31,6 +31,7 @@ UiContainer.init = function() {
   updateStorageText();
   updateSelectionDescription();
 
+  context.on("INIT_STORAGE", updateStorageText);
   context.on("UPDATE_STORAGE", updateStorageText);
   context.on("SET_APPLICATION_SIZE", updatePositions);
   context.on("SELECT", updateSelectionDescription);
