@@ -1,7 +1,9 @@
 import * as Actions from "../actions.js";
 
+import Point from "../../common/point.js";
 import * as Blueprints from "../../app/blueprints.js";
 import * as Constants from "../../common/constants.js";
+import { canBuildingBePlaced } from "../../common/util.js";
 
 /**
  * Create a new building.
@@ -14,6 +16,11 @@ import * as Constants from "../../common/constants.js";
 export default function placeBuilding(context, i, j, blueprintName) {
   const blueprint = Blueprints[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
+
+  const targetTile = Point.fromTile(i, j);
+
+  if (!canBuildingBePlaced(context, blueprint, targetTile))
+    throw Error("cannot be placed");
 
   if (context.getState().storage.wood < blueprint.wood) {
     throw Error("not enough wood");
