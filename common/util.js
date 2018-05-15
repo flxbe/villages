@@ -84,8 +84,7 @@ export function isOnTile(context, object, target) {
   const { tickTimestamp } = context.getState();
   const { position } = getMovement(object.path, tickTimestamp);
 
-  position.toTile();
-  return position.i === target.i && position.j === target.j;
+  return position.toTile().equals(target);
 }
 
 /**
