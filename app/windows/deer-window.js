@@ -49,7 +49,7 @@ class DeerWindow extends Window {
   }
 
   setText() {
-    const deer = context.get().deers[this.id];
+    const deer = context.getState().deers[this.id];
 
     this.p.text = [
       `id: ${deer.id}`,

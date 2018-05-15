@@ -22,14 +22,14 @@ TooltipLayer.init = function() {
 };
 
 function updatePosition() {
-  const { mouseIsoX, mouseIsoY } = context.get();
+  const { mouseIsoX, mouseIsoY } = context.getState();
 
   tooltipText.position.x = mouseIsoX;
   tooltipText.position.y = mouseIsoY + 20;
 }
 
 function updateText() {
-  const { hoveredElement } = context.get();
+  const { hoveredElement } = context.getState();
 
   if (hoveredElement && hoveredElement.tooltip) {
     TooltipLayer.visible = true;

@@ -111,7 +111,7 @@ export function pointInHitbox(x, y, w, h, px, py) {
 }
 
 export function sufficientResources(blueprint) {
-  return context.get().storage.wood >= blueprint.wood;
+  return context.getState().storage.wood >= blueprint.wood;
 }
 
 /**
@@ -125,7 +125,10 @@ export function sufficientResources(blueprint) {
 export function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !isBuildableTile(context.get().map[k][l].type))
+      if (
+        !isTileOnMap(k, l) ||
+        !isBuildableTile(context.getState().map[k][l].type)
+      )
         return false;
     }
   }

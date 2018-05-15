@@ -46,7 +46,7 @@ class BuildMenu extends Window {
   }
 
   onBuild(blueprintName) {
-    context.update({ type: "ENTER_BUILD_MODE", blueprintName });
+    context.dispatch({ type: "ENTER_BUILD_MODE", blueprintName });
   }
 
   onUpdatePosition() {
@@ -54,7 +54,7 @@ class BuildMenu extends Window {
   }
 
   getXPosition() {
-    const { applicationWidth } = context.get();
+    const { applicationWidth } = context.getState();
     return applicationWidth - this.width;
   }
 

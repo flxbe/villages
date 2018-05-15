@@ -12,7 +12,7 @@ function getContext() {
   };
 
   return {
-    get: () => state
+    getState: () => state
   };
 }
 

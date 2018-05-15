@@ -165,7 +165,7 @@ export default class Point {
 
     assert(context);
     if (!this.isAbs()) this.toAbs();
-    const { offsetX, offsetY } = context.get();
+    const { offsetX, offsetY } = context.getState();
     this.add(offsetX, offsetY);
 
     this.type = POINT_REL;
@@ -177,7 +177,7 @@ export default class Point {
 
     if (this.isRel()) {
       assert(context);
-      const { offsetX, offsetY } = context.get();
+      const { offsetX, offsetY } = context.getState();
       this.sub(offsetX, offsetY);
     } else {
       if (!this.isCart()) this.toCart();
@@ -240,7 +240,7 @@ export default class Point {
   }
 
   isOnMap(context) {
-    const { mapHeight, mapWidth } = context.get();
+    const { mapHeight, mapWidth } = context.getState();
     assertNumber(mapHeight);
     assertNumber(mapWidth);
     return (

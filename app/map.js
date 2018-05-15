@@ -105,7 +105,7 @@ function onRightClick(event) {
     Math.abs(clickStartX - clickEndX) + Math.abs(clickStartY - clickEndY) >= 10;
 
   if (!movedSignificantly) {
-    context.update({ type: "RESET_MODE" });
+    context.dispatch({ type: "RESET_MODE" });
     return;
   }
 }
@@ -113,9 +113,9 @@ function onRightClick(event) {
 function onMouseMove(event) {
   if (!scrolling) return;
 
-  const { mouseIsoX, mouseIsoY } = context.get();
+  const { mouseIsoX, mouseIsoY } = context.getState();
 
-  context.update({
+  context.dispatch({
     type: "MOVE_CAMERA",
     dX: event.data.global.x - mouseIsoX,
     dY: event.data.global.y - mouseIsoY
@@ -127,9 +127,9 @@ function onMouseMapMove(event) {
 
   if (tile.isOnMap(context)) {
     const { i, j } = tile;
-    context.update({ type: "HOVER", element: { type: "tile", i, j } });
+    context.dispatch({ type: "HOVER", element: { type: "tile", i, j } });
   } else {
-    context.update({ type: "HOVER", element: null });
+    context.dispatch({ type: "HOVER", element: null });
   }
 }
 
@@ -137,17 +137,17 @@ async function onMouseMapUp(event) {
   const tile = getHoveredTile();
 
   if (!tile.isOnMap(context)) {
-    context.update({ type: "SELECT", element: null });
+    context.dispatch({ type: "SELECT", element: null });
     return;
   }
 
   const { i, j } = tile;
-  const { mode } = context.get();
+  const { mode } = context.getState();
 
   if (mode === "normal") {
-    context.update({ type: "SELECT", element: { type: "tile", i, j } });
+    context.dispatch({ type: "SELECT", element: { type: "tile", i, j } });
   } else if (mode === "build") {
-    const { blueprintName, ctrlDown } = context.get();
+    const { blueprintName, ctrlDown } = context.getState();
     const blueprint = Blueprints[blueprintName];
 
     if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
@@ -155,7 +155,7 @@ async function onMouseMapUp(event) {
         await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });
 
         if (!ctrlDown) {
-          context.update({ type: "RESET_MODE" });
+          context.dispatch({ type: "RESET_MODE" });
         }
       } else {
         console.log("not enough resources");
@@ -167,7 +167,7 @@ async function onMouseMapUp(event) {
 }
 
 function resizeMapHitArea() {
-  const { applicationHeight, applicationWidth } = context.get();
+  const { applicationHeight, applicationWidth } = context.getState();
   const hitArea = new PIXI.Rectangle(0, 0, applicationWidth, applicationHeight);
   Map.hitArea = hitArea;
 }
@@ -178,10 +178,10 @@ function createSprite({ hitArea, element, animation }) {
   sprite.interactive = true;
 
   sprite.on("mouseup", event => {
-    context.update({ type: "SELECT", element });
+    context.dispatch({ type: "SELECT", element });
   });
   sprite.on("mousemove", event => {
-    context.update({ type: "HOVER", element });
+    context.dispatch({ type: "HOVER", element });
   });
 
   setAnimation(sprite, animation);
@@ -217,7 +217,7 @@ function addTree({ tree }) {
  * @param {Action} action - The context update
  */
 function move({ delta }) {
-  const state = context.get();
+  const state = context.getState();
   const { timestamp, mode, mapOffsetX, offsetX, offsetY } = state;
 
   mapSprite.position.x = offsetX - mapOffsetX;
@@ -374,23 +374,23 @@ function move({ delta }) {
  */
 function renderTexture() {
   // calculate texture size
-  const xDim = context.get().map.length;
-  const yDim = context.get().map[0].length;
+  const xDim = context.getState().map.length;
+  const yDim = context.getState().map[0].length;
   const height = (xDim + yDim) * Constants.TILE_HEIGHT / 2.0;
   const width = (xDim + yDim) * Constants.TILE_WIDTH;
   const offsetX = width / 2.0;
 
   // update context
-  context.update({ type: "UPDATE_MAP_SIZE", height, width });
+  context.dispatch({ type: "UPDATE_MAP_SIZE", height, width });
   mapTexture.resize(width, height);
   gridTexture.resize(width, height);
 
   const map = new PIXI.Graphics();
   const mapGrid = new PIXI.Graphics();
 
-  for (let i = 0; i < context.get().map.length; i++) {
-    for (let j = 0; j < context.get().map[i].length; j++) {
-      const tile = context.get().map[i][j];
+  for (let i = 0; i < context.getState().map.length; i++) {
+    for (let j = 0; j < context.getState().map[i].length; j++) {
+      const tile = context.getState().map[i][j];
 
       if (tile.type === Constants.TILE_EMPTY) {
         continue;
@@ -416,7 +416,7 @@ function renderTexture() {
 function updateTexture(updates) {
   const map = new PIXI.Graphics();
   map.fillAlpha = 0;
-  const offsetX = context.get().mapOffsetX;
+  const offsetX = context.getState().mapOffsetX;
 
   for (let update of updates) {
     const { i, j, tile } = update;
@@ -516,6 +516,6 @@ function renderHitBox(sprite) {
 }
 
 function getHoveredTile() {
-  const { mouseIsoX, mouseIsoY } = context.get();
+  const { mouseIsoX, mouseIsoY } = context.getState();
   return Point.fromRel(mouseIsoX, mouseIsoY).toTile(context);
 }

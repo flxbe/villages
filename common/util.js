@@ -133,8 +133,31 @@ export function isNorthWest([dx, dy]) {
   return dx < 0 && dy < 0;
 }
 
+export function getTileType(context, tile) {
+  assert(tile.isTile());
+  return context.getState().map[tile.i][tile.j].type;
+}
+
+/**
+ * Check, whether a blueprint can be placed at the specified tile.
+ * @param {Context} context
+ * @param {Blueprint} blueprint
+ * @param {Point} tile
+ */
+export function canBuildingBePlaced(context, blueprint, tile) {
+  for (let i = 0; i < blueprint.height; i++) {
+    for (let j = 0; j < blueprint.width; j++) {
+      const currentTile = tile.clone().add(i, j);
+      if (!currentTile.isTileOnMap(context)) return false;
+      if (!isBuildableTile(getTileType(currentTile))) return false;
+    }
+  }
+
+  return true;
+}
+
 export function sufficientResources(blueprint) {
-  return context.get().storage.wood >= blueprint.wood;
+  return context.getState().storage.wood >= blueprint.wood;
 }
 
 /**
@@ -148,7 +171,11 @@ export function sufficientResources(blueprint) {
 export function isAreaFreeForBuilding(i, j, height, width) {
   for (let k = i; k > i - height; k--) {
     for (let l = j; l > j - width; l--) {
-      if (!isTileOnMap(k, l) || !isBuildableTile(context.get().map[k][l].type))
+      const tile = Point.fromTile(k, l);
+      if (
+        !isTileOnMap(k, l) ||
+        !isBuildableTile(context.getState().map[k][l].type)
+      )
         return false;
     }
   }

@@ -26,10 +26,10 @@ let application;
  */
 async function load() {
   context.reset();
-  context.update({ type: "RESET_MODE" });
-  context.update({ type: "INIT_CAMERA" });
+  context.dispatch({ type: "RESET_MODE" });
+  context.dispatch({ type: "INIT_CAMERA" });
 
-  server.on("update", update => context.update(update));
+  server.on("update", update => context.dispatch(update));
   await server.connect();
 
   const height = window.innerHeight;
@@ -53,7 +53,7 @@ async function load() {
 
   document.body.insertBefore(application.view, windowLayer);
 
-  context.update({ type: "SET_APPLICATION_SIZE", height, width });
+  context.dispatch({ type: "SET_APPLICATION_SIZE", height, width });
   PIXI.loader.add(getAssets()).load(setup);
 }
 
@@ -75,11 +75,11 @@ function setup() {
 }
 
 /**
- * Proceed the game logic and render the current context.get().
+ * Proceed the game logic and render the current context.
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  context.update({ type: "MOVE", timestamp: Date.now(), delta });
+  context.dispatch({ type: "MOVE", timestamp: Date.now(), delta });
 }
 
 load();

@@ -14,10 +14,10 @@ describe("context", () => {
 
   describe("reset", () => {
     it("should reset the internal state", () => {
-      context.update(getMapAction());
+      context.dispatch(getMapAction());
       context.reset();
 
-      expect(context.get().map).to.equal(undefined);
+      expect(context.getState().map).to.equal(undefined);
     });
   });
 
@@ -25,22 +25,22 @@ describe("context", () => {
     it("should add a new callback", () => {
       const cb = sinon.spy();
       context.on("SET_MAP", cb);
-      context.update(getMapAction());
+      context.dispatch(getMapAction());
       expect(cb.called);
     });
 
     it("should only subscribe to the correct event", () => {
       const cb = sinon.spy();
       context.on("ANOTHER_EVENT", cb);
-      context.update(getMapAction());
+      context.dispatch(getMapAction());
       expect(!cb.called);
     });
 
     describe("array of actions", () => {
-      it("should emit an update for every action", () => {
+      it("should emit an dispatch for every action", () => {
         const cb = sinon.spy();
         context.on("SET_MAP", cb);
-        context.update([getMapAction(), getMapAction()]);
+        context.dispatch([getMapAction(), getMapAction()]);
         expect(cb.callCount).to.equal(2);
       });
     });
@@ -51,7 +51,7 @@ describe("context", () => {
       const cb = sinon.spy();
       context.on("SET_MAP", cb);
       context.off("SET_MAP", cb);
-      context.update(getMapAction());
+      context.dispatch(getMapAction());
       expect(!cb.called);
     });
   });

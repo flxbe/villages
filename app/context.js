@@ -6,8 +6,8 @@ let state = undefined;
 
 export default {
   reset,
-  get,
-  update,
+  getState,
+  dispatch,
   on,
   off
 };
@@ -51,11 +51,11 @@ function emitAction(action) {
   emit(action.type, action);
 }
 
-function get() {
+function getState() {
   return state;
 }
 
-function update(action) {
+function dispatch(action) {
   State.update(state, action);
 
   if (isArray(action)) {

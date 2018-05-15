@@ -38,7 +38,7 @@ UiContainer.init = function() {
 };
 
 function updatePositions() {
-  const { applicationWidth, applicationHeight } = context.get();
+  const { applicationWidth, applicationHeight } = context.getState();
 
   descriptionText.position.set(
     5,
@@ -47,7 +47,7 @@ function updatePositions() {
 }
 
 function updateStorageText() {
-  const { storage } = context.get();
+  const { storage } = context.getState();
 
   storageText.text = [
     "Storage",
@@ -67,7 +67,7 @@ function updateSelectionDescription() {
     return array;
   }
 
-  const { selectedElement } = context.get();
+  const { selectedElement } = context.getState();
   if (!selectedElement) {
     descriptionText.visible = false;
     return;
@@ -75,16 +75,16 @@ function updateSelectionDescription() {
   let array = [];
   switch (selectedElement.type) {
     case "deer":
-      array = obj2array(context.get().deers[selectedElement.id]);
+      array = obj2array(context.getState().deers[selectedElement.id]);
       break;
     case "tree":
-      array = obj2array(context.get().trees[selectedElement.id]);
+      array = obj2array(context.getState().trees[selectedElement.id]);
       break;
     case "tile":
       array = obj2array(selectedElement);
       array.push(
         `tileType: ${
-          context.get().map[selectedElement.i][selectedElement.j].type
+          context.getState().map[selectedElement.i][selectedElement.j].type
         }`
       );
       break;
