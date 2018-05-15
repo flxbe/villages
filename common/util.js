@@ -147,9 +147,11 @@ export function getTileType(context, tile) {
 export function canBuildingBePlaced(context, blueprint, tile) {
   for (let i = 0; i < blueprint.height; i++) {
     for (let j = 0; j < blueprint.width; j++) {
-      const currentTile = tile.clone().add(i, j);
-      if (!currentTile.isTileOnMap(context)) return false;
-      if (!isBuildableTile(getTileType(currentTile))) return false;
+      console.log(i, j);
+      const currentTile = tile.clone().sub(i, j);
+      console.log(currentTile.toArray());
+      if (!currentTile.isOnMap(context)) return false;
+      if (!isBuildableTile(getTileType(context, currentTile))) return false;
     }
   }
 
@@ -158,28 +160,6 @@ export function canBuildingBePlaced(context, blueprint, tile) {
 
 export function sufficientResources(blueprint) {
   return context.getState().storage.wood >= blueprint.wood;
-}
-
-/**
- * Check, whether a building with the specified width and height can
- * be placed at position i, j.
- * @param {number} i
- * @param {number} j
- * @param {number} height
- * @param {number} width
- */
-export function isAreaFreeForBuilding(i, j, height, width) {
-  for (let k = i; k > i - height; k--) {
-    for (let l = j; l > j - width; l--) {
-      const tile = Point.fromTile(k, l);
-      if (
-        !isTileOnMap(k, l) ||
-        !isBuildableTile(context.getState().map[k][l].type)
-      )
-        return false;
-    }
-  }
-  return true;
 }
 
 /**
@@ -207,6 +187,7 @@ export function isWalkableTile(type) {
  * @param {string} type
  */
 export function isBuildableTile(type) {
+  console.log(type);
   switch (type) {
     case Constants.TILE_GRASS:
     case Constants.TILE_DIRT:

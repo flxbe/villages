@@ -115,27 +115,6 @@ export function sufficientResources(blueprint) {
 }
 
 /**
- * Check, whether a building with the specified width and height can
- * be placed at position i, j.
- * @param {number} i
- * @param {number} j
- * @param {number} height
- * @param {number} width
- */
-export function isAreaFreeForBuilding(i, j, height, width) {
-  for (let k = i; k > i - height; k--) {
-    for (let l = j; l > j - width; l--) {
-      if (
-        !isTileOnMap(k, l) ||
-        !isBuildableTile(context.getState().map[k][l].type)
-      )
-        return false;
-    }
-  }
-  return true;
-}
-
-/**
  * Determine if a tile is walkable by its type.
  * @param {string} type
  */
