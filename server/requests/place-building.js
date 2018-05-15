@@ -3,7 +3,7 @@ import * as Actions from "../actions.js";
 import Point from "../../common/point.js";
 import * as Blueprints from "../../app/blueprints.js";
 import * as Constants from "../../common/constants.js";
-import { canBuildingBePlaced } from "../../common/util.js";
+import { canBuildingBePlaced, sufficientResources } from "../../common/util.js";
 
 /**
  * Create a new building.
@@ -22,7 +22,7 @@ export default function placeBuilding(context, i, j, blueprintName) {
   if (!canBuildingBePlaced(context, blueprint, targetTile))
     throw Error("cannot be placed");
 
-  if (context.getState().storage.wood < blueprint.wood) {
+  if (!sufficientResources(context, blueprint)) {
     throw Error("not enough wood");
   }
 

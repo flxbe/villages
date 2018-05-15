@@ -110,10 +110,6 @@ export function pointInHitbox(x, y, w, h, px, py) {
   return px >= x && px <= x + w && py >= y && py <= y + h;
 }
 
-export function sufficientResources(blueprint) {
-  return context.getState().storage.wood >= blueprint.wood;
-}
-
 /**
  * Determine if a tile is walkable by its type.
  * @param {string} type

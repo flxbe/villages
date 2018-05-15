@@ -4,7 +4,6 @@ import context from "./context.js";
 import server from "./server.js";
 import {
   isBuildableTile,
-  sufficientResources,
   distance,
   getDirection,
   isNorth,
@@ -19,7 +18,7 @@ import {
 import { getPosition } from "./movement.js";
 import { setAnimation, animate } from "./animations.js";
 
-import { canBuildingBePlaced } from "../common/util.js";
+import { canBuildingBePlaced, sufficientResources } from "../common/util.js";
 
 import Point from "../common/point.js";
 
@@ -153,7 +152,7 @@ async function onMouseMapUp(event) {
 
     console.log(blueprint);
     if (canBuildingBePlaced(context, blueprint, Point.fromTile(i, j))) {
-      if (sufficientResources(blueprint)) {
+      if (sufficientResources(context, blueprint)) {
         await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });
 
         if (!ctrlDown) {

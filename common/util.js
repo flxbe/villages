@@ -147,9 +147,7 @@ export function getTileType(context, tile) {
 export function canBuildingBePlaced(context, blueprint, tile) {
   for (let i = 0; i < blueprint.height; i++) {
     for (let j = 0; j < blueprint.width; j++) {
-      console.log(i, j);
       const currentTile = tile.clone().sub(i, j);
-      console.log(currentTile.toArray());
       if (!currentTile.isOnMap(context)) return false;
       if (!isBuildableTile(getTileType(context, currentTile))) return false;
     }
@@ -158,7 +156,7 @@ export function canBuildingBePlaced(context, blueprint, tile) {
   return true;
 }
 
-export function sufficientResources(blueprint) {
+export function sufficientResources(context, blueprint) {
   return context.getState().storage.wood >= blueprint.wood;
 }
 
@@ -187,7 +185,6 @@ export function isWalkableTile(type) {
  * @param {string} type
  */
 export function isBuildableTile(type) {
-  console.log(type);
   switch (type) {
     case Constants.TILE_GRASS:
     case Constants.TILE_DIRT:
