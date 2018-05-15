@@ -1,7 +1,7 @@
 import astar from "./astar.js";
 import * as Constants from "../common/constants.js";
 import Point from "../common/point.js";
-import { isWalkableTile } from "../app/util.js";
+import { isWalkableTile } from "../common/util.js";
 
 const { expect } = require("chai");
 
