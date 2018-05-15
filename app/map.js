@@ -2,7 +2,12 @@ import * as Constants from "./constants.js";
 import * as Blueprints from "./blueprints.js";
 import context from "./context.js";
 import server from "./server.js";
+import { setAnimation, animate } from "./animations.js";
+
 import {
+  getMovement,
+  canBuildingBePlaced,
+  sufficientResources,
   isBuildableTile,
   distance,
   getDirection,
@@ -14,11 +19,7 @@ import {
   isSouthWest,
   isWest,
   isNorthWest
-} from "./util.js";
-import { getPosition } from "./movement.js";
-import { setAnimation, animate } from "./animations.js";
-
-import { canBuildingBePlaced, sufficientResources } from "../common/util.js";
+} from "../common/util.js";
 
 import Point from "../common/point.js";
 
@@ -288,12 +289,10 @@ function move({ delta }) {
       }
       case "deer": {
         const deer = state.deers[selectedElement.id];
-        const { x, y } = getPosition(deer.path, timestamp);
-        const p = Point.fromCart(x, y)
-          .sub(10)
-          .toRel(context);
+        const { position } = getMovement(deer.path, timestamp);
+        position.sub(10).toRel(context);
         selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", p.x, p.y);
+        renderCircle(selectionLayer, "0xffffff", position.x, position.y);
         break;
       }
       case "tree": {
@@ -321,27 +320,27 @@ function move({ delta }) {
 
     for (let deer of Object.values(state.deers)) {
       const sprite = deerSprites[deer.id];
-      const position = getPosition(deer.path, Date.now());
+      const { position, direction } = getMovement(deer.path, timestamp);
 
       let animation;
-      if (!position.direction) animation = "STAND";
-      else if (isNorth(position.direction)) animation = "GO_N";
-      else if (isNorthEast(position.direction)) animation = "GO_NE";
-      else if (isEast(position.direction)) animation = "GO_E";
-      else if (isSouthEast(position.direction)) animation = "GO_SE";
-      else if (isSouth(position.direction)) animation = "GO_S";
-      else if (isSouthWest(position.direction)) animation = "GO_SW";
-      else if (isWest(position.direction)) animation = "GO_W";
-      else if (isNorthWest(position.direction)) animation = "GO_NW";
+      if (!direction) animation = "STAND";
+      else if (isNorth(direction)) animation = "GO_N";
+      else if (isNorthEast(direction)) animation = "GO_NE";
+      else if (isEast(direction)) animation = "GO_E";
+      else if (isSouthEast(direction)) animation = "GO_SE";
+      else if (isSouth(direction)) animation = "GO_S";
+      else if (isSouthWest(direction)) animation = "GO_SW";
+      else if (isWest(direction)) animation = "GO_W";
+      else if (isNorthWest(direction)) animation = "GO_NW";
       else animation = "STAND";
 
       setAnimation(sprite, animation);
       animate(sprite, delta);
 
-      const p = Point.fromCart(position.x, position.y).toRel(context);
-      sprite.zIndex = p.y;
-      sprite.x = p.x + Constants.DEER_OFFSET_X;
-      sprite.y = p.y + Constants.DEER_OFFSET_Y;
+      position.toRel(context);
+      sprite.zIndex = position.y;
+      sprite.x = position.x + Constants.DEER_OFFSET_X;
+      sprite.y = position.y + Constants.DEER_OFFSET_Y;
 
       if (renderHitAreas) renderHitBox(sprite);
     }

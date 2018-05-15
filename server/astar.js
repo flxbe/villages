@@ -1,6 +1,6 @@
 import * as Constants from "../common/constants.js";
 import Point from "../common/point.js";
-import { isWalkableTile } from "../app/util.js";
+import { isWalkableTile } from "../common/util.js";
 
 const directions = [
   [0, -1],
