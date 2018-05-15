@@ -104,8 +104,7 @@ export default class Point {
     } else {
       assertNumber(a);
       x = a;
-      if (b) {
-        assertNumber(b);
+      if (isNumber(b)) {
         y = b;
       } else {
         y = a;

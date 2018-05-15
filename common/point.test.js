@@ -97,6 +97,12 @@ describe("Point", () => {
       expect(p.toArray()).to.deep.equal([1, 2]);
     });
 
+    it("should add two numbers if the second is 0", () => {
+      const p = new Point();
+      p.add(1, 0);
+      expect(p.toArray()).to.deep.equal([1, 0]);
+    });
+
     it("should add an array", () => {
       const p = new Point();
       p.add([1, 2]);
