@@ -16,11 +16,9 @@ export function create() {
  * @param {object} action
  */
 export function update(state, action) {
-  if (isArray(action)) {
-    return action.reduce(update, state);
-  }
-
+  assert(!isArray(action));
   assert(action.type, `Action has no type: ${action}`);
+
   switch (action.type) {
     case "TICK": {
       state.tickTimestamp = action.timestamp;

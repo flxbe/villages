@@ -40,18 +40,5 @@ describe("State", () => {
         expect(state.deers).not.toMatchObject({ [deer.id]: deer });
       });
     });
-
-    describe("array of actions", () => {
-      function addDeer(id) {
-        return { type: "ADD_DEER", deer: { id } };
-      }
-
-      test("should execute all actions", () => {
-        const actions = [addDeer("deer1"), addDeer("deer2")];
-
-        update(state, actions);
-        expect(Object.keys(state.deers).length).toBe(2);
-      });
-    });
   });
 });
