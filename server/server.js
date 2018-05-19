@@ -5,12 +5,6 @@ import executeRequest from "./requests.js";
 import scheduleJobs from "./scheduler.js";
 
 const context = new Context();
-let updateCallback = undefined;
-
-function flushUpdates() {
-  updateCallback(context.getActions());
-  context.clearActions();
-}
 
 /**
  * Start the server emulation.
@@ -21,7 +15,7 @@ function flushUpdates() {
  * @param {function} consumeUpdate - Send Updates to the client
  */
 export function startServer(consumeUpdate) {
-  updateCallback = consumeUpdate;
+  context.on("all", consumeUpdate);
 }
 
 /**
@@ -30,7 +24,6 @@ export function startServer(consumeUpdate) {
 export function tick() {
   context.dispatch(Actions.tick());
   scheduleJobs(context);
-  flushUpdates();
 }
 
 /**
@@ -42,5 +35,4 @@ export function tick() {
  */
 export function serverRequest(request) {
   executeRequest(context, request);
-  flushUpdates();
 }
