@@ -114,8 +114,10 @@ BinaryHeap.prototype = {
  * @param {Tile[][]} map
  * @param {Point} start
  * @param {Point} target
+ * @param {number} targetDistance Specifies how close the path should get to
+ * the target (euclidian distance in tiles).
  */
-export default function astar(map, startTile, targetTile) {
+export default function astar(map, startTile, targetTile, targetDistance = 0) {
   const [si, sj] = startTile.toArray();
   const [ti, tj] = targetTile.toArray();
   let compMap = [];
@@ -154,8 +156,9 @@ export default function astar(map, startTile, targetTile) {
 
   while (heap.size() > 0) {
     let current = heap.pop();
+    const currentTile = Point.fromTile(current.i, current.j);
 
-    if (current.i == ti && current.j == tj) {
+    if (targetTile.distance(currentTile) <= targetDistance) {
       let path = [];
       while (current) {
         const center = Point.fromTile(current.i, current.j).getCenter();
