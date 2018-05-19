@@ -7,7 +7,12 @@ describe("Context", () => {
     context = new Context();
   });
 
-  describe("constructor", () => {});
+  function getMapAction(map = []) {
+    return {
+      type: "SET_MAP",
+      map
+    };
+  }
 
   describe("getState", () => {
     test("should return the internal state", () => {
@@ -20,7 +25,7 @@ describe("Context", () => {
     let action;
     beforeEach(() => {
       map = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
-      action = { type: "SET_MAP", map };
+      action = getMapAction(map);
       context.dispatch(action);
     });
 
@@ -37,10 +42,7 @@ describe("Context", () => {
       test("should work with multiple actions", () => {
         const actions = context.getActions().length;
 
-        context.dispatch([
-          { type: "SET_MAP", map: [] },
-          { type: "SET_MAP", map: [] }
-        ]);
+        context.dispatch([getMapAction(), getMapAction()]);
 
         expect(context.getActions().length).toBe(actions + 2);
       });
@@ -56,13 +58,45 @@ describe("Context", () => {
       test("should provide dispatch and getState", () => {
         context.dispatch((dispatch, getState) => {
           const map = [];
-          dispatch({ type: "SET_MAP", map });
+          dispatch(getMapAction(map));
           expect(getState().map).toBe(map);
         });
       });
     });
   });
 
+  describe("on", () => {
+    test("should add a new callback", () => {
+      const cb = jest.fn();
+      context.on("SET_MAP", cb);
+      context.dispatch(getMapAction());
+      expect(cb.mock.calls.length).toBe(1);
+    });
+
+    test("should only subscribe to the correct event", () => {
+      const cb = jest.fn();
+      context.on("ANOTHER_EVENT", cb);
+      context.dispatch(getMapAction());
+      expect(cb.mock.calls.length).toBe(0);
+    });
+
+    test("should always emit the 'all' event", () => {
+      const cb = jest.fn();
+      context.on("all", cb);
+      context.dispatch(getMapAction());
+      expect(cb.mock.calls.length).toBe(1);
+    });
+  });
+
+  describe("off", () => {
+    test("should remove a registered callback", () => {
+      const cb = jest.fn();
+      context.on("SET_MAP", cb);
+      context.off("SET_MAP", cb);
+      context.dispatch(getMapAction());
+      expect(cb.mock.calls.length).toBe(0);
+    });
+  });
   describe("clearActions", () => {
     test("shoul clear the internal action cache", () => {
       context.dispatch({ type: "SET_MAP", map: [] });
