@@ -143,7 +143,8 @@ export function update(state, action) {
       break;
     }
     default:
-      assert(false, `Unknwon action: ${action}`);
+      console.error(action);
+      throw new Error("unknown action", action);
   }
 
   return state;

@@ -1,4 +1,4 @@
-import { TILE_ROAD } from "../common/constants";
+import { TILE_ROAD } from "../common/constants.js";
 
 /**
  * Update the tick timestamp.
@@ -29,7 +29,7 @@ export function setMap(map) {
 
 export function addStorageTile(i, j) {
   return [
-    { type: "ADD_MAP_TILE", i, j },
+    { type: "ADD_STORAGE_TILE", i, j },
     updateMap([{ i, j, tile: { type: TILE_ROAD } }])
   ];
 }
