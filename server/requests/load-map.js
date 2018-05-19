@@ -33,6 +33,10 @@ export default function loadMap(context) {
     })
   );
 
+  context.dispatch(Actions.addStorageTile(3, 3));
+  context.dispatch(Actions.addTreeTile(7, 10));
+  context.dispatch(Actions.addFoodTile(9, 13));
+
   setTree(context, "tree1", 2, 5);
   setTree(context, "tree2", 3, 5);
   setTree(context, "tree3", 4, 5);

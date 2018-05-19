@@ -30,7 +30,7 @@ describe("FoodJob", () => {
     context = new Context();
     context.dispatch(Actions.setMap(map));
     context.dispatch(Actions.tick());
-    // State.update(Actions.addFoodSource())
+    context.dispatch(Actions.addFoodTile(2, 2));
   });
 
   function addDeer(context, id = "deer1") {

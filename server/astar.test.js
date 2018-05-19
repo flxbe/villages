@@ -4,8 +4,8 @@ import Point from "../common/point.js";
 import { isWalkableTile } from "../common/util.js";
 
 describe("astar", () => {
-  const start = [0, 0];
-  const target = [2, 2];
+  const start = Point.fromTile(0, 0);
+  const target = Point.fromTile(2, 2);
   const map = [
     [
       { type: Constants.TILE_GRASS },
@@ -35,7 +35,7 @@ describe("astar", () => {
   test("path should end at 'target'", () => {
     const path = astar(map, start, target);
     const pathEnd = path[path.length - 1];
-    const center = Point.fromTile(target[0], target[1]).getCenter();
+    const center = target.getCenter();
     expect([pathEnd.x, pathEnd.y]).toEqual([center.x, center.y]);
   });
 

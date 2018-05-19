@@ -8,17 +8,23 @@ const INVENTORY_CAPACITY = 20;
 
 export function getTreeTile(context) {
   assert(context);
-  return [7, 10];
+  const { treeTile } = context.getState();
+  assert(treeTile);
+  return Point.fromTile(treeTile.i, treeTile.j);
 }
 
 export function getFoodTile(context) {
   assert(context);
-  return [9, 13];
+  const { foodTile } = context.getState();
+  assert(foodTile);
+  return Point.fromTile(foodTile.i, foodTile.j);
 }
 
 export function getStorageTile(context) {
   assert(context);
-  return [3, 3];
+  const { storageTile } = context.getState();
+  assert(storageTile);
+  return Point.fromTile(storageTile.i, storageTile.j);
 }
 
 export function getTile(context, object) {
@@ -26,9 +32,7 @@ export function getTile(context, object) {
   assert(object);
   const { tickTimestamp } = context.getState();
   const { position } = getMovement(object.path, tickTimestamp);
-
-  // TODO: return point
-  return position.toTile().toArray();
+  return position.toTile();
 }
 
 export function wasWorking(object) {

@@ -1,3 +1,5 @@
+import { TILE_ROAD } from "../common/constants";
+
 /**
  * Update the tick timestamp.
  */
@@ -23,6 +25,27 @@ export function setMap(map) {
     type: "SET_MAP",
     map
   };
+}
+
+export function addStorageTile(i, j) {
+  return [
+    { type: "ADD_MAP_TILE", i, j },
+    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
+  ];
+}
+
+export function addTreeTile(i, j) {
+  return [
+    { type: "ADD_TREE_TILE", i, j },
+    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
+  ];
+}
+
+export function addFoodTile(i, j) {
+  return [
+    { type: "ADD_FOOD_TILE", i, j },
+    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
+  ];
 }
 
 /**

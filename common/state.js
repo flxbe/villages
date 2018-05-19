@@ -55,6 +55,18 @@ export function update(state, action) {
       }
       break;
     }
+    case "ADD_STORAGE_TILE": {
+      state.storageTile = { i: action.i, j: action.j };
+      break;
+    }
+    case "ADD_TREE_TILE": {
+      state.treeTile = { i: action.i, j: action.j };
+      break;
+    }
+    case "ADD_FOOD_TILE": {
+      state.foodTile = { i: action.i, j: action.j };
+      break;
+    }
     case "INIT_STORAGE": {
       state.storage = {
         wood: 0,

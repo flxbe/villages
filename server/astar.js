@@ -115,7 +115,9 @@ BinaryHeap.prototype = {
  * @param {Point} start
  * @param {Point} target
  */
-export default function astar(map, [si, sj], [ti, tj]) {
+export default function astar(map, startTile, targetTile) {
+  const [si, sj] = startTile.toArray();
+  const [ti, tj] = targetTile.toArray();
   let compMap = [];
 
   const weightFunction = function(i, j) {
