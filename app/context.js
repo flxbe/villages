@@ -1,8 +1,7 @@
 import { isArray } from "../common/assert.js";
-import * as State from "../common/state.js";
+import Context from "../common/context.js";
 
-let callbackMap = {};
-let state = undefined;
+let context = undefined;
 
 export default {
   reset,
@@ -13,54 +12,20 @@ export default {
 };
 
 function reset() {
-  state = State.create();
+  context = new Context();
 }
 
 function on(eventName, callback) {
-  if (!callback) {
-    throw new Error("Callback is undefined.");
-  }
-
-  if (!callbackMap[eventName]) {
-    callbackMap[eventName] = [];
-  }
-
-  callbackMap[eventName].push(callback);
+  return context.on(eventName, callback);
 }
 
 function off(eventName, callback) {
-  if (!callback) {
-    throw new Error("Callback is undefined.");
-  }
-
-  if (!callbackMap[eventName]) return;
-
-  callbackMap[eventName] = callbackMap[eventName].filter(c => c !== callback);
+  return context.off(eventName, callback);
 }
-
-function emit(eventName, data) {
-  const callbacks = callbackMap[eventName];
-  if (callbacks) {
-    for (let callback of callbacks) {
-      callback(data);
-    }
-  }
-}
-
-function emitAction(action) {
-  emit(action.type, action);
-}
-
 function getState() {
-  return state;
+  return context.getState();
 }
 
 function dispatch(action) {
-  State.update(state, action);
-
-  if (isArray(action)) {
-    for (let a of action) emitAction(a);
-  } else {
-    emitAction(action);
-  }
+  return context.dispatch(action);
 }
