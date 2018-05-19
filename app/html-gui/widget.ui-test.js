@@ -44,7 +44,7 @@ describe("HTMLWidget", () => {
       it("should add a new child", () => {
         const parent = createContainer();
         const child = createWidget();
-        const mock = sinon.spy();
+        const mock = jest.fn();
         child.on("mounted", mock);
 
         parent.add(child);
@@ -63,7 +63,7 @@ describe("HTMLWidget", () => {
       it("should remove a child", () => {
         const parent = createContainer();
         const child = createWidget();
-        const mock = sinon.spy();
+        const mock = jest.fn();
         child.on("unmounted", mock);
 
         parent.add(child);

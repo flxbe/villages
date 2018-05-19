@@ -1,7 +1,5 @@
 import Context from "./context.js";
 
-const { expect } = require("chai");
-
 describe("Context", () => {
   let context;
 
@@ -12,8 +10,8 @@ describe("Context", () => {
   describe("constructor", () => {});
 
   describe("getState", () => {
-    it("should return the internal state", () => {
-      expect(context.getState()).to.exist;
+    test("should return the internal state", () => {
+      expect(context.getState()).toBeDefined();
     });
   });
 
@@ -26,17 +24,17 @@ describe("Context", () => {
       context.dispatch(action);
     });
 
-    it("should proxy updates to the state", () => {
-      expect(context.getState().map).to.equal(map);
+    test("should proxy updates to the state", () => {
+      expect(context.getState().map).toBe(map);
     });
 
-    it("should save actions in the internal cache", () => {
-      expect(context.getActions().length).to.equal(1);
-      expect(context.getActions()[0]).to.equal(action);
+    test("should save actions in the internal cache", () => {
+      expect(context.getActions().length).toBe(1);
+      expect(context.getActions()[0]).toBe(action);
     });
 
     describe("multiple action", () => {
-      it("should work with multiple actions", () => {
+      test("should work with multiple actions", () => {
         const actions = context.getActions().length;
 
         context.dispatch([
@@ -44,17 +42,17 @@ describe("Context", () => {
           { type: "SET_MAP", map: [] }
         ]);
 
-        expect(context.getActions().length).to.equal(actions + 2);
+        expect(context.getActions().length).toBe(actions + 2);
       });
     });
   });
 
   describe("clearActions", () => {
-    it("shoul clear the internal action cache", () => {
+    test("shoul clear the internal action cache", () => {
       context.dispatch({ type: "SET_MAP", map: [] });
-      expect(context.getActions().length).to.equal(1);
+      expect(context.getActions().length).toBe(1);
       context.clearActions();
-      expect(context.getActions().length).to.equal(0);
+      expect(context.getActions().length).toBe(0);
     });
   });
 });

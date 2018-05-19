@@ -4,8 +4,6 @@ import * as Constants from "../../common/constants.js";
 
 import * as FoodJob from "./food.js";
 
-const { expect } = require("chai");
-
 describe("FoodJob", () => {
   let context;
 
@@ -45,30 +43,30 @@ describe("FoodJob", () => {
   }
 
   describe("start", () => {
-    it("should set the job to 'food'", () => {
+    test("should set the job to 'food'", () => {
       const deer = addDeer(context);
       FoodJob.start(context, deer);
-      expect(context.getState().deers[deer.id].job).to.equal("food");
+      expect(context.getState().deers[deer.id].job).toBe("food");
     });
 
-    it("should set target to food", () => {
+    test("should set target to food", () => {
       let deer = addDeer(context);
 
       FoodJob.start(context, deer);
 
       deer = context.getState().deers[deer.id];
-      expect(deer.target).to.equal("food");
+      expect(deer.target).toBe("food");
     });
 
-    it("should set the path", () => {
+    test("should set the path", () => {
       let deer = addDeer(context);
       const oldPath = deer.path;
 
       FoodJob.start(context, deer);
 
       deer = context.getState().deers[deer.id];
-      expect(deer.path).to.exist;
-      expect(deer.path).to.not.equal(oldPath);
+      expect(deer.path).toBeDefined();
+      expect(deer.path).not.toBe(oldPath);
     });
   });
 });
