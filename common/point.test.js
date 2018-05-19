@@ -263,6 +263,14 @@ describe("Point", () => {
     });
   });
 
+  describe("distance", () => {
+    it("should calculate the distance between two points", () => {
+      const p1 = Point.fromTile(0, 0);
+      const p2 = Point.fromTile(1, 0);
+      expect(p1.distance(p2)).toBe(1);
+    });
+  });
+
   describe("getCenter", () => {
     describe("from Tile", () => {
       test("should return the tile center", () => {

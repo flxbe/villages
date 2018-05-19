@@ -3,13 +3,13 @@ import * as Actions from "../actions.js";
 
 import assert from "../../common/assert.js";
 import Point from "../../common/point.js";
-import { getMovement } from "../../common/util.js";
+import { getMovement, getNearestTree } from "../../common/util.js";
 
 const INVENTORY_CAPACITY = 20;
 
 export function getPathToTile(context, start, target) {
   const map = context.getState().map;
-  return astar(map, start, end);
+  return astar(map, start, target);
 }
 
 /**
@@ -20,9 +20,8 @@ export function getPathToTile(context, start, target) {
  * @param {Point} target - end tile
  */
 export function getPathNextToTile(context, start, target) {
-  const path = getPathToTile(context, start, target);
-  if (!path) return path;
-  return path.slice(0, -1);
+  const map = context.getState().map;
+  return astar(map, start, target, 1);
 }
 
 export function goToStorage(context, villager) {
@@ -41,9 +40,12 @@ export function goToFood(context, villager) {
   context.dispatch(Actions.setVillagerTarget(villager.id, "food", path));
 }
 export function goToTree(context, villager) {
-  const { map } = context.getState();
   const villagerTile = getTile(context, villager);
-  const path = astar(map, villagerTile, getTreeTile(context));
+  const tree = getNearestTree(context, villagerTile);
+  console.log(tree);
+  const treeTile = Point.fromTile(tree.i, tree.j);
+  const path = getPathNextToTile(context, villagerTile, treeTile);
+  console.log(path);
 
   context.dispatch(Actions.setVillagerTarget(villager.id, "wood", path));
 }

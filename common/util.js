@@ -1,6 +1,6 @@
 import * as Constants from "./constants.js";
 import assert from "./assert.js";
-import Point from "./point.js";
+import Point, { assertPoint } from "./point.js";
 
 /**
  * Return euclidean norm of 2-dimensional vector.
@@ -20,6 +20,32 @@ export function norm(x, y) {
  */
 export function distance(x1, y1, x2, y2) {
   return norm(x2 - x1, y2 - y1);
+}
+
+/**
+ * Get the nearest tree as seen from startTile.
+ * Uses the euclidian distance.
+ *
+ * @param {Context} context
+ * @param {Point} startTile
+ */
+export function getNearestTree(context, startTile) {
+  assert(context);
+  assertPoint(startTile);
+  assert(startTile.isTile());
+
+  const { trees } = context.getState();
+  let nearestTree = undefined;
+  let minDist = undefined;
+  for (let tree of Object.values(trees)) {
+    const dist = startTile.distance(Point.fromTile(tree.i, tree.j));
+    if (!nearestTree || dist < minDist) {
+      nearestTree = tree;
+      minDist = dist;
+    }
+  }
+
+  return nearestTree;
 }
 
 /**

@@ -159,6 +159,14 @@ export default class Point {
     return this.x === x && this.y === y;
   }
 
+  distance(p) {
+    assertPoint(p);
+    assertType(p, this.type);
+    const x = p.x - this.x;
+    const y = p.y - this.y;
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+  }
+
   toRel(context) {
     if (this.isRel()) return this;
 
