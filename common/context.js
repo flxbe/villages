@@ -10,8 +10,6 @@ export default class Context {
 
     this._dispatch = action => this.dispatch(action);
     this._getState = () => this.getState();
-
-    this.clearActions();
   }
 
   getState() {
@@ -26,22 +24,9 @@ export default class Context {
       return action(this._dispatch, this._getState);
     }
     State.update(this.state, action);
-    this.pushAction(action);
 
     this.emit(action.type, action);
     this.emit("all", action);
-  }
-
-  clearActions() {
-    this._actions = [];
-  }
-
-  pushAction(action) {
-    this._actions.push(action);
-  }
-
-  getActions() {
-    return this._actions;
   }
 
   on(eventName, callback) {

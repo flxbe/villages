@@ -33,18 +33,12 @@ describe("Context", () => {
       expect(context.getState().map).toBe(map);
     });
 
-    test("should save actions in the internal cache", () => {
-      expect(context.getActions().length).toBe(1);
-      expect(context.getActions()[0]).toBe(action);
-    });
-
     describe("multiple action", () => {
       test("should work with multiple actions", () => {
-        const actions = context.getActions().length;
-
-        context.dispatch([getMapAction(), getMapAction()]);
-
-        expect(context.getActions().length).toBe(actions + 2);
+        const map1 = [];
+        const map2 = [[1, 2], [3, 4]];
+        context.dispatch([getMapAction(map1), getMapAction(map2)]);
+        expect(context.getState().map).toBe(map2);
       });
     });
 
@@ -95,14 +89,6 @@ describe("Context", () => {
       context.off("SET_MAP", cb);
       context.dispatch(getMapAction());
       expect(cb.mock.calls.length).toBe(0);
-    });
-  });
-  describe("clearActions", () => {
-    test("shoul clear the internal action cache", () => {
-      context.dispatch({ type: "SET_MAP", map: [] });
-      expect(context.getActions().length).toBe(1);
-      context.clearActions();
-      expect(context.getActions().length).toBe(0);
     });
   });
 });
