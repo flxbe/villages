@@ -45,6 +45,22 @@ describe("Context", () => {
         expect(context.getActions().length).toBe(actions + 2);
       });
     });
+
+    describe("thunk", () => {
+      test("should call the thunk action", () => {
+        const cb = jest.fn();
+        context.dispatch(cb);
+        expect(cb.mock.calls.length).toBe(1);
+      });
+
+      test("should provide dispatch and getState", () => {
+        context.dispatch((dispatch, getState) => {
+          const map = [];
+          dispatch({ type: "SET_MAP", map });
+          expect(getState().map).toBe(map);
+        });
+      });
+    });
   });
 
   describe("clearActions", () => {
