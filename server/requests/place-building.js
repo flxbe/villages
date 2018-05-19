@@ -1,7 +1,7 @@
 import * as Actions from "../actions.js";
 
 import Point from "../../common/point.js";
-import * as Blueprints from "../../app/blueprints.js";
+import * as Blueprints from "../../common/blueprints.js";
 import * as Constants from "../../common/constants.js";
 import { canBuildingBePlaced, sufficientResources } from "../../common/util.js";
 

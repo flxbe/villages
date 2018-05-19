@@ -1,5 +1,5 @@
 import * as Constants from "./constants.js";
-import * as Blueprints from "./blueprints.js";
+import * as Blueprints from "../common/blueprints.js";
 import context from "./context.js";
 import server from "./server.js";
 import { setAnimation, animate } from "./animations.js";
@@ -151,7 +151,6 @@ async function onMouseMapUp(event) {
     const { blueprintName, ctrlDown } = context.getState();
     const blueprint = Blueprints[blueprintName];
 
-    console.log(blueprint);
     if (canBuildingBePlaced(context, blueprint, Point.fromTile(i, j))) {
       if (sufficientResources(context, blueprint)) {
         await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });

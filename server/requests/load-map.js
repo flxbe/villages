@@ -1,6 +1,6 @@
 import * as Actions from "../actions.js";
 
-import * as Blueprints from "../../app/blueprints.js";
+import * as Blueprints from "../../common/blueprints.js";
 import * as Constants from "../../common/constants.js";
 
 import { generateRandomMap } from "../map-generator.js";
