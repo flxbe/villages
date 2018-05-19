@@ -42,10 +42,8 @@ export function goToFood(context, villager) {
 export function goToTree(context, villager) {
   const villagerTile = getTile(context, villager);
   const tree = getNearestTree(context, villagerTile);
-  console.log(tree);
   const treeTile = Point.fromTile(tree.i, tree.j);
   const path = getPathNextToTile(context, villagerTile, treeTile);
-  console.log(path);
 
   context.dispatch(Actions.setVillagerTarget(villager.id, "wood", path));
 }
