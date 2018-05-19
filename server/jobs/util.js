@@ -90,6 +90,11 @@ export function wasWorking(object) {
   return object.state === "working";
 }
 
+export function wasWalking(object) {
+  assert(object);
+  return object.state === "walking";
+}
+
 export function isWalking(context, object) {
   assert(context);
   assert(object);

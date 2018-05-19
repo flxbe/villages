@@ -1,4 +1,4 @@
-import Context from "./context.js";
+import Context from "../common/context.js";
 import * as Actions from "./actions.js";
 
 import executeRequest from "./requests.js";
