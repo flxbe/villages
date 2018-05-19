@@ -1,4 +1,5 @@
 import { TILE_ROAD } from "../common/constants.js";
+export * from "./actions/villagers.js";
 
 /**
  * Update the tick timestamp.

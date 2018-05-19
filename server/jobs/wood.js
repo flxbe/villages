@@ -11,30 +11,11 @@ export function finish(context, deer) {
 
   switch (deer.target) {
     case "wood": {
-      const inventory = Math.min(deer.inventory + 1, 20);
-      context.dispatch(
-        Actions.updateDeer({
-          id: deer.id,
-          item: "wood",
-          inventory
-        })
-      );
+      util.incInventoryItem(context, deer, "wood", 1);
       break;
     }
     case "storage": {
-      context.dispatch(
-        Actions.updateStorage({
-          [deer.item]: context.getState().storage[deer.item] + deer.inventory
-        })
-      );
-      context.dispatch(
-        Actions.updateDeer({
-          id: deer.id,
-          job: "wood",
-          target: "storage",
-          inventory: 0
-        })
-      );
+      util.storeInventory(context, deer);
       break;
     }
     default: {
@@ -44,81 +25,35 @@ export function finish(context, deer) {
 }
 
 export function start(context, deer) {
-  const deerTile = util.getTile(context, deer);
-  const state = context.getState();
-
-  if (deer.job === "wood" && util.isWalking(context, deer)) return;
+  if (deer.job !== "wood") {
+    util.startJob(context, deer, "wood");
+  } else if (util.isWalking(context, deer)) {
+    return;
+  }
 
   switch (deer.target) {
     case "wood": {
       if (util.isInventoryFull(deer)) {
-        const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "wood",
-            target: "storage",
-            state: "walking",
-            path
-          })
-        );
+        util.goToStorage(context, deer);
       } else if (!util.wasWorking(deer)) {
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            state: "working"
-          })
-        );
+        util.startWorking(context, deer);
       }
       break;
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(state.map, deerTile, util.getTreeTile(context));
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "wood",
-            target: "wood",
-            state: "walking",
-            path
-          })
-        );
+        util.goToTree(context, deer);
       } else if (!util.wasWorking(deer)) {
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            state: "working"
-          })
-        );
+        util.startWorking(context, deer);
       }
       break;
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "wood",
-            target: "storage",
-            state: "walking",
-            path
-          })
-        );
+        util.goToStorage(context, deer);
       } else {
-        const path = astar(state.map, deerTile, util.getTreeTile(context));
-        context.dispatch(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "wood",
-            target: "wood",
-            state: "walking",
-            path
-          })
-        );
+        util.goToTree(context, deer);
       }
-
       break;
     }
   }

@@ -17,7 +17,6 @@ export default class Context {
       for (let a of action) this.dispatch(a);
       return;
     }
-
     State.update(this.state, action);
     this.pushAction(action);
   }
