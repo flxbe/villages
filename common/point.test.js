@@ -67,66 +67,46 @@ describe("Point", () => {
       expect(j).toBe(2);
     });
   });
-  describe("set i", () => {
-    test("should change x", () => {
-      const p = new Point();
-      p.i = 1;
-      expect(p.x).toBe(1);
-    });
-  });
-  describe("get i", () => {
-    test("should return x", () => {
-      const p = new Point();
-      p.x = 1;
-      expect(p.i).toBe(1);
-    });
-  });
 
   describe("add", () => {
     test("should add a number", () => {
       const p = new Point();
-      p.add(1);
-      expect(p.toArray()).toEqual([1, 1]);
+      expect(p.add(1).toArray()).toEqual([1, 1]);
     });
 
     test("should add two numbers", () => {
       const p = new Point();
-      p.add(1, 2);
-      expect(p.toArray()).toEqual([1, 2]);
+      expect(p.add(1, 2).toArray()).toEqual([1, 2]);
     });
 
     test("should add two numbers if the second is 0", () => {
       const p = new Point();
-      p.add(1, 0);
-      expect(p.toArray()).toEqual([1, 0]);
+      expect(p.add(1, 0).toArray()).toEqual([1, 0]);
     });
 
     test("should add an array", () => {
       const p = new Point();
-      p.add([1, 2]);
-      expect(p.toArray()).toEqual([1, 2]);
+      expect(p.add([1, 2]).toArray()).toEqual([1, 2]);
     });
 
     test("should add ta point", () => {
       const p = new Point();
-      p.add(new Point(1, 2));
-      expect(p.toArray()).toEqual([1, 2]);
+      const p2 = new Point(1, 2);
+      expect(p.add(p2).toArray()).toEqual([1, 2]);
     });
   });
 
   describe("div", () => {
     test("should divide the point by a number", () => {
       const p = new Point(10, 10);
-      p.div(10);
-      expect(p.toArray()).toEqual([1, 1]);
+      expect(p.div(10).toArray()).toEqual([1, 1]);
     });
   });
 
   describe("mul", () => {
     test("should multiply the point by a number", () => {
       const p = new Point(1, 1);
-      p.mul(10);
-      expect(p.toArray()).toEqual([10, 10]);
+      expect(p.mul(10).toArray()).toEqual([10, 10]);
     });
   });
 
@@ -134,14 +114,12 @@ describe("Point", () => {
     describe("from Cart", () => {
       test("should convert without error", () => {
         const p = Point.fromCart(1, 1);
-        p.toTile();
-        expect(p.isTile()).toBe(true);
+        expect(p.toTile().isTile()).toBe(true);
       });
 
       test("should round on whole tiles", () => {
         const p = Point.fromCart(1, 1);
-        p.toTile();
-        expect(p.toArray()).toEqual([0, 0]);
+        expect(p.toTile().toArray()).toEqual([0, 0]);
       });
     });
   });
@@ -150,14 +128,12 @@ describe("Point", () => {
     describe("from Tile", () => {
       test("should convert without error", () => {
         const p = Point.fromTile(1, 1);
-        p.toCart();
-        expect(p.isCart()).toBe(true);
+        expect(p.toCart().isCart()).toBe(true);
       });
 
       test("should transform correctly", () => {
         const p = Point.fromTile(1, 1);
-        p.toCart();
-        expect(p.toArray()).toEqual([
+        expect(p.toCart().toArray()).toEqual([
           Constants.TILE_WIDTH,
           Constants.TILE_HEIGHT
         ]);
@@ -167,8 +143,7 @@ describe("Point", () => {
     describe("from Abs", () => {
       test("should convert without error", () => {
         const p = Point.fromAbs(1, 1);
-        p.toCart();
-        expect(p.isCart()).toBe(true);
+        expect(p.toCart().isCart()).toBe(true);
       });
 
       test("should convert back without error", () => {
@@ -187,8 +162,7 @@ describe("Point", () => {
     describe("from Tile", () => {
       test("should convert without error", () => {
         const p = Point.fromTile(1, 1);
-        p.toAbs();
-        expect(p.isAbs()).toBe(true);
+        expect(p.toAbs().isAbs()).toBe(true);
       });
     });
   });
@@ -198,8 +172,7 @@ describe("Point", () => {
       test("should convert without error", () => {
         const context = getContext();
         const p = Point.fromTile(1, 1);
-        p.toRel(context);
-        expect(p.isRel()).toBe(true);
+        expect(p.toRel(context).isRel()).toBe(true);
       });
     });
   });

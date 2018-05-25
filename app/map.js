@@ -254,7 +254,7 @@ function move({ delta }) {
         if (!p.isOnMap(context)) continue;
         const tile = state.map[i][j];
         const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
-        const { x, y } = Point.fromTile(i, j).toRel(context);
+        const { x, y } = p.toRel(context);
         renderTile(decorationLayer, color, x, y);
       }
     }
@@ -336,10 +336,10 @@ function move({ delta }) {
       setAnimation(sprite, animation);
       animate(sprite, delta);
 
-      position.toRel(context);
-      sprite.zIndex = position.y;
-      sprite.x = position.x + Constants.DEER_OFFSET_X;
-      sprite.y = position.y + Constants.DEER_OFFSET_Y;
+      const relPos = position.toRel(context);
+      sprite.zIndex = relPos.y;
+      sprite.x = relPos.x + Constants.DEER_OFFSET_X;
+      sprite.y = relPos.y + Constants.DEER_OFFSET_Y;
 
       if (renderHitAreas) renderHitBox(sprite);
     }

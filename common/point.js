@@ -69,16 +69,8 @@ export default class Point {
     this.y = y || 0;
   }
 
-  set i(x) {
-    this.x = x;
-  }
-
   get i() {
     return this.x;
-  }
-
-  set j(y) {
-    this.y = y;
   }
 
   get j() {
@@ -111,9 +103,7 @@ export default class Point {
       }
     }
 
-    this.x = op(this.x, x);
-    this.y = op(this.y, y);
-    return this;
+    return new Point(op(this.x, x), op(this.y, y), this.type);
   }
 
   add(a, b) {
@@ -126,16 +116,12 @@ export default class Point {
 
   div(f) {
     assertNumber(f);
-    this.x /= f;
-    this.y /= f;
-    return this;
+    return new Point(this.x / f, this.y / f, this.type);
   }
 
   mul(f) {
     assertNumber(f);
-    this.x *= f;
-    this.y *= f;
-    return this;
+    return new Point(this.x * f, this.y * f, this.type);
   }
 
   equals(a, b) {
@@ -171,12 +157,10 @@ export default class Point {
     if (this.isRel()) return this;
 
     assert(context);
-    if (!this.isAbs()) this.toAbs();
-    const { offsetX, offsetY } = context.getState();
-    this.add(offsetX, offsetY);
+    if (!this.isAbs()) return this.toAbs().toRel(context);
 
-    this.type = POINT_REL;
-    return this;
+    const { offsetX, offsetY } = context.getState();
+    return Point.fromRel(this.x + offsetX, this.y + offsetY);
   }
 
   toAbs(context) {
@@ -185,52 +169,49 @@ export default class Point {
     if (this.isRel()) {
       assert(context);
       const { offsetX, offsetY } = context.getState();
-      this.sub(offsetX, offsetY);
-    } else {
-      if (!this.isCart()) this.toCart();
-      const { x, y } = this;
-      this.x = x - y;
-      this.y = (x + y) / 2.0;
+      return Point.fromAbs(this.x - offsetX, this.y - offsetY);
+    } else if (!this.isCart()) {
+      return this.toCart(context).toAbs(context);
     }
 
-    this.type = POINT_ABS;
-    return this;
+    assert(this.isCart());
+    const { x, y } = this;
+    return Point.fromAbs(x - y, (x + y) / 2.0);
   }
 
   toCart(context) {
     if (this.isCart()) return this;
     if (this.isTile()) {
-      const { i, j } = this;
-      this.x = j * Constants.TILE_WIDTH;
-      this.y = i * Constants.TILE_HEIGHT;
-    } else {
-      if (!this.isAbs()) this.toAbs(context);
-      const { x, y } = this;
-      this.x = 2.0 * y + x;
-      this.y = 2.0 * y - x;
-      this.div(2.0);
+      return Point.fromCart(
+        this.j * Constants.TILE_WIDTH,
+        this.i * Constants.TILE_HEIGHT
+      );
+    } else if (!this.isAbs()) {
+      return this.toAbs(context).toCart(content);
     }
 
-    this.type = POINT_CART;
-    return this;
+    assert(this.isAbs());
+    const { x, y } = this;
+    const tX = 2.0 * y + x;
+    const tY = 2.0 * y - x;
+    return Point.fromCart(tX / 2.0, tY / 2.0);
   }
 
   toTile(context) {
     if (this.isTile()) return this;
-    if (!this.isCart()) this.toCart(context);
-    const { x, y } = this;
-    this.i = Math.floor(y / Constants.TILE_HEIGHT);
-    this.j = Math.floor(x / Constants.TILE_WIDTH);
+    if (!this.isCart()) return this.toCart(context).toTile(context);
 
-    this.type = POINT_TILE;
-    return this;
+    const i = Math.floor(this.y / Constants.TILE_HEIGHT);
+    const j = Math.floor(this.x / Constants.TILE_WIDTH);
+    return Point.fromTile(i, j);
   }
 
   getCenter() {
     assertType(this, POINT_TILE, true);
-    return this.clone()
-      .toCart()
-      .add(Constants.TILE_WIDTH / 2, Constants.TILE_HEIGHT / 2);
+    return this.toCart().add(
+      Constants.TILE_WIDTH / 2,
+      Constants.TILE_HEIGHT / 2
+    );
   }
 
   getNeighbours(context) {
@@ -238,8 +219,7 @@ export default class Point {
 
     let neighbours = [];
     for (let dir of directions) {
-      const n = this.clone();
-      n.add(dir);
+      const n = this.add(dir);
       if (n.isOnMap(context)) neighbours.push(n);
     }
 
