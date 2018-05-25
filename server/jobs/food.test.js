@@ -69,4 +69,29 @@ describe("FoodJob", () => {
       expect(deer.path).not.toBe(oldPath);
     });
   });
+
+  describe("finish", () => {
+    describe("full inventory", () => {
+      test("should store the inventory", () => {
+        let deer = addDeer(context);
+        context.dispatch(
+          Actions.updateDeer({
+            id: deer.id,
+            job: "food",
+            target: "storage",
+            state: "working",
+            item: "food",
+            inventory: 20
+          })
+        );
+
+        FoodJob.finish(context, deer);
+
+        const state = context.getState();
+        deer = state.deers[deer.id];
+        expect(deer.inventory).toBe(0);
+        expect(state.storage.food).toBe(20);
+      });
+    });
+  });
 });

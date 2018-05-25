@@ -126,12 +126,3 @@ export function incInventoryItem(context, villager, item, amount) {
     Actions.setVillagerInventory(villager.id, item, villager.inventory + amount)
   );
 }
-export function storeInventory(context, villager) {
-  context.dispatch(
-    Actions.updateStorage({
-      [villager.item]:
-        context.getState().storage[villager.item] + villager.inventory
-    })
-  );
-  context.dispatch(Actions.setVillagerInventory(villager.id, villager.item, 0));
-}

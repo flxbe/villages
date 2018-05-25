@@ -3,7 +3,10 @@ import * as Constants from "./constants.js";
 
 export function create() {
   return {
-    storage: {},
+    storage: {
+      wood: 0,
+      food: 0
+    },
     deers: {},
     trees: {}
   };

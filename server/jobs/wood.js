@@ -15,7 +15,7 @@ export function finish(context, deer) {
       break;
     }
     case "storage": {
-      util.storeInventory(context, deer);
+      context.dispatch(Actions.storeIventory(deer.id));
       break;
     }
     default: {

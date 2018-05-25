@@ -289,9 +289,9 @@ function move({ delta }) {
       case "deer": {
         const deer = state.deers[selectedElement.id];
         const { position } = getMovement(deer.path, timestamp);
-        position.sub(10).toRel(context);
+        const relPos = position.sub(10).toRel(context);
         selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", position.x, position.y);
+        renderCircle(selectionLayer, "0xffffff", relPos.x, relPos.y);
         break;
       }
       case "tree": {
