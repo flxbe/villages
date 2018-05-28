@@ -26,8 +26,7 @@ import Point from "../common/point.js";
 import openDeerWindow from "./windows/deer-window.js";
 
 let _renderer;
-const deerSprites = {};
-const treeSprites = {};
+const sprites = {};
 
 const Map = new PIXI.Container();
 export default Map;
@@ -199,7 +198,7 @@ function addDeer({ deer }) {
   });
   sprite.on("click", () => openDeerWindow(deer.id));
 
-  deerSprites[deer.id] = sprite;
+  sprites[deer.id] = sprite;
 }
 
 function addTree({ tree }) {
@@ -209,12 +208,12 @@ function addTree({ tree }) {
     element: { type: "tree", id: tree.id, tooltip: tree.id }
   });
 
-  treeSprites[tree.id] = sprite;
+  sprites[tree.id] = sprite;
 }
 
 function moveVillager(villager) {
   const { timestamp } = context.getState();
-  const sprite = deerSprites[villager.id];
+  const sprite = sprites[villager.id];
   const { position, direction } = getMovement(villager.path, timestamp);
 
   let animation;
@@ -238,7 +237,7 @@ function moveVillager(villager) {
 }
 
 function moveTree(tree) {
-  const sprite = treeSprites[tree.id];
+  const sprite = sprites[tree.id];
 
   const { i, j } = tree;
   const { x, y } = Point.fromTile(i, j).toRel(context);
@@ -288,8 +287,7 @@ function renderSelection() {
 
 function renderHitAreas() {
   hitAreaLayer.clear();
-  Object.values(deerSprites).forEach(renderHitBox);
-  Object.values(treeSprites).forEach(renderHitBox);
+  Object.values(sprites).forEach(renderHitBox);
 }
 
 function renderBuildDecorations() {
@@ -357,8 +355,7 @@ function move({ delta }) {
   Object.values(state.deers).forEach(moveVillager);
   Object.values(state.trees).forEach(moveTree);
 
-  Object.values(deerSprites).forEach(sprite => animate(sprite, delta));
-  Object.values(treeSprites).forEach(sprite => animate(sprite, delta));
+  Object.values(sprites).forEach(sprite => animate(sprite, delta));
 
   objectLayer.children.sort((c1, c2) => c1.zIndex - c2.zIndex);
 }
