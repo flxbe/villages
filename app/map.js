@@ -69,7 +69,6 @@ Map.init = function(renderer) {
   mapSprite.on("mouseup", onMouseMapUp);
 
   context.on("SET_APPLICATION_SIZE", resizeMapHitArea);
-  context.on("SET_MAP", renderTexture);
   context.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
   context.on("ADD_DEER", addDeer);
   context.on("ADD_TREE", addTree);
@@ -80,7 +79,16 @@ Map.init = function(renderer) {
   context.on("RESET_MODE", () => {
     objectLayer.interactiveChildren = true;
   });
+
+  initializeMap();
 };
+
+function initializeMap() {
+  const state = context.getState();
+  for (let deer of Object.values(state.deers)) addDeer({ deer });
+  for (let tree of Object.values(state.trees)) addTree({ tree });
+  renderTexture();
+}
 
 // internal scrolling context
 let clickStartX;

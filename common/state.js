@@ -27,6 +27,10 @@ export function update(state, action) {
       state.tickTimestamp = action.timestamp;
       break;
     }
+    case "LOAD_STATE": {
+      Object.assign(state, action.state);
+      break;
+    }
     case "SET_APPLICATION_SIZE": {
       state.applicationHeight = action.height;
       state.applicationWidth = action.width;
@@ -60,19 +64,8 @@ export function update(state, action) {
       state.storageTile = { i: action.i, j: action.j };
       break;
     }
-    case "ADD_TREE_TILE": {
-      state.treeTile = { i: action.i, j: action.j };
-      break;
-    }
     case "ADD_FOOD_TILE": {
       state.foodTile = { i: action.i, j: action.j };
-      break;
-    }
-    case "INIT_STORAGE": {
-      state.storage = {
-        wood: 0,
-        food: 0
-      };
       break;
     }
     case "UPDATE_STORAGE": {

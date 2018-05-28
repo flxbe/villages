@@ -1,4 +1,5 @@
 import { TILE_ROAD } from "../common/constants.js";
+export * from "./actions/client.js";
 export * from "./actions/storage.js";
 export * from "./actions/villagers.js";
 
@@ -9,12 +10,6 @@ export function tick() {
   return {
     type: "TICK",
     timestamp: new Date()
-  };
-}
-
-export function initStorage() {
-  return {
-    type: "INIT_STORAGE"
   };
 }
 
@@ -32,13 +27,6 @@ export function setMap(map) {
 export function addStorageTile(i, j) {
   return [
     { type: "ADD_STORAGE_TILE", i, j },
-    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
-  ];
-}
-
-export function addTreeTile(i, j) {
-  return [
-    { type: "ADD_TREE_TILE", i, j },
     updateMap([{ i, j, tile: { type: TILE_ROAD } }])
   ];
 }

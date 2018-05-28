@@ -1,10 +1,10 @@
-import loadMap from "./requests/load-map.js";
+import loadState from "./requests/load-state.js";
 import placeBuilding from "./requests/place-building.js";
 
 export default function executeRequest(context, request) {
   switch (request.type) {
-    case "LOAD_MAP": {
-      loadMap(context);
+    case "LOAD_STATE": {
+      loadState(context);
       break;
     }
     case "PLACE_BUILDING": {
@@ -12,5 +12,7 @@ export default function executeRequest(context, request) {
       placeBuilding(context, i, j, blueprintName);
       break;
     }
+    default:
+      throw new Error(`Unknown request: ${request.type}`);
   }
 }

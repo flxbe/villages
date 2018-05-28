@@ -31,6 +31,7 @@ async function load() {
 
   server.on("update", update => context.dispatch(update));
   await server.connect();
+  await server.request({ type: "LOAD_STATE" });
 
   const height = window.innerHeight;
   const width = window.innerWidth;
@@ -68,8 +69,6 @@ function setup() {
   application.stage.addChild(Map);
   application.stage.addChild(UiContainer);
   application.stage.addChild(Tooltips);
-
-  server.request({ type: "LOAD_MAP" });
 
   application.ticker.add(gameloop);
 }
