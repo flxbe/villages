@@ -1,0 +1,9 @@
+{
+  "extends": ["standard", "plugin:prettier/recommended"],
+  "env": {
+    "jest": true
+  },
+  "globals": {
+    "PIXI": false
+  }
+}

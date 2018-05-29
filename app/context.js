@@ -1,7 +1,6 @@
-import { isArray } from "../common/assert.js";
 import Context from "../common/context.js";
 
-let context = undefined;
+let context;
 
 export default {
   reset,

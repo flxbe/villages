@@ -1,9 +1,4 @@
-import assert, {
-  isNumber,
-  assertNumber,
-  isArray,
-  assertInteger
-} from "./assert.js";
+import assert, { isNumber, assertNumber, isArray } from "./assert.js";
 import * as Constants from "./constants.js";
 
 const directions = [

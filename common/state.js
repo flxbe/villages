@@ -83,7 +83,6 @@ export function update(state, action) {
       break;
     }
     case "REMOVE_DEER": {
-      const deer = state.deers[action.id];
       delete state.deers[action.id];
       break;
     }

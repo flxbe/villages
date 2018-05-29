@@ -9,8 +9,6 @@ import {
   canBuildingBePlaced,
   sufficientResources,
   isBuildableTile,
-  distance,
-  getDirection,
   isNorth,
   isNorthEast,
   isEast,
@@ -114,7 +112,6 @@ function onRightClick(event) {
 
   if (!movedSignificantly) {
     context.dispatch({ type: "RESET_MODE" });
-    return;
   }
 }
 
@@ -261,8 +258,6 @@ function renderSelection() {
   const { selectedElement } = state;
   if (!selectedElement) return;
 
-  let relX = 0;
-  let relY = 0;
   const { timestamp } = state;
   switch (selectedElement.type) {
     case "tile": {
@@ -289,7 +284,7 @@ function renderSelection() {
       break;
     }
     default:
-      throw Error(`Unknown selection type: ${selection}`);
+      throw Error(`Unknown selection type: ${selectedElement.type}`);
   }
 }
 
@@ -381,7 +376,7 @@ function renderTexture() {
   // calculate texture size
   const xDim = context.getState().map.length;
   const yDim = context.getState().map[0].length;
-  const height = (xDim + yDim) * Constants.TILE_HEIGHT / 2.0;
+  const height = ((xDim + yDim) * Constants.TILE_HEIGHT) / 2.0;
   const width = (xDim + yDim) * Constants.TILE_WIDTH;
   const offsetX = width / 2.0;
 
@@ -464,14 +459,14 @@ function getTileColor(type) {
  * @param {number} y
  */
 function renderTile(target, color, x, y) {
-  const h_2 = Constants.TILE_HEIGHT / 2;
+  const h2 = Constants.TILE_HEIGHT / 2;
 
   target.beginFill(color);
   target.lineStyle(1, color, 1);
   target.moveTo(x, y);
-  target.lineTo(x + Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x + Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y + Constants.TILE_HEIGHT);
-  target.lineTo(x - Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x - Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y);
   target.endFill();
 }
@@ -483,24 +478,24 @@ function renderTile(target, color, x, y) {
  * @param {number} y
  */
 function renderTileGrid(target, x, y) {
-  const h_2 = Constants.TILE_HEIGHT / 2;
+  const h2 = Constants.TILE_HEIGHT / 2;
 
   target.lineStyle(1, "0x444", 1);
   target.moveTo(x, y);
-  target.lineTo(x + Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x + Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y + Constants.TILE_HEIGHT);
-  target.lineTo(x - Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x - Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y);
 }
 
 function renderCircle(target, color, x, y) {
-  const h_2 = Constants.TILE_HEIGHT / 2;
+  const h2 = Constants.TILE_HEIGHT / 2;
 
   target.lineStyle(1, color, 1);
   target.moveTo(x, y);
-  target.lineTo(x + Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x + Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y + Constants.TILE_HEIGHT);
-  target.lineTo(x - Constants.TILE_WIDTH, y + h_2);
+  target.lineTo(x - Constants.TILE_WIDTH, y + h2);
   target.lineTo(x, y);
 }
 

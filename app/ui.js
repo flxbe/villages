@@ -1,4 +1,3 @@
-import * as Constants from "./constants.js";
 import context from "./context.js";
 
 const UiContainer = new PIXI.Container();
@@ -38,7 +37,7 @@ UiContainer.init = function() {
 };
 
 function updatePositions() {
-  const { applicationWidth, applicationHeight } = context.getState();
+  const { applicationHeight } = context.getState();
 
   descriptionText.position.set(
     5,
