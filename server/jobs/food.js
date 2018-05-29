@@ -2,7 +2,7 @@ import * as Actions from "../actions.js";
 import astar from "../astar.js";
 
 import * as util from "./util.js";
-import assert from "../../assert.js";
+import assert from "../../common/assert.js";
 
 /**
  * During the last server tick, the deer had the job `food`. This function
@@ -23,21 +23,11 @@ export function finish(context, deer) {
   switch (deer.target) {
     case "food": {
       assert(!deer.item || deer.item === "food");
-      context.pushUpdate(util.incInventoryItem(deer, "food", 1));
+      util.incInventoryItem(context, deer, "food", 1);
       break;
     }
     case "storage": {
-      context.pushUpdate(
-        Actions.updateStorage({
-          [deer.item]: context.getState().storage[deer.item] + deer.inventory
-        })
-      );
-      context.pushUpdate(
-        Actions.updateDeer({
-          id: deer.id,
-          inventory: 0
-        })
-      );
+      context.dispatch(Actions.storeIventory(deer.id));
       break;
     }
     default: {
@@ -62,82 +52,35 @@ export function finish(context, deer) {
  * 4.2. If not, go to the food.
  */
 export function start(context, deer) {
-  const deerTile = util.getTile(context, deer);
-  const state = context.getState();
-
-  if (deer.job === "food" && util.isWalking(context, deer)) return;
+  if (deer.job !== "food") {
+    util.startJob(context, deer, "food");
+  } else if (util.isWalking(context, deer)) {
+    return;
+  }
 
   switch (deer.target) {
     case "food": {
-      assert(deer.job === "food");
       if (util.isInventoryFull(deer)) {
-        const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "food",
-            target: "storage",
-            state: "walking",
-            path
-          })
-        );
+        util.goToStorage(context, deer);
       } else if (!util.wasWorking(deer)) {
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            state: "working"
-          })
-        );
+        util.startWorking(context, deer);
       }
       break;
     }
     case "storage": {
       if (util.isInventoryEmpty(deer)) {
-        const path = astar(state.map, deerTile, util.getFoodTile(context));
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "food",
-            target: "food",
-            state: "walking",
-            path
-          })
-        );
+        util.goToFood(context, deer);
       } else if (!util.wasWorking(deer)) {
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            state: "working"
-          })
-        );
+        util.startWorking(context, deer);
       }
       break;
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        const path = astar(state.map, deerTile, util.getStorageTile(context));
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "food",
-            target: "storage",
-            state: "walking",
-            path
-          })
-        );
+        util.goToStorage(context, deer);
       } else {
-        const path = astar(state.map, deerTile, util.getFoodTile(context));
-        context.pushUpdate(
-          Actions.updateDeer({
-            id: deer.id,
-            job: "food",
-            target: "food",
-            state: "walking",
-            path
-          })
-        );
+        util.goToFood(context, deer);
       }
-
       break;
     }
   }

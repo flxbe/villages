@@ -1,4 +1,4 @@
-import State from "../state.js";
+import context from "../context.js";
 import Compositor from "../html-gui/compositor.js";
 
 import Window from "../html-gui/window.js";
@@ -32,14 +32,14 @@ class DeerWindow extends Window {
 
     this.setText();
     this.closeButton.node.addEventListener("click", this._onClose);
-    State.on("UPDATE_DEER", this._onUpdateDeer);
+    context.on("UPDATE_DEER", this._onUpdateDeer);
   }
 
   onDidUnmount() {
     super.onDidUnmount();
 
     this.closeButton.node.removeEventListener("click", this._onClose);
-    State.off("UPDATE_DEER", this._onUpdateDeer);
+    context.off("UPDATE_DEER", this._onUpdateDeer);
   }
 
   onUpdateDeer(action) {
@@ -49,7 +49,7 @@ class DeerWindow extends Window {
   }
 
   setText() {
-    const deer = State.get().deers[this.id];
+    const deer = context.getState().deers[this.id];
 
     this.p.text = [
       `id: ${deer.id}`,

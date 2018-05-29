@@ -1,4 +1,4 @@
-import * as Constants from "../constants.js";
+import * as Constants from "../common/constants.js";
 
 function noise(width, height, frequency) {
   const sinPhase = Math.floor(Math.random() * 2 * Math.PI);

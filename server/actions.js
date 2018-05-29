@@ -1,3 +1,18 @@
+import { TILE_ROAD } from "../common/constants.js";
+export * from "./actions/client.js";
+export * from "./actions/storage.js";
+export * from "./actions/villagers.js";
+
+/**
+ * Update the tick timestamp.
+ */
+export function tick() {
+  return {
+    type: "TICK",
+    timestamp: new Date()
+  };
+}
+
 /**
  * Set the map.
  * @param {Map} map
@@ -7,6 +22,20 @@ export function setMap(map) {
     type: "SET_MAP",
     map
   };
+}
+
+export function addStorageTile(i, j) {
+  return [
+    { type: "ADD_STORAGE_TILE", i, j },
+    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
+  ];
+}
+
+export function addFoodTile(i, j) {
+  return [
+    { type: "ADD_FOOD_TILE", i, j },
+    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
+  ];
 }
 
 /**
@@ -65,16 +94,5 @@ export function addTree(tree) {
   return {
     type: "ADD_TREE",
     tree
-  };
-}
-
-/**
- * Update the storage STATE.
- * @param {StorageUpdate} storage
- */
-export function updateStorage(storage) {
-  return {
-    type: "UPDATE_STORAGE",
-    storage
   };
 }

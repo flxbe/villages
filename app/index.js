@@ -1,4 +1,4 @@
-import State from "./state.js";
+import context from "./context.js";
 import { getAssets } from "./assets.js";
 import server from "./server.js";
 
@@ -17,6 +17,7 @@ import Tooltips from "./tooltips.js";
  */
 PIXI.settings.RESOLUTION = window.devicePixelRatio;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+PIXI.loader.baseUrl = "app/";
 
 let application;
 
@@ -24,10 +25,13 @@ let application;
  * The inital loading step of the application.
  */
 async function load() {
-  State.reset();
+  context.reset();
+  context.dispatch({ type: "RESET_MODE" });
+  context.dispatch({ type: "INIT_CAMERA" });
 
-  server.on("update", update => State.update(update));
+  server.on("update", update => context.dispatch(update));
   await server.connect();
+  await server.request({ type: "LOAD_STATE" });
 
   const height = window.innerHeight;
   const width = window.innerWidth;
@@ -40,7 +44,7 @@ async function load() {
   application.stage.interactive = true;
   application.renderer.backgroundColor = "0x1099bb";
 
-  State.on("SET_APPLICATION_SIZE", ({ height, width }) => {
+  context.on("SET_APPLICATION_SIZE", ({ height, width }) => {
     application.renderer.resize(width, height);
     application.stage.hitArea = new PIXI.Rectangle(0, 0, width, height);
   });
@@ -50,7 +54,7 @@ async function load() {
 
   document.body.insertBefore(application.view, windowLayer);
 
-  State.update({ type: "SET_APPLICATION_SIZE", height, width });
+  context.dispatch({ type: "SET_APPLICATION_SIZE", height, width });
   PIXI.loader.add(getAssets()).load(setup);
 }
 
@@ -66,17 +70,15 @@ function setup() {
   application.stage.addChild(UiContainer);
   application.stage.addChild(Tooltips);
 
-  server.request({ type: "LOAD_MAP" });
-
   application.ticker.add(gameloop);
 }
 
 /**
- * Proceed the game logic and render the current State.get().
+ * Proceed the game logic and render the current context.
  * @param {number} delta The weight of the latest frame.
  */
 function gameloop(delta) {
-  State.update({ type: "MOVE", timestamp: Date.now(), delta });
+  context.dispatch({ type: "MOVE", timestamp: Date.now(), delta });
 }
 
 load();

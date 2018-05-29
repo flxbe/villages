@@ -1,5 +1,5 @@
 import * as Constants from "./constants.js";
-import State from "./state.js";
+import context from "./context.js";
 
 const UiContainer = new PIXI.Container();
 export default UiContainer;
@@ -31,13 +31,14 @@ UiContainer.init = function() {
   updateStorageText();
   updateSelectionDescription();
 
-  State.on("UPDATE_STORAGE", updateStorageText);
-  State.on("SET_APPLICATION_SIZE", updatePositions);
-  State.on("SELECT", updateSelectionDescription);
+  context.on("INIT_STORAGE", updateStorageText);
+  context.on("UPDATE_STORAGE", updateStorageText);
+  context.on("SET_APPLICATION_SIZE", updatePositions);
+  context.on("SELECT", updateSelectionDescription);
 };
 
 function updatePositions() {
-  const { applicationWidth, applicationHeight } = State.get();
+  const { applicationWidth, applicationHeight } = context.getState();
 
   descriptionText.position.set(
     5,
@@ -46,7 +47,7 @@ function updatePositions() {
 }
 
 function updateStorageText() {
-  const { storage } = State.get();
+  const { storage } = context.getState();
 
   storageText.text = [
     "Storage",
@@ -66,7 +67,7 @@ function updateSelectionDescription() {
     return array;
   }
 
-  const { selectedElement } = State.get();
+  const { selectedElement } = context.getState();
   if (!selectedElement) {
     descriptionText.visible = false;
     return;
@@ -74,16 +75,16 @@ function updateSelectionDescription() {
   let array = [];
   switch (selectedElement.type) {
     case "deer":
-      array = obj2array(State.get().deers[selectedElement.id]);
+      array = obj2array(context.getState().deers[selectedElement.id]);
       break;
     case "tree":
-      array = obj2array(State.get().trees[selectedElement.id]);
+      array = obj2array(context.getState().trees[selectedElement.id]);
       break;
     case "tile":
       array = obj2array(selectedElement);
       array.push(
         `tileType: ${
-          State.get().map[selectedElement.i][selectedElement.j].type
+          context.getState().map[selectedElement.i][selectedElement.j].type
         }`
       );
       break;

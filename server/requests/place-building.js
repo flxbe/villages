@@ -1,7 +1,9 @@
 import * as Actions from "../actions.js";
 
-import * as Blueprints from "../../blueprints.js";
-import * as Constants from "../../constants.js";
+import Point from "../../common/point.js";
+import * as Blueprints from "../../common/blueprints.js";
+import * as Constants from "../../common/constants.js";
+import { canBuildingBePlaced, sufficientResources } from "../../common/util.js";
 
 /**
  * Create a new building.
@@ -15,12 +17,17 @@ export default function placeBuilding(context, i, j, blueprintName) {
   const blueprint = Blueprints[blueprintName];
   if (!blueprint) throw Error(`unknown blueprint: ${blueprintName}`);
 
-  if (context.getState().storage.wood < blueprint.wood) {
+  const targetTile = Point.fromTile(i, j);
+
+  if (!canBuildingBePlaced(context, blueprint, targetTile))
+    throw Error("cannot be placed");
+
+  if (!sufficientResources(context, blueprint)) {
     throw Error("not enough wood");
   }
 
   // reduce resources
-  context.pushUpdate(
+  context.dispatch(
     Actions.updateStorage({
       wood: context.getState().storage.wood - blueprint.wood
     })
@@ -41,5 +48,5 @@ export default function placeBuilding(context, i, j, blueprintName) {
   }
 
   // dispatch map updates
-  context.pushUpdate(Actions.updateMap(mapUpdates));
+  context.dispatch(Actions.updateMap(mapUpdates));
 }

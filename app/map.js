@@ -1,15 +1,14 @@
 import * as Constants from "./constants.js";
-import * as Blueprints from "./blueprints.js";
-import State from "./state.js";
+import * as Blueprints from "../common/blueprints.js";
+import context from "./context.js";
 import server from "./server.js";
+import { setAnimation, animate } from "./animations.js";
+
 import {
-  tile2abs,
-  tile2rel,
-  cart2rel,
-  isTileOnMap,
-  isBuildableTile,
-  isAreaFreeForBuilding,
+  getMovement,
+  canBuildingBePlaced,
   sufficientResources,
+  isBuildableTile,
   distance,
   getDirection,
   isNorth,
@@ -19,17 +18,15 @@ import {
   isSouth,
   isSouthWest,
   isWest,
-  isNorthWest,
-  getActiveTile
-} from "./util.js";
-import { getPosition } from "./movement.js";
-import { setAnimation, animate } from "./animations.js";
+  isNorthWest
+} from "../common/util.js";
+
+import Point from "../common/point.js";
 
 import openDeerWindow from "./windows/deer-window.js";
 
 let _renderer;
-const deerSprites = {};
-const treeSprites = {};
+const sprites = {};
 
 const Map = new PIXI.Container();
 export default Map;
@@ -71,21 +68,29 @@ Map.init = function(renderer) {
   mapSprite.on("mousemove", onMouseMapMove);
   mapSprite.on("mouseup", onMouseMapUp);
 
-  State.on("SET_APPLICATION_SIZE", resizeMapHitArea);
-  State.on("SET_MAP", renderTexture);
-  State.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
-  State.on("ADD_DEER", addDeer);
-  State.on("ADD_TREE", addTree);
-  State.on("MOVE", move);
-  State.on("ENTER_BUILD_MODE", () => {
+  context.on("SET_APPLICATION_SIZE", resizeMapHitArea);
+  context.on("UPDATE_MAP", ({ mapUpdates }) => updateTexture(mapUpdates));
+  context.on("ADD_DEER", addDeer);
+  context.on("ADD_TREE", addTree);
+  context.on("MOVE", move);
+  context.on("ENTER_BUILD_MODE", () => {
     objectLayer.interactiveChildren = false;
   });
-  State.on("RESET_MODE", () => {
+  context.on("RESET_MODE", () => {
     objectLayer.interactiveChildren = true;
   });
+
+  initializeMap();
 };
 
-// internal scrolling state
+function initializeMap() {
+  const state = context.getState();
+  for (let deer of Object.values(state.deers)) addDeer({ deer });
+  for (let tree of Object.values(state.trees)) addTree({ tree });
+  renderTexture();
+}
+
+// internal scrolling context
 let clickStartX;
 let clickStartY;
 let scrolling = false;
@@ -108,7 +113,7 @@ function onRightClick(event) {
     Math.abs(clickStartX - clickEndX) + Math.abs(clickStartY - clickEndY) >= 10;
 
   if (!movedSignificantly) {
-    State.update({ type: "RESET_MODE" });
+    context.dispatch({ type: "RESET_MODE" });
     return;
   }
 }
@@ -116,9 +121,9 @@ function onRightClick(event) {
 function onMouseMove(event) {
   if (!scrolling) return;
 
-  const { mouseIsoX, mouseIsoY } = State.get();
+  const { mouseIsoX, mouseIsoY } = context.getState();
 
-  State.update({
+  context.dispatch({
     type: "MOVE_CAMERA",
     dX: event.data.global.x - mouseIsoX,
     dY: event.data.global.y - mouseIsoY
@@ -126,37 +131,39 @@ function onMouseMove(event) {
 }
 
 function onMouseMapMove(event) {
-  const [i, j] = getActiveTile();
+  const tile = getHoveredTile();
 
-  if (isTileOnMap(i, j)) {
-    State.update({ type: "HOVER", element: { type: "tile", i, j } });
+  if (tile.isOnMap(context)) {
+    const { i, j } = tile;
+    context.dispatch({ type: "HOVER", element: { type: "tile", i, j } });
   } else {
-    State.update({ type: "HOVER", element: null });
+    context.dispatch({ type: "HOVER", element: null });
   }
 }
 
 async function onMouseMapUp(event) {
-  const [i, j] = getActiveTile();
+  const tile = getHoveredTile();
 
-  if (!isTileOnMap(i, j)) {
-    State.update({ type: "SELECT", element: null });
+  if (!tile.isOnMap(context)) {
+    context.dispatch({ type: "SELECT", element: null });
     return;
   }
 
-  const { mode } = State.get();
+  const { i, j } = tile;
+  const { mode } = context.getState();
 
   if (mode === "normal") {
-    State.update({ type: "SELECT", element: { type: "tile", i, j } });
+    context.dispatch({ type: "SELECT", element: { type: "tile", i, j } });
   } else if (mode === "build") {
-    const { blueprintName, ctrlDown } = State.get();
+    const { blueprintName, ctrlDown } = context.getState();
     const blueprint = Blueprints[blueprintName];
 
-    if (isAreaFreeForBuilding(i, j, blueprint.height, blueprint.width)) {
-      if (sufficientResources(blueprint)) {
+    if (canBuildingBePlaced(context, blueprint, Point.fromTile(i, j))) {
+      if (sufficientResources(context, blueprint)) {
         await server.request({ type: "PLACE_BUILDING", i, j, blueprintName });
 
         if (!ctrlDown) {
-          State.update({ type: "RESET_MODE" });
+          context.dispatch({ type: "RESET_MODE" });
         }
       } else {
         console.log("not enough resources");
@@ -168,7 +175,7 @@ async function onMouseMapUp(event) {
 }
 
 function resizeMapHitArea() {
-  const { applicationHeight, applicationWidth } = State.get();
+  const { applicationHeight, applicationWidth } = context.getState();
   const hitArea = new PIXI.Rectangle(0, 0, applicationWidth, applicationHeight);
   Map.hitArea = hitArea;
 }
@@ -179,10 +186,10 @@ function createSprite({ hitArea, element, animation }) {
   sprite.interactive = true;
 
   sprite.on("mouseup", event => {
-    State.update({ type: "SELECT", element });
+    context.dispatch({ type: "SELECT", element });
   });
   sprite.on("mousemove", event => {
-    State.update({ type: "HOVER", element });
+    context.dispatch({ type: "HOVER", element });
   });
 
   setAnimation(sprite, animation);
@@ -199,7 +206,7 @@ function addDeer({ deer }) {
   });
   sprite.on("click", () => openDeerWindow(deer.id));
 
-  deerSprites[deer.id] = sprite;
+  sprites[deer.id] = sprite;
 }
 
 function addTree({ tree }) {
@@ -209,17 +216,121 @@ function addTree({ tree }) {
     element: { type: "tree", id: tree.id, tooltip: tree.id }
   });
 
-  treeSprites[tree.id] = sprite;
+  sprites[tree.id] = sprite;
+}
+
+function moveVillager(villager) {
+  const { timestamp } = context.getState();
+  const sprite = sprites[villager.id];
+  const { position, direction } = getMovement(villager.path, timestamp);
+
+  let animation;
+  if (!direction) animation = "STAND";
+  else if (isNorth(direction)) animation = "GO_N";
+  else if (isNorthEast(direction)) animation = "GO_NE";
+  else if (isEast(direction)) animation = "GO_E";
+  else if (isSouthEast(direction)) animation = "GO_SE";
+  else if (isSouth(direction)) animation = "GO_S";
+  else if (isSouthWest(direction)) animation = "GO_SW";
+  else if (isWest(direction)) animation = "GO_W";
+  else if (isNorthWest(direction)) animation = "GO_NW";
+  else animation = "STAND";
+
+  setAnimation(sprite, animation);
+
+  const relPos = position.toRel(context);
+  sprite.zIndex = relPos.y;
+  sprite.x = relPos.x + Constants.DEER_OFFSET_X;
+  sprite.y = relPos.y + Constants.DEER_OFFSET_Y;
+}
+
+function moveTree(tree) {
+  const sprite = sprites[tree.id];
+
+  const { i, j } = tree;
+  const { x, y } = Point.fromTile(i, j).toRel(context);
+  sprite.zIndex = y;
+  sprite.x = x + Constants.PALM_OFFSET_X;
+  sprite.y = y + Constants.PALM_OFFSET_Y;
+}
+
+function renderSelection() {
+  selectionLayer.clear();
+
+  const state = context.getState();
+  const { selectedElement } = state;
+  if (!selectedElement) return;
+
+  let relX = 0;
+  let relY = 0;
+  const { timestamp } = state;
+  switch (selectedElement.type) {
+    case "tile": {
+      const { i, j } = selectedElement;
+      const { x, y } = Point.fromTile(i, j).toRel(context);
+      selectionLayer.alpha = 0.25;
+      renderTile(selectionLayer, "0xffffff", x, y);
+      break;
+    }
+    case "deer": {
+      const deer = state.deers[selectedElement.id];
+      const { position } = getMovement(deer.path, timestamp);
+      const relPos = position.sub(10).toRel(context);
+      selectionLayer.alpha = 0.5;
+      renderCircle(selectionLayer, "0xffffff", relPos.x, relPos.y);
+      break;
+    }
+    case "tree": {
+      const tree = state.trees[selectedElement.id];
+      const { i, j } = tree;
+      const { x, y } = Point.fromTile(i, j).toRel(context);
+      selectionLayer.alpha = 0.5;
+      renderCircle(selectionLayer, "0xffffff", x, y);
+      break;
+    }
+    default:
+      throw Error(`Unknown selection type: ${selection}`);
+  }
+}
+
+function renderHitAreas() {
+  hitAreaLayer.clear();
+  Object.values(sprites).forEach(renderHitBox);
+}
+
+function renderBuildDecorations() {
+  decorationLayer.clear();
+
+  const state = context.getState();
+  const { hoveredElement } = state;
+  if (!hoveredElement || hoveredElement.type !== "tile") {
+    return;
+  }
+
+  const { i: mouseI, j: mouseJ } = hoveredElement;
+  const { blueprintName } = state;
+  const blueprint = Blueprints[blueprintName];
+
+  for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
+    for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
+      const p = Point.fromTile(i, j);
+      if (!p.isOnMap(context)) continue;
+      const tile = state.map[i][j];
+      const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
+      const { x, y } = p.toRel(context);
+      renderTile(decorationLayer, color, x, y);
+    }
+  }
 }
 
 /**
  * Update the map UI elements and animate all objects.
  *
- * @param {Action} action - The state update
+ * @param {Action} action - The context update
  */
 function move({ delta }) {
-  const state = State.get();
-  const { timestamp, mode, mapOffsetX, offsetX, offsetY } = state;
+  const state = context.getState();
+  const { mode, mapOffsetX, offsetX, offsetY } = state;
 
   mapSprite.position.x = offsetX - mapOffsetX;
   mapSprite.position.y = offsetY;
@@ -228,133 +339,33 @@ function move({ delta }) {
   gridSprite.position.y = offsetY;
   gridSprite.visible = state.renderGrid;
 
-  decorations: {
-    if (mode !== "build") {
-      decorationLayer.visible = false;
-      break decorations;
-    }
-
-    const { hoveredElement } = state;
-
-    if (!hoveredElement || hoveredElement.type !== "tile") {
-      decorationLayer.visible = false;
-      break decorations;
-    }
-
+  if (mode === "build") {
     decorationLayer.visible = true;
-    decorationLayer.clear();
-
-    const { i: mouseI, j: mouseJ } = hoveredElement;
-    const { blueprintName } = state;
-    const blueprint = Blueprints[blueprintName];
-
-    for (let i = mouseI - blueprint.height + 1; i <= mouseI; i++) {
-      for (let j = mouseJ - blueprint.width + 1; j <= mouseJ; j++) {
-        if (!isTileOnMap(i, j)) continue;
-        const tile = state.map[i][j];
-        const color = isBuildableTile(tile.type) ? "0xff0000" : "0x990000";
-        const [relX, relY] = tile2rel(i, j);
-        renderTile(decorationLayer, color, relX, relY);
-      }
-    }
+    renderBuildDecorations();
+  } else {
+    decorationLayer.visible = false;
   }
 
-  selection: {
-    if (mode !== "normal") {
-      selectionLayer.visible = false;
-      break selection;
-    }
-
-    const { selectedElement } = state;
-
-    if (!selectedElement) {
-      selectionLayer.visible = false;
-      break selection;
-    }
-
+  if (mode === "normal") {
     selectionLayer.visible = true;
-    selectionLayer.clear();
-
-    let relX = 0;
-    let relY = 0;
-    switch (selectedElement.type) {
-      case "tile":
-        [relX, relY] = tile2rel(selectedElement.i, selectedElement.j);
-        selectionLayer.alpha = 0.25;
-        renderTile(selectionLayer, "0xffffff", relX, relY);
-        break;
-      case "deer": {
-        const deer = state.deers[selectedElement.id];
-        const { x: cartX, y: cartY } = getPosition(deer.path, timestamp);
-        [relX, relY] = cart2rel(cartX - 10, cartY - 10);
-        selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", relX, relY);
-        break;
-      }
-      case "tree": {
-        const tree = state.trees[selectedElement.id];
-        [relX, relY] = tile2rel(tree.i, tree.j);
-        selectionLayer.alpha = 0.5;
-        renderCircle(selectionLayer, "0xffffff", relX, relY);
-        break;
-      }
-      default:
-        throw Error(`Unknown selection type: ${selection}`);
-    }
+    renderSelection();
+  } else {
+    selectionLayer.visible = false;
   }
 
-  objects: {
-    const { renderHitAreas } = state;
-
-    if (renderHitAreas) {
-      hitAreaLayer.visible = true;
-      hitAreaLayer.clear();
-    } else {
-      hitAreaLayer.visible = false;
-    }
-
-    for (let deer of Object.values(state.deers)) {
-      const sprite = deerSprites[deer.id];
-      const position = getPosition(deer.path, Date.now());
-
-      let animation;
-      if (!position.direction) animation = "STAND";
-      else if (isNorth(position.direction)) animation = "GO_N";
-      else if (isNorthEast(position.direction)) animation = "GO_NE";
-      else if (isEast(position.direction)) animation = "GO_E";
-      else if (isSouthEast(position.direction)) animation = "GO_SE";
-      else if (isSouth(position.direction)) animation = "GO_S";
-      else if (isSouthWest(position.direction)) animation = "GO_SW";
-      else if (isWest(position.direction)) animation = "GO_W";
-      else if (isNorthWest(position.direction)) animation = "GO_NW";
-      else animation = "STAND";
-
-      setAnimation(sprite, animation);
-      animate(sprite, delta);
-
-      const [relX, relY] = cart2rel(position.x, position.y);
-      sprite.zIndex = relY;
-      sprite.x = relX + Constants.DEER_OFFSET_X;
-      sprite.y = relY + Constants.DEER_OFFSET_Y;
-
-      if (renderHitAreas) renderHitBox(sprite);
-    }
-
-    for (let tree of Object.values(state.trees)) {
-      const sprite = treeSprites[tree.id];
-
-      animate(sprite, delta);
-
-      const [relX, relY] = tile2rel(tree.i, tree.j);
-      sprite.zIndex = relY;
-      sprite.x = relX + Constants.PALM_OFFSET_X;
-      sprite.y = relY + Constants.PALM_OFFSET_Y;
-
-      if (renderHitAreas) renderHitBox(sprite);
-    }
-
-    objectLayer.children.sort((c1, c2) => c1.zIndex - c2.zIndex);
+  if (state.renderHitAreas) {
+    hitAreaLayer.visible = true;
+    renderHitAreas();
+  } else {
+    hitAreaLayer.visible = false;
   }
+
+  Object.values(state.deers).forEach(moveVillager);
+  Object.values(state.trees).forEach(moveTree);
+
+  Object.values(sprites).forEach(sprite => animate(sprite, delta));
+
+  objectLayer.children.sort((c1, c2) => c1.zIndex - c2.zIndex);
 }
 
 /**
@@ -368,29 +379,31 @@ function move({ delta }) {
  */
 function renderTexture() {
   // calculate texture size
-  const xDim = State.get().map.length;
-  const yDim = State.get().map[0].length;
+  const xDim = context.getState().map.length;
+  const yDim = context.getState().map[0].length;
   const height = (xDim + yDim) * Constants.TILE_HEIGHT / 2.0;
   const width = (xDim + yDim) * Constants.TILE_WIDTH;
   const offsetX = width / 2.0;
 
-  // update state
-  State.update({ type: "UPDATE_MAP_SIZE", height, width });
+  // update context
+  context.dispatch({ type: "UPDATE_MAP_SIZE", height, width });
   mapTexture.resize(width, height);
   gridTexture.resize(width, height);
 
   const map = new PIXI.Graphics();
   const mapGrid = new PIXI.Graphics();
 
-  for (let i = 0; i < State.get().map.length; i++) {
-    for (let j = 0; j < State.get().map[i].length; j++) {
-      const tile = State.get().map[i][j];
+  for (let i = 0; i < context.getState().map.length; i++) {
+    for (let j = 0; j < context.getState().map[i].length; j++) {
+      const tile = context.getState().map[i][j];
 
       if (tile.type === Constants.TILE_EMPTY) {
         continue;
       }
 
-      const [absX, absY] = tile2abs(i, j);
+      const [absX, absY] = Point.fromTile(i, j)
+        .toAbs()
+        .toArray();
       renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
       renderTileGrid(mapGrid, offsetX + absX, absY);
     }
@@ -408,11 +421,13 @@ function renderTexture() {
 function updateTexture(updates) {
   const map = new PIXI.Graphics();
   map.fillAlpha = 0;
-  const offsetX = State.get().mapOffsetX;
+  const offsetX = context.getState().mapOffsetX;
 
   for (let update of updates) {
     const { i, j, tile } = update;
-    const [absX, absY] = tile2abs(i, j);
+    const [absX, absY] = Point.fromTile(i, j)
+      .toAbs()
+      .toArray();
     renderTile(map, getTileColor(tile.type), offsetX + absX, absY);
   }
 
@@ -503,4 +518,9 @@ function renderHitBox(sprite) {
   hitAreaLayer.lineTo(x + w, y + h);
   hitAreaLayer.lineTo(x, y + h);
   hitAreaLayer.lineTo(x, y);
+}
+
+function getHoveredTile() {
+  const { mouseIsoX, mouseIsoY } = context.getState();
+  return Point.fromRel(mouseIsoX, mouseIsoY).toTile(context);
 }

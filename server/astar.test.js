@@ -1,12 +1,11 @@
 import astar from "./astar.js";
-import * as Constants from "../constants.js";
-import { getTileCenter, cart2tile, isWalkableTile } from "../util.js";
-
-const { expect } = chai;
+import * as Constants from "../common/constants.js";
+import Point from "../common/point.js";
+import { isWalkableTile } from "../common/util.js";
 
 describe("astar", () => {
-  const start = [0, 0];
-  const target = [2, 2];
+  const start = Point.fromTile(0, 0);
+  const target = Point.fromTile(2, 2);
   const map = [
     [
       { type: Constants.TILE_GRASS },
@@ -26,29 +25,27 @@ describe("astar", () => {
     ]
   ];
 
-  it("path should start at 'start'", () => {
+  test("path should start at 'start'", () => {
     const path = astar(map, start, target);
     const pathStart = path[0];
-    expect([pathStart.x, pathStart.y]).to.deep.equal(
-      getTileCenter(start[0], start[1])
-    );
+    const center = Point.fromTile(start[0], start[1]).getCenter();
+    expect([pathStart.x, pathStart.y]).toEqual([center.x, center.y]);
   });
 
-  it("path should end at 'target'", () => {
+  test("path should end at 'target'", () => {
     const path = astar(map, start, target);
     const pathEnd = path[path.length - 1];
-    expect([pathEnd.x, pathEnd.y]).to.deep.equal(
-      getTileCenter(target[0], target[1])
-    );
+    const center = target.getCenter();
+    expect([pathEnd.x, pathEnd.y]).toEqual([center.x, center.y]);
   });
 
-  it("path should only include walkable tiles", () => {
+  test("path should only include walkable tiles", () => {
     const path = astar(map, start, target);
     expect(
       path.every(node => {
-        const [i, j] = cart2tile(node.x, node.y);
+        const { i, j } = Point.fromCart(node.x, node.y).toTile();
         return isWalkableTile(map[i][j].type);
       })
-    ).to.be.true;
+    ).toBe(true);
   });
 });
