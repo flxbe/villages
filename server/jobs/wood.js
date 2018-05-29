@@ -11,7 +11,6 @@ export function finish(context, deer) {
 
   switch (deer.target) {
     case "wood": {
-      context.dispatch(Actions.decreaseVillagerNeeds(deer.id));
       context.dispatch(Actions.increaseVillagerSkill(deer.id, "woodCutting"));
       util.incInventoryItem(context, deer, "wood", 1);
       break;

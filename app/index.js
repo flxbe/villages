@@ -32,6 +32,12 @@ async function load() {
   server.on("update", update => context.dispatch(update));
   await server.connect();
   await server.request({ type: "LOAD_STATE" });
+  await server.request({
+    type: "PLACE_BUILDING",
+    blueprintName: "house",
+    i: 5,
+    j: 15
+  });
 
   const height = window.innerHeight;
   const width = window.innerWidth;

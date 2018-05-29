@@ -90,7 +90,7 @@ describe("FoodJob", () => {
         const state = context.getState();
         deer = state.deers[deer.id];
         expect(deer.inventory).toBe(0);
-        expect(state.storage.food).toBe(20);
+        expect(state.storage.food).toBe(120);
       });
     });
   });

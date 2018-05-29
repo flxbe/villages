@@ -4,11 +4,12 @@ import * as Constants from "./constants.js";
 export function create() {
   return {
     storage: {
-      wood: 0,
-      food: 0
+      wood: 100,
+      food: 100
     },
     deers: {},
-    trees: {}
+    trees: {},
+    buildings: {}
   };
 }
 
@@ -46,6 +47,11 @@ export function update(state, action) {
       state.mode = "build";
       state.blueprintName = action.blueprintName;
       state.selectedElement = null;
+      break;
+    }
+    case "ADD_BUILDING": {
+      state.buildings[action.building.id] = action.building;
+      console.info(state);
       break;
     }
     case "SET_MAP": {

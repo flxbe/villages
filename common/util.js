@@ -48,6 +48,19 @@ export function getNearestTree(context, startTile) {
   return nearestTree;
 }
 
+export function getNearestHouse(context, startTile) {
+  assert(context);
+  assert(startTile);
+  assert(startTile.isTile());
+
+  const { buildings } = context.getState();
+  const sortedBuildings = Object.values(buildings)
+    .filter(({ blueprintName }) => blueprintName === "house")
+    .sort(({ i, j }) => startTile.distance(Point.fromTile(i, j)));
+
+  return sortedBuildings[0];
+}
+
 /**
  * Return the current position of an object, that moves on the specified path.
  *

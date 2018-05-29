@@ -1,5 +1,6 @@
 import { TILE_ROAD } from "../common/constants.js";
 export * from "./actions/client.js";
+export * from "./actions/buildings.js";
 export * from "./actions/storage.js";
 export * from "./actions/villagers.js";
 

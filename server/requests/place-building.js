@@ -26,13 +26,6 @@ export default function placeBuilding(context, i, j, blueprintName) {
     throw Error("not enough wood");
   }
 
-  // reduce resources
-  context.dispatch(
-    Actions.updateStorage({
-      wood: context.getState().storage.wood - blueprint.wood
-    })
-  );
-
   // update map
   const tileType =
     blueprintName === "road" ? Constants.TILE_ROAD : Constants.TILE_BUILDING;
@@ -47,6 +40,11 @@ export default function placeBuilding(context, i, j, blueprintName) {
     }
   }
 
-  // dispatch map updates
   context.dispatch(Actions.updateMap(mapUpdates));
+  context.dispatch(Actions.addBuilding(blueprintName, i, j));
+  context.dispatch(
+    Actions.updateStorage({
+      wood: context.getState().storage.wood - blueprint.wood
+    })
+  );
 }

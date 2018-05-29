@@ -17,11 +17,11 @@ function setTree(id, i, j) {
   context.dispatch(Actions.addTree({ id, i, j }));
 }
 
-function addDeer(id, job) {
+function addDeer(id, profession) {
   context.dispatch(
     Actions.addDeer({
       id,
-      job,
+      profession,
       path: [{ x: 0, y: 0, timestamp: Date.now() }],
       inventory: 0,
       needs: {

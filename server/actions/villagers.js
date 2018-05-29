@@ -34,7 +34,24 @@ export function setVillagerInventory(id, item, amount) {
   };
 }
 
-export function decreaseVillagerNeeds(id, amount = 0.1) {
+export function increaseVillagerNeeds(id, amount = 4) {
+  return (dispatch, getState) => {
+    const villager = getState().deers[id];
+    assert(villager);
+
+    const { needs } = villager;
+    const newNeeds = {
+      food: Math.min(100, needs.food + amount),
+      sleep: Math.min(100, needs.sleep + amount)
+    };
+    dispatch({
+      type: "UPDATE_DEER",
+      deer: { id, needs: newNeeds }
+    });
+  };
+}
+
+export function decreaseVillagerNeeds(id, amount = 0.5) {
   return (dispatch, getState) => {
     const villager = getState().deers[id];
     assert(villager);

@@ -3,7 +3,11 @@ import * as Actions from "../actions.js";
 
 import assert from "../../common/assert.js";
 import Point from "../../common/point.js";
-import { getMovement, getNearestTree } from "../../common/util.js";
+import {
+  getMovement,
+  getNearestTree,
+  getNearestHouse
+} from "../../common/util.js";
 
 const INVENTORY_CAPACITY = 20;
 
@@ -48,11 +52,15 @@ export function goToTree(context, villager) {
   context.dispatch(Actions.setVillagerTarget(villager.id, "wood", path));
 }
 
-export function getTreeTile(context) {
-  assert(context);
-  const { treeTile } = context.getState();
-  assert(treeTile);
-  return Point.fromTile(treeTile.i, treeTile.j);
+export function goToHouse(context, villager) {
+  const villagerTile = getTile(context, villager);
+  const house = getNearestHouse(context, villagerTile);
+  assert(house, "no house found");
+  const houseTile = Point.fromTile(house.i, house.j);
+  console.log(villagerTile, houseTile);
+  const path = getPathNextToTile(context, villagerTile, houseTile);
+
+  context.dispatch(Actions.setVillagerTarget(villager.id, "house", path));
 }
 
 export function getFoodTile(context) {
