@@ -26,7 +26,7 @@ export function finish(context, deer) {
       util.incInventoryItem(context, deer, "food", 1);
       break;
     }
-    case "storage": {
+    case "barn": {
       context.dispatch(Actions.storeIventory(deer.id));
       break;
     }
@@ -61,13 +61,13 @@ export function start(context, deer) {
   switch (deer.target) {
     case "food": {
       if (util.isInventoryFull(deer)) {
-        util.goToStorage(context, deer);
+        util.goToBuilding(context, deer, "barn");
       } else if (!util.wasWorking(deer)) {
         util.startWorking(context, deer);
       }
       break;
     }
-    case "storage": {
+    case "barn": {
       if (util.isInventoryEmpty(deer)) {
         util.goToFood(context, deer);
       } else if (!util.wasWorking(deer)) {
@@ -77,7 +77,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        util.goToStorage(context, deer);
+        util.goToBuilding(context, deer, "barn");
       } else {
         util.goToFood(context, deer);
       }

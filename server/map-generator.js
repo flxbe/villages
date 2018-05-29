@@ -99,9 +99,7 @@ export function generateRandomMap() {
     map.push(line);
   }
 
-  map[7][10].type = Constants.TILE_ROAD;
   map[9][13].type = Constants.TILE_ROAD;
-  map[3][3].type = Constants.TILE_ROAD;
 
   return map;
 }

@@ -40,7 +40,6 @@ function initContext() {
   const map = generateRandomMap();
 
   context.dispatch(Actions.setMap(map));
-  context.dispatch(Actions.addStorageTile(3, 3));
   context.dispatch(Actions.addFoodTile(9, 13));
 
   addDeer("deer1", "wood");

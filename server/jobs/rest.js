@@ -15,7 +15,7 @@ export function finish(context, deer) {
 
 export function start(context, deer) {
   if (deer.job !== "rest") {
-    util.goToHouse(context, deer);
+    util.goToBuilding(context, deer, "house");
     util.startJob(context, deer, "rest");
     return;
   }

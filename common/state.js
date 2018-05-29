@@ -4,7 +4,7 @@ import * as Constants from "./constants.js";
 export function create() {
   return {
     storage: {
-      wood: 100,
+      wood: 140,
       food: 100
     },
     deers: {},
@@ -51,7 +51,6 @@ export function update(state, action) {
     }
     case "ADD_BUILDING": {
       state.buildings[action.building.id] = action.building;
-      console.info(state);
       break;
     }
     case "SET_MAP": {
@@ -64,10 +63,6 @@ export function update(state, action) {
       for (let update of action.mapUpdates) {
         state.map[update.i][update.j] = update.tile;
       }
-      break;
-    }
-    case "ADD_STORAGE_TILE": {
-      state.storageTile = { i: action.i, j: action.j };
       break;
     }
     case "ADD_FOOD_TILE": {

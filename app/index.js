@@ -38,6 +38,12 @@ async function load() {
     i: 5,
     j: 15
   });
+  await server.request({
+    type: "PLACE_BUILDING",
+    blueprintName: "barn",
+    i: 12,
+    j: 4
+  });
 
   const height = window.innerHeight;
   const width = window.innerWidth;

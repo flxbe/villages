@@ -25,13 +25,6 @@ export function setMap(map) {
   };
 }
 
-export function addStorageTile(i, j) {
-  return [
-    { type: "ADD_STORAGE_TILE", i, j },
-    updateMap([{ i, j, tile: { type: TILE_ROAD } }])
-  ];
-}
-
 export function addFoodTile(i, j) {
   return [
     { type: "ADD_FOOD_TILE", i, j },

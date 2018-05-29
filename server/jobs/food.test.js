@@ -78,7 +78,7 @@ describe("FoodJob", () => {
           Actions.updateDeer({
             id: deer.id,
             job: "food",
-            target: "storage",
+            target: "barn",
             state: "working",
             item: "food",
             inventory: 20

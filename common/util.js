@@ -48,15 +48,17 @@ export function getNearestTree(context, startTile) {
   return nearestTree;
 }
 
-export function getNearestHouse(context, startTile) {
+export function getNearestBuilding(context, startTile, blueprintName) {
   assert(context);
   assert(startTile);
   assert(startTile.isTile());
+  assert(blueprintName);
 
   const { buildings } = context.getState();
   const sortedBuildings = Object.values(buildings)
-    .filter(({ blueprintName }) => blueprintName === "house")
-    .sort(({ i, j }) => startTile.distance(Point.fromTile(i, j)));
+    .filter(b => b.blueprintName === blueprintName)
+    .sort(b => startTile.distance(Point.fromTile(b.i, b.j)))
+    .reverse();
 
   return sortedBuildings[0];
 }

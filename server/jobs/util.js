@@ -6,7 +6,7 @@ import Point from "../../common/point.js";
 import {
   getMovement,
   getNearestTree,
-  getNearestHouse
+  getNearestBuilding
 } from "../../common/util.js";
 
 const INVENTORY_CAPACITY = 20;
@@ -28,14 +28,6 @@ export function getPathNextToTile(context, start, target) {
   return astar(map, start, target, 1);
 }
 
-export function goToStorage(context, villager) {
-  const { map } = context.getState();
-  const villagerTile = getTile(context, villager);
-  const path = astar(map, villagerTile, getStorageTile(context));
-
-  context.dispatch(Actions.setVillagerTarget(villager.id, "storage", path));
-}
-
 export function goToFood(context, villager) {
   const { map } = context.getState();
   const villagerTile = getTile(context, villager);
@@ -52,15 +44,14 @@ export function goToTree(context, villager) {
   context.dispatch(Actions.setVillagerTarget(villager.id, "wood", path));
 }
 
-export function goToHouse(context, villager) {
+export function goToBuilding(context, villager, blueprintName) {
   const villagerTile = getTile(context, villager);
-  const house = getNearestHouse(context, villagerTile);
-  assert(house, "no house found");
+  const house = getNearestBuilding(context, villagerTile, blueprintName);
+  assert(house, `could not find any building of type '${blueprintName}'.`);
   const houseTile = Point.fromTile(house.i, house.j);
-  console.log(villagerTile, houseTile);
   const path = getPathNextToTile(context, villagerTile, houseTile);
 
-  context.dispatch(Actions.setVillagerTarget(villager.id, "house", path));
+  context.dispatch(Actions.setVillagerTarget(villager.id, blueprintName, path));
 }
 
 export function getFoodTile(context) {
@@ -68,13 +59,6 @@ export function getFoodTile(context) {
   const { foodTile } = context.getState();
   assert(foodTile);
   return Point.fromTile(foodTile.i, foodTile.j);
-}
-
-export function getStorageTile(context) {
-  assert(context);
-  const { storageTile } = context.getState();
-  assert(storageTile);
-  return Point.fromTile(storageTile.i, storageTile.j);
 }
 
 export function startWorking(context, villager) {
