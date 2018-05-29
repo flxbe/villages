@@ -9,7 +9,7 @@ import { generateRandomMap } from "./map-generator.js";
 const context = new Context();
 initContext();
 
-function setTree(context, id, i, j) {
+function setTree(id, i, j) {
   const tile = {
     type: Constants.TILE_TREE
   };
@@ -17,35 +17,38 @@ function setTree(context, id, i, j) {
   context.dispatch(Actions.addTree({ id, i, j }));
 }
 
+function addDeer(id, job) {
+  context.dispatch(
+    Actions.addDeer({
+      id,
+      job,
+      path: [{ x: 0, y: 0, timestamp: Date.now() }],
+      inventory: 0,
+      needs: {
+        food: 100.0,
+        sleep: 100.0
+      },
+      skills: {
+        harvesting: 1,
+        woodCutting: 1
+      }
+    })
+  );
+}
+
 function initContext() {
   const map = generateRandomMap();
 
   context.dispatch(Actions.setMap(map));
-
-  context.dispatch(
-    Actions.addDeer({
-      id: "deer1",
-      path: [{ x: 0, y: 0, timestamp: Date.now() }],
-      inventory: 0,
-      job: "wood"
-    })
-  );
-  context.dispatch(
-    Actions.addDeer({
-      id: "deer2",
-      path: [{ x: 0, y: 0, timestamp: Date.now() }],
-      inventory: 0,
-      job: "food"
-    })
-  );
-
   context.dispatch(Actions.addStorageTile(3, 3));
   context.dispatch(Actions.addFoodTile(9, 13));
 
-  setTree(context, "tree1", 2, 5);
-  setTree(context, "tree2", 3, 5);
-  setTree(context, "tree3", 4, 5);
-  setTree(context, "tree4", 5, 5);
+  addDeer("deer1", "wood");
+  addDeer("deer2", "food");
+  setTree("tree1", 2, 5);
+  setTree("tree2", 3, 5);
+  setTree("tree3", 4, 5);
+  setTree("tree4", 5, 5);
 }
 
 /**

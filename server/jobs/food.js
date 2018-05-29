@@ -23,6 +23,8 @@ export function finish(context, deer) {
   switch (deer.target) {
     case "food": {
       assert(!deer.item || deer.item === "food");
+      context.dispatch(Actions.decreaseVillagerNeeds(deer.id));
+      context.dispatch(Actions.increaseVillagerSkill(deer.id, "harvesting"));
       util.incInventoryItem(context, deer, "food", 1);
       break;
     }

@@ -30,8 +30,43 @@ describe("State", () => {
       });
     });
 
+    describe("UPDATE_DEER", () => {
+      const deer = {
+        id: "deer1",
+        needs: {
+          food: 100,
+          sleep: 100
+        }
+      };
+
+      function addDeer() {
+        update(state, {
+          type: "ADD_DEER",
+          deer
+        });
+      }
+
+      test("should update the needs", () => {
+        addDeer();
+        const updatedDeer = {
+          id: "deer1",
+          needs: {
+            food: 90,
+            sleep: 80
+          }
+        };
+        const action = {
+          type: "UPDATE_DEER",
+          deer: updatedDeer
+        };
+
+        update(state, action);
+        expect(state.deers[deer.id]).toEqual(updatedDeer);
+      });
+    });
+
     describe("REMOVE_DEER", () => {
-      test("shold remove a deer", () => {
+      test("should remove a deer", () => {
         const deer = { id: "deer1" };
 
         update(state, { type: "ADD_DEER", deer });

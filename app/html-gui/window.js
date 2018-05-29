@@ -25,7 +25,7 @@ export default class Window extends Widget {
 
     this.node.style.position = "absolute";
     this.node.style.backgroundColor = options.backgroundColor || "#ffffff";
-    this.node.style.padding = options.margin ? intToPx(options.margin) : "10px";
+    this.node.style.padding = options.margin ? intToPx(options.margin) : "2px";
 
     this.shadow = options.shadow || false;
 

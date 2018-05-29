@@ -1,3 +1,4 @@
+import assert from "../../common/assert.js";
 import { updateStorage } from "./storage.js";
 /**
  * Set the job of a villager.
@@ -30,6 +31,39 @@ export function setVillagerInventory(id, item, amount) {
   return {
     type: "UPDATE_DEER",
     deer: { id, item, inventory: amount }
+  };
+}
+
+export function decreaseVillagerNeeds(id, amount = 0.1) {
+  return (dispatch, getState) => {
+    const villager = getState().deers[id];
+    assert(villager);
+
+    const { needs } = villager;
+    const newNeeds = {
+      food: Math.max(0, needs.food - amount),
+      sleep: Math.max(0, needs.sleep - amount)
+    };
+    dispatch({
+      type: "UPDATE_DEER",
+      deer: { id, needs: newNeeds }
+    });
+  };
+}
+
+export function increaseVillagerSkill(id, skill, amount = 0.01) {
+  return (dispatch, getState) => {
+    const villager = getState().deers[id];
+    assert(villager);
+
+    const { skills } = villager;
+    const newSkills = Object.assign({}, skills, {
+      [skill]: skills[skill] + amount
+    });
+    dispatch({
+      type: "UPDATE_DEER",
+      deer: { id, skills: newSkills }
+    });
   };
 }
 

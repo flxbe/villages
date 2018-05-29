@@ -10,7 +10,8 @@ class DeerWindow extends Window {
     super({
       name,
       title: `Deer '${id}'`,
-      margin: 10,
+      margin: 5,
+      width: 200,
       borders: true,
       shadow: true
     });
@@ -21,6 +22,7 @@ class DeerWindow extends Window {
     this._onUpdateDeer = action => this.onUpdateDeer(action);
 
     this.p = new Paragraph();
+    this.p.marginTop = 0;
     this.add(this.p);
 
     this.closeButton = new Button("Close");
@@ -55,7 +57,17 @@ class DeerWindow extends Window {
       `id: ${deer.id}`,
       `job: ${deer.job}`,
       `target: ${deer.target}`,
-      `inventory: ${deer.item} (${deer.inventory})`
+      "",
+      "INVENTORY",
+      `${deer.item} (${deer.inventory})`,
+      "",
+      "NEEDS",
+      `food: ${deer.needs.food.toFixed(1)}`,
+      `sleep: ${deer.needs.sleep.toFixed(1)}`,
+      "",
+      "SKILLS",
+      `Harvesting: ${deer.skills.harvesting.toFixed(2)}`,
+      `Wood Cutting: ${deer.skills.woodCutting.toFixed(2)}`
     ].join("\n");
   }
 }
