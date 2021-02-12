@@ -1,9 +1,4 @@
-import assert, {
-  isNumber,
-  assertNumber,
-  isArray,
-  assertInteger
-} from "./assert.js";
+import assert, { isNumber, assertNumber, isArray } from "./assert.js";
 import * as Constants from "./constants.js";
 
 const directions = [
@@ -187,7 +182,7 @@ export default class Point {
         this.i * Constants.TILE_HEIGHT
       );
     } else if (!this.isAbs()) {
-      return this.toAbs(context).toCart(content);
+      return this.toAbs(context).toCart(context);
     }
 
     assert(this.isAbs());

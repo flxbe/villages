@@ -42,5 +42,5 @@ async function connect() {
 }
 
 async function request(req) {
-  return await serverRequest(req);
+  return serverRequest(req);
 }

@@ -1,5 +1,4 @@
-import assert from "./assert.js";
-import { isArray } from "./assert.js";
+import assert, { isArray } from "./assert.js";
 import * as State from "./state.js";
 
 export default class Context {

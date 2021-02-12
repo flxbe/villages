@@ -260,19 +260,16 @@ describe("Point", () => {
   describe("isOnMap", () => {
     test("should correctly check points on the map", () => {
       const p = Point.fromTile(0, 0);
-      const neighbours = p.getNeighbours(getContext());
       expect(p.isOnMap(getContext())).toBe(true);
     });
 
     test("should correctly check points with negative coordinates", () => {
       const p = Point.fromTile(-1, -1);
-      const neighbours = p.getNeighbours(getContext());
       expect(p.isOnMap(getContext())).toBe(false);
     });
 
     test("should correctly check points outside the map", () => {
       const p = Point.fromTile(101, 101);
-      const neighbours = p.getNeighbours(getContext());
       expect(p.isOnMap(getContext())).toBe(false);
     });
   });

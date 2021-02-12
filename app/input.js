@@ -80,7 +80,7 @@ window.addEventListener(
 );
 
 document.addEventListener("keyup", event => {
-  if (event.keyCode == 17) {
+  if (event.keyCode === 17) {
     context.dispatch({ type: "SET_CTRL_context", value: false });
   }
 });

@@ -48,10 +48,10 @@ BinaryHeap.prototype = {
 
   remove: function(node) {
     let i = 0;
-    while (i < this.size() && this.content[i] != node) {
+    while (i < this.size() && this.content[i] !== node) {
       i++;
     }
-    if (i == this.size() - 1) return;
+    if (i === this.size() - 1) return;
     const last = this.content.pop();
     this.content[i] = last;
     this.bubbleUp(i);
@@ -123,7 +123,7 @@ export default function astar(map, startTile, targetTile, targetDistance = 0) {
   let compMap = [];
 
   const weightFunction = function(i, j) {
-    if (map[i][j].type == Constants.TILE_ROAD) return 1;
+    if (map[i][j].type === Constants.TILE_ROAD) return 1;
     return 2;
   };
 
@@ -190,7 +190,7 @@ export default function astar(map, startTile, targetTile, targetDistance = 0) {
 
       const nCost = weightFunction(ni, nj);
       const g =
-        ni != current.i && nj != current.j
+        ni !== current.i && nj !== current.j
           ? current.g + nCost * 1.5
           : current.g + nCost;
 
@@ -207,6 +207,4 @@ export default function astar(map, startTile, targetTile, targetDistance = 0) {
       }
     }
   }
-
-  return;
 }

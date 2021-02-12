@@ -78,7 +78,7 @@ describe("FoodJob", () => {
           Actions.updateDeer({
             id: deer.id,
             job: "food",
-            target: "storage",
+            target: "barn",
             state: "working",
             item: "food",
             inventory: 20
@@ -90,7 +90,7 @@ describe("FoodJob", () => {
         const state = context.getState();
         deer = state.deers[deer.id];
         expect(deer.inventory).toBe(0);
-        expect(state.storage.food).toBe(20);
+        expect(state.storage.food).toBe(120);
       });
     });
   });

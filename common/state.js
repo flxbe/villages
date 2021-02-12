@@ -4,11 +4,12 @@ import * as Constants from "./constants.js";
 export function create() {
   return {
     storage: {
-      wood: 0,
-      food: 0
+      wood: 140,
+      food: 100
     },
     deers: {},
-    trees: {}
+    trees: {},
+    buildings: {}
   };
 }
 
@@ -48,6 +49,10 @@ export function update(state, action) {
       state.selectedElement = null;
       break;
     }
+    case "ADD_BUILDING": {
+      state.buildings[action.building.id] = action.building;
+      break;
+    }
     case "SET_MAP": {
       state.map = action.map;
       state.mapHeight = Constants.MAP_HEIGHT;
@@ -58,10 +63,6 @@ export function update(state, action) {
       for (let update of action.mapUpdates) {
         state.map[update.i][update.j] = update.tile;
       }
-      break;
-    }
-    case "ADD_STORAGE_TILE": {
-      state.storageTile = { i: action.i, j: action.j };
       break;
     }
     case "ADD_FOOD_TILE": {
@@ -82,7 +83,6 @@ export function update(state, action) {
       break;
     }
     case "REMOVE_DEER": {
-      const deer = state.deers[action.id];
       delete state.deers[action.id];
       break;
     }

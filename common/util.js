@@ -35,17 +35,26 @@ export function getNearestTree(context, startTile) {
   assert(startTile.isTile());
 
   const { trees } = context.getState();
-  let nearestTree = undefined;
-  let minDist = undefined;
-  for (let tree of Object.values(trees)) {
-    const dist = startTile.distance(Point.fromTile(tree.i, tree.j));
-    if (!nearestTree || dist < minDist) {
-      nearestTree = tree;
-      minDist = dist;
-    }
-  }
+  const sortedTrees = Object.values(trees)
+    .sort(b => startTile.distance(Point.fromTile(b.i, b.j)))
+    .reverse();
 
-  return nearestTree;
+  return sortedTrees[0];
+}
+
+export function getNearestBuilding(context, startTile, blueprintName) {
+  assert(context);
+  assert(startTile);
+  assert(startTile.isTile());
+  assert(blueprintName);
+
+  const { buildings } = context.getState();
+  const sortedBuildings = Object.values(buildings)
+    .filter(b => b.blueprintName === blueprintName)
+    .sort(b => startTile.distance(Point.fromTile(b.i, b.j)))
+    .reverse();
+
+  return sortedBuildings[0];
 }
 
 /**

@@ -11,12 +11,11 @@ export function finish(context, deer) {
 
   switch (deer.target) {
     case "wood": {
-      context.dispatch(Actions.decreaseVillagerNeeds(deer.id));
       context.dispatch(Actions.increaseVillagerSkill(deer.id, "woodCutting"));
       util.incInventoryItem(context, deer, "wood", 1);
       break;
     }
-    case "storage": {
+    case "barn": {
       context.dispatch(Actions.storeIventory(deer.id));
       break;
     }
@@ -36,13 +35,13 @@ export function start(context, deer) {
   switch (deer.target) {
     case "wood": {
       if (util.isInventoryFull(deer)) {
-        util.goToStorage(context, deer);
+        util.goToBuilding(context, deer, "barn");
       } else if (!util.wasWorking(deer)) {
         util.startWorking(context, deer);
       }
       break;
     }
-    case "storage": {
+    case "barn": {
       if (util.isInventoryEmpty(deer)) {
         util.goToTree(context, deer);
       } else if (!util.wasWorking(deer)) {
@@ -52,7 +51,7 @@ export function start(context, deer) {
     }
     default: {
       if (util.isInventoryFull(deer)) {
-        util.goToStorage(context, deer);
+        util.goToBuilding(context, deer, "barn");
       } else {
         util.goToTree(context, deer);
       }
